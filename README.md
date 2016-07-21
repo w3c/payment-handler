@@ -1,5 +1,4 @@
 
 # Specification 'webpayments-payment-apps-api'
 
-This is the repository for webpayments-payment-apps-api. You're welcome to contribute! Let's make the Web rock our socks
-off!
+Repository for the Payment App API specification of the Web Payments Working Group. [View the specification](https://w3c.github.io/webpayments-payment-apps-api/).
