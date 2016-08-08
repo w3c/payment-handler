@@ -92,8 +92,7 @@
     underlying Payment Request API.</p>
 </section>
 <section id='sotd'>
-    <p>The Web Payments Working Group maintains <a href=
-                                              "https://github.com/w3c/webpayments/issues?q=is%3Aissue+is%3Aopen+label%3A%22Proposal%3A+Payment+Apps%22">
+    <p>The Web Payments Working Group maintains <a href="https://github.com/w3c/webpayments-payment-apps-api/issues">
         a list of all bug reports that the group has not yet addressed</a>.
         This draft highlights some of the pending issues that are still to
         be discussed in the working group. No decision has been taken on
@@ -258,7 +257,7 @@
 </section>
 <section id="model">
   <h2>Payment App Model and Design Considerations</h2>
-  <p>This section (which maypaym be temporary) intends to help build shared understanding of the capabilities and limitations of the specified model.</p>
+  <p>This section (which may be temporary) intends to help build shared understanding of the capabilities and limitations of the specified model.</p>
   <section>
     <h3>General Considerations</h3>
     <ul>
@@ -273,7 +272,7 @@
     <ul>
 <li>    A goal of this system is to decouple the payment methods used to pay from the software (payment apps) that implement those payment methods. By decoupling, merchants (and their payment service providers) can lower the cost of creating a checkout experience, users can have more choice in the software they use to pay, and payment app providers can innovate without imposing an integration burden on merchants.</li>
 <li>    Users may choose to use "open" or "proprietary" payment methods, so the payment app ecosystem must support both. Users must be able to register payment apps of their choosing. We expect the user to have greater choice of third party payment apps for open payment methods than for proprietary payment methods. Examples of open payment methods include card payment and SEPA credit transfer.</li>
-<li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. For open payment methods, the merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information.</li>
+<li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. For open payment methods, the merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information. See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a> for discussion about how merchant may track progress of a push payment.</li>
 <li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for proprietary payment methods, but for open payment methods such as cards, merchants (or their PSPs) will be entrusting some portion of data collection to third party payment apps, without knowing which app the user will select.</li>
 <li>    We recognize, therefore, a tension between user preferences (e.g., registered payment apps, ordering of display of payment apps, etc.) and merchant preferences (e.g., control of the user experience previously implemented in a Web page, ordering of payment apps, presence of merchant's own payment app, etc.).</li>
 <li>    The design should address this tension by enabling the merchant to express preferences for both payment methods and payment apps. The design should not constrain how browsers make us of these preferences, only provide guidance to browser vendors about taking into account both merchant and user preferences.</li>
@@ -373,8 +372,8 @@
     <ul>
       <li>This specification only describes communication between the user agent and the payment app. This includes an
           asynchronous mechanism for a payment app to return a payment response to the user agent. This specification
-          does not (yet) address scenarios where the user agent does not receive the response (e.g., due to a crash our
-          network outage). Question: Should we recommend asynchronous communication between payment app and servers it talks to?</li>
+          does not (yet) address scenarios where the user agent does not receive the response (e.g., due to a crash or
+          network outage). Question: Should we recommend asynchronous communication between payment app and servers it talks to? See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>.</li>
       <li>This specification does not address communication between the payee server and the payee Web app, or between
           the payment app and other parties (e.g., the payment app distibutor, or directly to the merchant).</li>
     </ul>
