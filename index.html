@@ -286,7 +286,7 @@
 </li>
 <li> The browser uses this information in conjunction with user preferences to:
      <li>   Filter matching payment apps (in the case of accepted payment apps)</li>
-<li>        Display matching payment apps (according to merchant preferred payment method order)</li>
+<li>        Display matching payment apps (according to matching payment methods, according to merchant accepted payment method order)</li>
 <li>        Display recommended payment apps (according to merchant recommended payment app order)</li>
     </ul>
 </li>
@@ -301,7 +301,7 @@
 <li>        When the merchant recommends a payment app and the user selects it, registration can happen in that moment without additional user action.</li>
 <li>        When the browser recommends a payment app and the user selects it, registration can happen in that moment without additional user action. (There is an expectation that the display of browser-recommended apps will differ from the display of merchant-recommended apps).</li>
 <li>        When the user installs native payment app, registration can happen as part of the app installation process.</li>
-<li>        Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps.</li>
+<li>        Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register a payment app outside of the context of checkout.</li>
 	</ul>
       </li>
       <li>
@@ -310,7 +310,7 @@
       <li>During registration, information about enabled payment methods and available payment options is provided to the user agent. 
           The user agent stores this information for subsequent actions (e.g., when matching merchant-accepted payment methods). In this
           proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
-        registration information. In this proposal, payment apps to update the information that a user agent has stored about them
+        registration information. In this proposal, payment apps update the information that a user agent has stored about them
           by re-calling the registration API.</li>
     </ul>
   </section>
