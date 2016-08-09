@@ -31,6 +31,11 @@
                     company:    "Shopify",
                     companyURL: "https://shopify.com"
                 },
+                {   name:       "Ian Jacobs",
+                    url:        "http://www.w3.org/People/Jacobs/",
+                    company:    "W3C",
+                    companyURL: "https://www.w3.org/"
+                },
             ],
 
             useExperimentalStyles: true,
@@ -529,8 +534,10 @@
       dictionaries to provide information displayed to the user to facilitate payment app selection.</li>
   </ol>
 
+    <p class="issue" title="Should we distinguish the identifier for a payment app from the identifier for the app server that processes payments?">
+    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/20">issue 20</a> about whether we should have two identifiers (or one) and expectations for dereferencing.
+  </p>
 
-  
     <section>
         <h3>The PaymentOption dictionary</h3>
 <pre class="idl">
