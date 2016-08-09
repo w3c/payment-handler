@@ -286,7 +286,11 @@
 <li>        Accepted payment methods (payment methods the merchant accepts, and no others may be used; part of payment request API)</li>
 <li>        Preferred payment methods (merchant-specified order part of payment request API)</li>
 <li>        Recommended payment apps (payment apps the merchant prefers, but others may be used)</li>
-<li>        Accepted payment apps (payment apps the merchant accepts, and no others may be used). Note that this is the status quo since merchants either accept card information through UI that they control, or they redirect users to payment service providers with whom they have existing relationships. Note that if we allow merchants to restrict payment apps that might end up requiring the customer to register multiple payment apps for the same payment method, which would complicate the user experience for the same payment method.</li>
+<li>        Accepted payment apps (payment apps the merchant accepts, and no others may be used). Note that this is the status quo since merchants either accept card information through UI that they control, or they redirect users to payment service providers with whom they have existing relationships. Note that if we allow merchants to restrict payment apps that might end up requiring the customer to register multiple payment apps for the same payment method, which would complicate the user experience for the same payment method.
+    <p class="issue" title="Should merchants be able to limit matching to trusted apps?">
+    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/1">issue 1</a> about whether we should including filtering on accepted payment apps.
+  </p>
+</li>
   </ul>
 </li>
 <li> The browser uses this information in conjunction with user preferences to:
