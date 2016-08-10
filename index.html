@@ -278,24 +278,18 @@
 <li>    A goal of this system is to decouple the payment methods used to pay from the software (payment apps) that implement those payment methods. By decoupling, merchants (and their payment service providers) can lower the cost of creating a checkout experience, users can have more choice in the software they use to pay, and payment app providers can innovate without imposing an integration burden on merchants.</li>
 <li>    Users may choose to use "open" or "proprietary" payment methods, so the payment app ecosystem must support both. Users must be able to register payment apps of their choosing. We expect the user to have greater choice of third party payment apps for open payment methods than for proprietary payment methods. Examples of open payment methods include card payment and SEPA credit transfer.</li>
 <li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. For open payment methods, the merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information. See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a> for discussion about how merchant may track progress of a push payment.</li>
-<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for proprietary payment methods, but for open payment methods such as cards, merchants (or their PSPs) will be entrusting some portion of data collection to third party payment apps, without knowing which app the user will select.</li>
-<li>    We recognize, therefore, a tension between user preferences (e.g., registered payment apps, ordering of display of payment apps, etc.) and merchant preferences (e.g., control of the user experience previously implemented in a Web page, ordering of payment apps, presence of merchant's own payment app, etc.).</li>
-<li>    The design should address this tension by enabling the merchant to express preferences for both payment methods and payment apps. The design should not constrain how browsers make use of these preferences, only provide guidance to browser vendors about taking into account both merchant and user preferences.</li>
-<li>    Here are preferences the system might support:
+<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for proprietary payment methods, but for open payment methods such as cards, merchants (or their PSPs) will be entrusting some portion of data collection to third party payment apps.</li>
+<li>The design therefore includes support for merchants to recommend payment apps and suggest the ordering of payment methods. The design should endeavor not to constrain how browsers make use of this information, only provide guidance to browser makers about taking into account both merchant and user preferences.</li>
+<li>Here are preferences the system might support:
   <ul>
 <li>        Accepted payment methods (payment methods the merchant accepts, and no others may be used; part of payment request API)</li>
 <li>        Preferred payment methods (merchant-specified order part of payment request API)</li>
 <li>        Recommended payment apps (payment apps the merchant prefers, but others may be used)</li>
-<li>        Accepted payment apps (payment apps the merchant accepts, and no others may be used). Note that this is the status quo since merchants either accept card information through UI that they control, or they redirect users to payment service providers with whom they have existing relationships. Note that if we allow merchants to restrict payment apps that might end up requiring the customer to register multiple payment apps for the same payment method, which would complicate the user experience for the same payment method.
-    <p class="issue" title="Should merchants be able to limit matching to trusted apps?">
-    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/1">issue 1</a> about whether we should including filtering on accepted payment apps.
-  </p>
-</li>
   </ul>
 </li>
-<li> The browser uses this information in conjunction with user preferences to:
+<li> The browser can use this information in conjunction with user preferences to:
   <ul>
-    <li>   Filter payment apps (to matching payment methods and accepted payment apps)</li>
+    <li>   Filter payment apps (to matching payment methods)</li>
 <li>        Order payment apps (according to merchant specified order)</li>
 <li>        Display recommended payment apps (according to merchant recommended payment app order)</li>
     </ul>
@@ -338,7 +332,7 @@
   <section>
     <h3>Payment App Identification</h3>
     <ul>
-<li>    For both "recommended" and "accepted" payment apps, we will need payment app identifiers (PAIs).</li>
+<li>    For recommended payment apps we will need payment app identifiers (PAIs).</li>
 <li>    A PAI should include origin information. This origin information may be used in a variety of ways:
   <ul>
 <li>        The origin information could enable browsers to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
@@ -458,12 +452,6 @@
       <dd>a payment app suggested by the payee or user agent to be registered and used to handle a specific payment request.
           <p class="issue" data-number="112" title="Recommended Payment Apps is still under discussion">
               The Working Group has not yet agreed that the system should support recommended payment apps.
-              Inclusion might involve small changes to payment request API.</p>
-      </dd>
-      <dt><dfn id="dfn-accepted-payment-app">accepted payment app</dfn></dt>
-      <dd>a payment app accepted by the payee. When the payee specifies one or more accepted payment apps, this is a signal that the payee <em>only</em> accepts these payment apps, and thus any matching is limited to these payment apps.
-          <p class="issue" title="Accepted Payment Apps is still under discussion">
-              The Working Group has not yet agreed that the system should support accepted payment apps.
               Inclusion might involve small changes to payment request API.</p>
       </dd>
       <dt><dfn id="dfn-displayed-payment-app">displayed payment app</dfn></dt>
@@ -603,8 +591,7 @@ partial interface PaymentApp {
             <dt><code>request_url</code> parameter</dt>
             <dd>
                 <p>
-                    The <dfn id="payment-app-request-url"><code>request_url</code></dfn> is a string that
-                    represents the <dfn>request URL</dfn>, which is the <a>URL</a> that accepts
+                    The <dfn id="payment-app-request-url"><code>request_url</code></dfn> identifies a service that accepts
                     payment request messages via HTTP POST.
                 </p>
                 <p>
