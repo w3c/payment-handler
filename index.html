@@ -305,28 +305,39 @@
   <section>
     <h3>Registration and Unregistration</h3>
     <ul>
-      <li>
-	We expect registrations will happen at various times (e.g., outside and inside of checkout): Here are some examples:
-	<ul>
-<li>        When the merchant recommends a payment app and the user selects it, registration can happen in that moment without additional user action.</li>
-<li>        When the browser recommends a payment app and the user selects it, registration can happen in that moment without additional user action. (There is an expectation that the display of browser-recommended apps will differ from the display of merchant-recommended apps).</li>
-<li>        When the user installs native payment app, registration can happen as part of the app installation process.</li>
-<li>        Users visiting a Web site (e.g., merchant or bank) may be invited to register a payment app outside of the context of checkout.</li>
-	</ul>
-      </li>
-      <li>
-	At the same time, the system should not modify the user's environment or share user data without the user's consent. Consent may be provided in a number of ways that can be streamlined (e.g., registration of a native payment app can happen when the native app is installed; when only one payment app matches merchant-accepted data, the browser can launch the app directly instead of requiring additional user selection; etc.)
-      </li>
-      <li>During registration, information about enabled payment methods and available payment options is provided to the user agent. 
+      <li>The user registers a payment app with the user agent, which provides developers with primitives for this
+          purpose. For example, when using a Web-based payment app, the user can push a button to register the payment app.
+          When using a native app, the native app can open a Web page that supports registration.</li>
+      <li>During registration, information about enabled payment methods and available payment options is provided to the user agent.
           The user agent stores this information for subsequent actions (e.g., when matching merchant-accepted payment methods). In this
           proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
-        registration information. In this proposal, payment apps update the information that a user agent has stored about them
+          registration information. In this proposal, payment apps update the information that a user agent has stored about them
           by re-calling the registration API.</li>
+      <li>We expect registrations will happen at various times (e.g., outside and inside of checkout), and with differing levels of
+          user consent to modify their configuration within the user agent. A general rule is that explicit consent is not required
+          while the user is within the context of the payment request UI. Here are some examples:
+        <ul>
+          <li>When the merchant recommends a payment app and the user selects it, registration can happen in that moment without
+              additional user action or consent.</li>
+          <li>When the browser recommends a payment app and the user selects it, registration can happen in that moment without
+              additional user action or consent. (There is an expectation that the display of browser-recommended apps will differ
+              from the display of merchant-recommended apps).</li>
+          <li>When the user installs native payment app, registration can happen as part of the app installation process and
+              requires consent through the user agent it triggers the registration through.</li>
+          <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps and requires explicit
+              consent from the user.</li>
+        </ul>
+      </li>
+      <li>Registration is not required to invoke a payment app or process a response. If a payment app is included in the list of
+          recommended apps provided by the merchant and the user selects it during the checkout process then the app is not required
+          to register itself with the user agent, it can still walk the user through the payment process that it provides and in the
+          end provide a payment response to the user agent.</li>
+
     </ul>
   </section>
   <section>
     <h3>Payment App Identification</h3>
-    <ul>    
+    <ul>
 <li>    For both "recommended" and "accepted" payment apps, we will need payment app identifiers (PAIs).</li>
 <li>    A PAI should include origin information. This origin information may be used in a variety of ways:
   <ul>
@@ -341,7 +352,7 @@
     <ul>
       <li>When the user invokes the Payment Request API (e.g., by "pushing the Buy button"), the user agent
           computes the intersection between merchant-accepted payment methods and user-registered payment methods. It
-          does this by comparing Payment Request API data (from the payee) and data provided during registration, 
+          does this by comparing Payment Request API data (from the payee) and data provided during registration,
           invoking the comparison algorithm defined in the Payment Method Identifier specification. The result is a list of
           matching payment options and recommended payment apps.</li>
       <li>Using information provided during registration (e.g., an app name or icon),the user agent displays matching
@@ -439,7 +450,7 @@
       <ul>
 	<li>has at least one <a>enabled payment method</a> that the
 	  <a>payee</a> accepts.</li>
-	
+
 	<li>is not an <a>ignored payment app</a>.</li>
       </ul>
     </dd>
@@ -464,10 +475,10 @@
       <dt><dfn id="dfn-invoked-payment-app">invoked payment app</dfn></dt>
       <dd>the selected payment app that the user agent has invoked (executed) and passed payment app input data.</dd>
   </dl>
-  
+
   <h3>Payment Options</h3>
   <p class="note">We need a clearer introduction to the concept of a payment option, and how it relates to payment apps.</p>
-    
+
   <dl>
       <dt><dfn id="dfn-available-payment-app">available payment option</dfn></dt>
       <dd>a payment option from a registered payment app available for selection, corresponding to at least one enabled payment method.</dd>
@@ -483,7 +494,7 @@
 
     <dt><dfn id="dfn-selected-payment-option">selected payment option</dfn></dt>
     <dd>the payment option selected by the user to handle the payment request.</dd>
-	  
+
   </dl>
   <h3>Payment Method Support</h3>
   <dl>
@@ -497,7 +508,7 @@
 
       <dt><dfn id="dfn-enabled-method">enabled payment method</dfn></dt>
       <dd>a supported payment method that a registered payment app is able to handle. The payment app must have at least
-          one available payment option with the corresponding enabled payment method. 
+          one available payment option with the corresponding enabled payment method.
       <p class="note" title="Supported vs enabled Payment Methods">
           The difference between <strong>supported</strong> and <strong>enabled</strong> payment methods is one of design-time vs runtime consideration.
           A payment app supports all the payment methods it was designed to support however at runtime only a subset
@@ -726,7 +737,7 @@ partial interface PaymentApp {
           <li>User has apps with supported but no enabled payment methods.</li>
           <li>User has apps with supported and enabled payment methods.</li>
           <li>Merchant wishes to recommend a payment app to the user.</li>
-          <li>user agent wishes to recommend a payment app that supports a payment method for which the user does not
+          <li>User agent wishes to recommend a payment app that supports a payment method for which the user does not
               currently have a supporting payment app.</li>
         </ol>
         <p>
