@@ -299,7 +299,13 @@
   <section>
     <h3>Registration and Unregistration</h3>
     <ul>
-      <li>The user registers a payment app with the user agent, which provides developers with primitives for this
+      <li>Registration provides a way for browsers
+	to remain aware of the user's payment apps across transactions.</li>
+      <li>This design should not require registration as a
+	prerequisite for using a payment app. In particular, a user
+	should be able to pay with a merchant-recommended payment app
+	that the user has not yet registered.</li>
+      <li>When registration is desired, the user registers a payment app with the user agent, which provides developers with primitives for this
           purpose. For example, when using a Web-based payment app, the user can push a button to register the payment app.
           When using a native app, the native app can open a Web page that supports registration.</li>
       <li>During registration, information about enabled payment methods and available payment options is provided to the user agent.
@@ -307,8 +313,8 @@
           proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
           registration information. In this proposal, payment apps update the information that a user agent has stored about them
           by re-calling the registration API.</li>
-      <li>We expect registrations will happen at various times (e.g., outside and inside of checkout), and with differing levels of
-          user consent to modify their configuration within the user agent. A general rule is that explicit consent is not required
+      <li>We expect registrations to happen at various times (e.g., outside and inside of checkout), and with differing levels of
+          user consent to modify their configuration within the user agent. In general, explicit consent should not be required
           while the user is within the context of the payment request UI. Here are some examples:
         <ul>
           <li>When the merchant recommends a payment app and the user selects it, registration can happen in that moment without
@@ -318,15 +324,10 @@
               from the display of merchant-recommended apps).</li>
           <li>When the user installs native payment app, registration can happen as part of the app installation process and
               requires consent through the user agent it triggers the registration through.</li>
-          <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps and requires explicit
+          <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps, which would require explicit
               consent from the user.</li>
         </ul>
       </li>
-      <li>Registration is not required to invoke a payment app or process a response. If a payment app is included in the list of
-          recommended apps provided by the merchant and the user selects it during the checkout process then the app is not required
-          to register itself with the user agent, it can still walk the user through the payment process that it provides and in the
-          end provide a payment response to the user agent.</li>
-
     </ul>
   </section>
   <section>
