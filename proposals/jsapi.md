@@ -65,7 +65,7 @@ self.addEventListener('message', function(e) {
   .then(function(response) {
     contentType = response.headers.get("content-type");
     if (!contentType) {
-      throw(new Error("No content type header"));
+      throw new Error("No content type header");
     }
     return response.text();
   }).then(function(body) {
@@ -76,7 +76,7 @@ self.addEventListener('message', function(e) {
           self.postMessage(JSON.parse(response));
         });
       } else {
-        throw(new Error("Unexpected value in content type header"));
+        throw new Error("Unexpected value in content type header");
       }
   }).catch(function(e) {
     self.postMessage(e);
