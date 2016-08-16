@@ -69,15 +69,15 @@ self.addEventListener('message', function(e) {
     }
     return response.text();
   }).then(function(body) {
-      if(contentType.indexOf("application/json") !== -1) {
-        self.postMessage(JSON.parse(body));
-      } else if (contentType.indexOf("text/html") !== -1) { {
-        paymentWindow.openBody(body).then(function(response) {
-          self.postMessage(JSON.parse(response));
-        });
-      } else {
-        throw new Error("Unexpected value in content type header");
-      }
+    if(contentType.indexOf("application/json") !== -1) {
+      self.postMessage(JSON.parse(body));
+    } else if (contentType.indexOf("text/html") !== -1) { {
+      paymentWindow.openBody(body).then(function(response) {
+        self.postMessage(JSON.parse(response));
+      });
+    } else {
+      throw new Error("Unexpected value in content type header");
+    }
   }).catch(function(e) {
     self.postMessage(e);
   });
