@@ -973,6 +973,12 @@ partial interface PaymentApp {
       <li>Payees should validate that the data they have received through the paymentRequest API is what they expect (e.g., the total that was paid, etc.).</li>
     </ul>
   </section>
+  <section>
+    <h3>Incognito Mode</h3>
+    <ul>
+      <li>When the Payment Request API is invoked in a browser's "incognito mode," the browser should launch browser-based payment apps in an incognito context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
+    </ul>
+  </section>
 </section>
 </body>
 </html>
