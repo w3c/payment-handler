@@ -329,6 +329,8 @@
         </ul>
       </li>
       <li>We expect browsers to distinguish themselves in how they balance different ease of registration and security.</li>
+      <li>It is important for merchants and users to be able to trust the
+	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is not available (e.g., potentially in the case of recommended payment apps) other mechanisms should be considered to help establish authenticity (e.g., invocation-time confirmation of a digital signature of a claimed origin).</li>
     </ul>
   </section>
   <section>
@@ -772,10 +774,9 @@ partial interface PaymentApp {
   <p class="note" title="Developing payment apps">The Working Group should discuss how to capture good practice for payment app development, with examples that illustrate common payment flows, different platforms, etc.. A public resource (e.g., on github) could foster contributions of good practice information from the developer community.</p>
   <section>
     <h3>Payment App Request Data</h3>
-    <p class="issue" title="Should origin information (about the payment request) be shared with the payment app?">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/27">issue 27</a>: Should origin information (about the payment request) be shared with the payment app?</p>
     <p class="issue" title="Need to define the shape of the payment app request data">
         Let P be the intersection of payment methods supported by the payee and enabled by the selected payment option.
-        Send the data corresponding to P, as well as any global transaction data (total, etc.) to the payment app.
+        Send the data corresponding to P, as well as any global transaction data (total, etc.), and payee origin information (per <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/27">issue 27</a>) to the payment app.
         The details depend on discussions about the shape of the Payment Request API.
     </p>
     <p class="issue" title="Need to define an algorithm for serializing the payment app request data to JSON">
@@ -965,6 +966,12 @@ partial interface PaymentApp {
     <ul>
       <li>See <a href="https://www.w3.org/TR/service-workers/#security-considerations">Service Worker security considerations</a></li>
       <li>Payment method security is outside the scope of this specification and is addressed by payment apps that support those payment methods.</li>
+    </ul>
+  </section>
+  <section>
+    <h3>Payment App Authenticity</h3>
+    <ul>
+      <li>To avoid problems such as phishing-type attacks on payee sites, we want to be able to ensure the authenticity of payment apps. In general we expect to rely on origin information for establishing payment app authenticity. In contexts where payment apps are referenced other than on their origin, we are considering additional measures to help establish authenticity. Examples: validate a digital signature prior to launching a recommended app or an installed native app without associated origin information.</li>
     </ul>
   </section>
   <section>
