@@ -719,10 +719,7 @@ partial interface PaymentApp {
     </ul>
 
     <div class="issue" title="Payment app selection user experience consistency">
-        <p>
-            Which of these scenarios do we expect to support through the set of technologies, and should we seek to harmonize
-            the user experience across them?
-        </p>
+        <p>We have identified a number of <a href="https://github.com/w3c/webpayments/wiki/PaymentApp_Notes#user-experience-descriptions">user experiences</a> that we would like to harmonize. Just a few examples here:</p>
         <ol>
           <li>User has no registered payment apps.</li>
           <li>User has apps with supported but no enabled payment methods.</li>
@@ -731,10 +728,6 @@ partial interface PaymentApp {
           <li>User agent wishes to recommend a payment app that supports a payment method for which the user does not
               currently have a supporting payment app.</li>
         </ol>
-        <p>
-            Current ideas for supporting 4 and 5 include (1) using the "recommended payment apps" approach of this
-            spec (2) using payment method identifiers to designated recommended payment apps.
-        </p>
     </div>
 
     <section class="informative">
@@ -742,11 +735,13 @@ partial interface PaymentApp {
       <p>The following are examples of user agent display behavior.</p>
       <ul>
         <li>Display a user-configured preferred payment app at the top of a list of matching payment apps.</li>
-        <li>Enable the user to set a default payment app for a Web site, and display that payment at the top of a list
-            of matching payment apps for transactions with that site.</li>
+	<li>Display a merchant-recommended app that the user has also registered at the top of a list.</li>
+        <li>Enable the user to set a default payment app for a Web site, and display that payment at the top of a list for that site.</li>
         <li>Enable the user to set a default payment app for a Web site (e.g., the payment app distributed by that
-            retailer), and display that payment at the top of a list of matching payment apps for transactions with that
-            site.</li>
+            retailer), and display that payment at the top of a list for that
+          site.</li>
+	<li>Based on how frequently the user has selected a payment app, the browser can automatically display that one closer to the top of a list.</li>
+	<li>If the user initiates a purchase on a site with the same origin as that associated with a payment app, display that app at the top of a list.</li>
       </ul>
     </section>
   </section>
