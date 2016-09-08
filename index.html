@@ -545,6 +545,10 @@
     See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/20">issue 20</a> about whether we should have two identifiers (or one) and expectations for dereferencing.
   </p>
 
+    <p class="issue" title="Registration data in manifest">
+    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33#issuecomment-245356298">discussion</a> about how to organize registration data. Can or should it be part of a "payment method" manifest? What is relationship to appmanifest for specifying icons, etc.?
+  </p>
+    
     <section>
         <h3>The PaymentOption dictionary</h3>
 <pre class="idl">
@@ -573,7 +577,10 @@ dictionary PaymentOption {
         </dl>
     </section>
     <section>
-        <h3>PaymentApp.register()</h3>
+      <h3>PaymentApp.register()</h3>
+
+      <p class="issue" title="Service workers for invoking apps">This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p> 
+      
         <p>
             The <code><dfn>register</dfn></code> method is used to register, update, or unregister a payment app with a <a>user agent</a>.
         </p>
@@ -761,11 +768,8 @@ partial interface PaymentApp {
       invoking the payment app, providing the request data to the payment app, and returning the payment app response
       through the Payment Request API.
   </p>
-  <p>
-      This specification defines an HTTP-based mechanism to provide data to the payment app. Payment apps may use
-      a variety of mechanisms to handle the incoming data, including server-side processing, or client-side interception
-      of the HTTP message by a <a>ServiceWorker</a>.
-  </p>
+  <p class="issue" title="Service workers for invoking apps">This specification <em>will</em> describe a service worker approach to launching apps; see <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>. 
+
   <p class="note" title="Developing payment apps">The Working Group should discuss how to capture good practice for payment app development, with examples that illustrate common payment flows, different platforms, etc.. A public resource (e.g., on github) could foster contributions of good practice information from the developer community.</p>
   <section>
     <h3>Payment App Request Data</h3>
@@ -781,15 +785,11 @@ partial interface PaymentApp {
   </section>
   <section>
     <h3>Payment App Invocation</h3>
-    <p class="issue" title="Invocation" data-number="130">
-        The Working Group is still discussing how to invoke payment apps (e.g., via an HTTP POST to
-        <code>request_url</code> or by executing a piece of JS provided at registration). The following
-        algorithm assumes an HTTP POST approach.
-    </p>
-    <p>
-        The payment app is invoked by the user agent making an HTTP request to the app's <code>request_url</code>
-        acording to the following algorithm:
-    </p>
+    <p class="issue" title="Service worker approach to invokation">
+      This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p>
+
+    <p><strong>The following algorithm is to be replace.</strong></p>
+
       <ol>
         <li>Let <var>payment request</var> be the string that is the
           outcome of the steps to prepare the payment app request data.
