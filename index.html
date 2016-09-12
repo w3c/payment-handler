@@ -307,7 +307,7 @@
 	that the user has not yet registered.</li>
       <li>When registration is desired it might happen in a variety of ways:
 	<ul>
-	  <li>This working group will define a user agent primitive available for all types of payment apps.</li>
+	  <li>This working group will define an API available for all types of payment apps.</li>
 	  <li>Native apps and browsers may have platform-specific ways to achieve the same (or similar) result.</li>
 	</ul>
       </li>
@@ -413,13 +413,16 @@
 
   <h3>Payment App Implementation Technology</h3>
   <dl>
-    <dt><dfn id="dfn-browser-based-payment-app">browser-based payment app</dfn></dt>
-    <dd>a <a>payment app</a> that runs in a <a>browser</a>.</dd>
+    <dt><dfn id="dfn-browser-based-payment-app"
+         data-lt="browser-based payment app|browser-based payment apps">
+    browser-based payment app</dfn></dt>
+    <dd>a <a>payment app</a> that runs in a <a>browser</a>. Browser-based
+    payment apps may elect to display a user interface, or to operate without
+    any user interaction. This decision is made at runtime, and may vary based
+    on criteria of the app's choosing (such as how long it has been since the
+    user last authenticated themselves).</dd>
 
-    <dt><dfn id="dfn-headless-payment-app">headless Web payment app</dfn></dt>
-    <dd>a payment app that has no user interface.</dd>
-
-    <dt><dfn id="dfn-native-payment-app">native payment app</dfn></dt>
+    <dt><dfn id="dfn-native-payment-app" data-lt="native payment app|native payment apps">native payment app</dfn></dt>
     <dd>a payment app built with the operating system default technology stack that uses non-Web technologies.</dd>
   </dl>
   <p class="note" title="Payment Apps in scope">
@@ -463,8 +466,8 @@
       <dt><dfn id="dfn-selected-payment-app">selected payment app</dfn></dt>
       <dd>the payment app whose option has been selected by the user to make a payment, but not yet invoked.</dd>
 
-      <dt><dfn id="dfn-invoked-payment-app">invoked payment app</dfn></dt>
-      <dd>the selected payment app that the user agent has invoked (executed) and passed payment app input data.</dd>
+      <dt><a>invoked payment app</a></dt>
+      <dd>the <a>selected payment app</a> that the user agent has invoked (executed) and passed payment app input data.</dd>
   </dl>
 
   <h3>Payment Options</h3>
@@ -524,159 +527,323 @@
         the Payment Request API as the payment response.</dd>
   </dl>
 </section>
+<section id="overview">
+  <h2>Overview</h2>
+  <p>
+    Browser-based payment apps are implemented as <a>service workers</a>. As
+    such, they use the registration, refresh, and unregistration procedures
+    defined for <a>service workers</a>. This specification adds a means of
+    associating <a>payment methods</a> (and associated metadata) with
+    registered service workers. When users are prompted to select a payment
+    method, any registered service worker associated with the <a>payment
+    method</a> is shown as part of the list. Once the user selects a
+    <a>browser-based payment app</a>, it is activated, and it receives a
+    payment request event.
+  </p>
+  <p>
+    Once active, the <a>payment app</a> performs whatever steps are necessary
+    to authenticate the user, process the payment, and return payment
+    information to the <a>payee</a>. If interaction with the user is necessary,
+    the <a>payment app</a> can open a <a>PaymentWindow</a> for that purpose.
+  </p>
+  <p>
+    Finally, once the <a>payment app</a> is finished with its processing, it
+    calls a <a>PaymentComplete</a> method with the result. This causes the
+    <code>Promise&lt;PaymentResponse&gt;</code> returned from
+    <code>PaymentRequest.show()</code> to resolve.
+  </p>
+</section>
 <section id="registration">
-  <h2>Payment App Registration, Updates and Unregistration</h2>
-
-  <p>To support registration and unregistration, the user agent provides primitives that may be called from within a Web
-      page.</p>
-
-  <p>Payment apps are registered with the user agent through a call to the <code>register()</code> method of the API.
-    The input to the registration process consists of:</p>
-  <ol>
-    <li>a <code>payment_app_id</code>, a URL that identifies the app.</li>
-      <li>a <code>request_url</code> which identifies the
-      endpoint where the user agent submits payment requests.</li>
-    <li>a sequence of <code>PaymentOption</code>
-      dictionaries to provide information displayed to the user to facilitate payment app selection.</li>
-  </ol>
-
-    <p class="issue" title="Should we distinguish the identifier for a payment app from the identifier for the app server that processes payments?">
-    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/20">issue 20</a> about whether we should have two identifiers (or one) and expectations for dereferencing.
-  </p>
-
-    <p class="issue" title="Registration data in manifest">
-    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/35">issue 33</a> and <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33#issuecomment-245356298">discussion</a> about how to organize registration data. Can or should it be part of a "payment method" manifest? What is relationship to appmanifest for specifying icons, etc.?
-  </p>
-    
-    <section>
-        <h3>The PaymentOption dictionary</h3>
-<pre class="idl">
-dictionary PaymentOption {
-    DOMString label;
-    DOMString icon;
-    sequence&lt;DOMString&gt; enabled_methods;
-};
-</pre>
+      <h2>
+        Extensions to the <a>ServiceWorkerRegistration</a> interface
+      </h2>
+      <p>
+        The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
+        [[!SERVICE-WORKERS]], which this specification extends.
+      </p>
+      <pre id="service-worker-registration-idl" class="idl">
+        partial interface ServiceWorkerRegistration {
+          readonly attribute PaymentAppManager paymentAppManager;
+        };
+      </pre>
+  <section id="payment-app-manager">
+  <h2>
+    <a>PaymentAppManager</a> interface
+  </h2>
+      <pre id="payment-app-manager-idl" class="idl">
+      interface PaymentAppManager {
+        Promise&lt;void&gt; setManifest(PaymentAppManifest manifest);
+        Promise&lt;PaymentAppManifest&gt; getManifest ();
+      };
+      </pre>
+      <section id="set-manifest">
+      <h3>
+        PaymentAppManager.setManifest()
+      </h3>
+        <p>
+            The <code><dfn>setManifest</dfn></code> method is used to enable a
+            service worker to process <a>payment requests</a>, and to set the
+            properties associated with the <a>payment app</a>.
+        </p>
+        <p>The <code>setManifest</code> method, when invoked, MUST run the
+        following steps:
+        <ol>
+          <li>
+            Let <em>promise</em> be a new <a>Promise</a>.
+          </li>
+          <li>
+            Return <em>promise</em> and asynchronously perform the remaining
+            steps.
+          </li>
+          <li>
+            If the <a>current settings object</a> is not a <a>secure
+            context</a>, reject <var>promise</var> with a
+            <code><a>DOMException</a></code> whose name is
+            "<code><a>SecurityError</a></code>" and terminate these steps.
+          </li>
+          <li>
+            Let <var>manifest</var> be the value of the <code>manifest</code>
+            argument.
+          </li>
+          <li>
+            Let <var>registration</var> be the
+            <code><a>PaymentAppManager</a></code>'s associated <a>service
+            worker registration</a>.
+          </li>
+          <li>If <var>registration</var> has no <a>active worker</a>, run the following substeps:
+            <ol>
+              <li>If <var>registration</var> has no <a>installing worker</a> and no <a>waiting
+              worker</a>, reject <var>promise</var> with a <code><a>DOMException</a></code> whose
+              name is "<code><a>InvalidStateError</a></code>" and terminate these steps.
+              </li>
+              <li>Wait for the <a>installing worker</a> or <a>waiting worker</a> of
+              <var>registration</var> to become its <a>active worker</a>.
+              </li>
+              <li>If <var>registration</var> fails to activate either worker, reject
+              <var>promise</var> with a <code><a>DOMException</a></code> whose name is
+              "<code><a>InvalidStateError</a></code>" and terminate these steps.
+              </li>
+              <li>Once <var>registration</var> has an <a>active worker</a>, proceed with the steps
+              below.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Ask the user whether they allow the <a>payment app</a> to be
+            registered to handle the indicated <a>payment methods</a>
+            unless a prearranged trust relationship applies or the user has
+            already granted or denied permission explicitly for this <a>payment
+            app</a>.
+          </li>
+          <li>
+            If permission is not granted, reject <var>promise</var> with a
+            <code><a>DOMException</a></code> whose name is
+            "<code><a>NotAllowedError</a></code>" and terminate these steps.
+          </li>
+          <li>
+            Register the <a>payment app</a> with the browser for future use,
+            associating <var>manifest</var>'s <code>label</code> and
+            <code>icon</code> with the payment app for user reference.
+          </li>
+          <li>
+            For each <a>PaymentAppOptions</a> present in the
+            <code>options</code> field of the <var>manifest</var>:
+            <ol>
+              <li>
+                Add a new payment option to the <a>payment app</a>'s
+                registration, associating it with the <a>PaymentAppOptions</a>
+                <code>label</code> and <code>icon</code> fields.
+              </li>
+              <li>
+                For each <a>payment method</a> indicated in the
+                <a>PaymentAppOptions</a>'s <code>enabledMethods</code>
+                field, associate the payment option and the <a>payment app</a>
+                with the payment method for future use.
+              </li>
+            </ol>
+          </li>
+          <li>
+            Resolve <em>promise</em> with <code>undefined</code>.
+          </li>
+        </ol>
+      </section>
+      <section id="get-manifest">
+      <h3>
+        PaymentAppManager.getManifest()
+      </h3>
+        <p>
+            The <code><dfn>getManifest</dfn></code> method is used to
+            retreive the properties associated with a registered
+            <a>payment app</a>.
+        </p>
+        <p>The <code>getManifest</code> method, when invoked, MUST run the
+        following steps:
+        <ol>
+          <li>
+            Let <em>promise</em> be a new <a>Promise</a>.
+          </li>
+          <li>
+            Return <em>promise</em> and asynchronously perform the remaining
+            steps.
+          </li>
+          <li>
+            If the <a>current settings object</a> is not a <a>secure
+            context</a>, reject <var>promise</var> with a
+            <code><a>DOMException</a></code> whose name is
+            "<code><a>SecurityError</a></code>" and terminate these steps.
+          </li>
+          <li>
+            If there is no <a>PaymentAppManifest</a> associated with the
+            <a>Service Worker</a>, reject <var>promise</var> with a <a>DOM
+            Exception</a> whose name is "<code><a>AbortError</a></code>" and
+            teminate these steps.
+          </li>
+          <li>
+            Retrieve the <a>PaymentAppManifest</a> associated with the
+            <a>Service Worker</a>.
+          </li>
+          <li>
+            Let <var>manifest</var> be the retreved <a>PaymentAppManifest</a>.
+          </li>
+          <li>
+            Resolve <em>promise</em> with <var>manifest</var>.
+          </li>
+        </ol>
+      </section>
+  </section>
+  <section id="payment-app-manifest">
+  <h2>
+    <a>PaymentAppManifest</a> interface
+  </h2>
+      <pre id="payment-app-manifest-idl" class="idl">
+      dictionary PaymentAppManifest {
+        DOMString label;
+        DOMString? icon;
+        sequence&lt;PaymentAppOptions&gt; options;
+      };
+      </pre>
         <dl>
             <dt><code>label</code> member</dt>
             <dd>
-                The <dfn id="payment-app-option-label"><code>label</code> member</dfn> is a
-                string that represents the lable for this option as it is usually displayed to the user when
-                selecting a payment app.
+                The <dfn id="payment-app-manifest-label"><code>label</code>
+                member</dfn> is a string that represents the label for this
+                <a>payment app</a> as it is usually displayed to the user.
+            </dd>
+            <dt><code>icon</code> member</dt>
+            <dd>
+                The <dfn id="payment-app-manifest-icon"><code>icon</code>
+                member</dfn> defines an icon for this
+                <a>payment app</a> as it is usually displayed to the user.
+            </dd>
+            <dd class="issue">
+                Need to define how an icon would be represented in this data.
+                Url? Data URL? Size options?
+            </dd>
+            <dt><code>options</code> member</dt>
+            <dd>
+                The <dfn
+                id="payment-app-manifest-options"><code>options</code></dfn>
+                member lists the <a>payment method identifiers</a> of the
+                payment methods enabled by this option.
+            </dd>
+        </dl>
+    <p class="issue" title="Registration data in manifest">
+      See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/35">
+      issue 33</a> and 
+      <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33#issuecomment-245356298">discussion</a>
+      about how to organize registration data. Can or should it be part of a
+      "payment method" manifest? What is relationship to appmanifest for
+      specifying icons, etc.?
+    </p>
+  </section>
+  <section id="payment-app-options">
+  <h2>
+    <a>PaymentAppOptions</a> dictionary
+  </h2>
+      <pre id="payment-app-options-idl" class="idl">
+      dictionary PaymentAppOptions {
+        DOMString label;
+        DOMString? icon;
+        sequence&lt;DOMString&gt; enabledMethods;
+      };
+      </pre>
+        <dl>
+            <dt><code>label</code> member</dt>
+            <dd>
+                The <dfn id="payment-app-option-label"><code>label</code>
+                member</dfn> is a string that represents the label for this
+                option as it is usually displayed to the user when selecting a
+                payment app.
             </dd>
             <dt><code>icon</code> member</dt>
             <dd class="issue">
-                Need to define how an icon would be represented in this data. Url? Data URL? Size options?
+                Need to define how an icon would be represented in this data.
+                Url? Data URL? Size options?
             </dd>
-            <dt><code>enabled_methods</code> member</dt>
+            <dt><code>enabledMethods</code> member</dt>
             <dd>
-                The <dfn id="payment-app-option-enabled-methods"><code>enabled_methods</code></dfn> member
-                lists the <a>payment method identifiers</a> of the payment methods enabled by this option.
+                The <dfn
+                id="payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
+                member lists the <a>payment method identifiers</a> of the
+                payment methods enabled by this option.
             </dd>
         </dl>
-    </section>
-    <section>
-      <h3>PaymentApp.register()</h3>
-
-      <p class="issue" title="Service workers for invoking apps">This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p> 
-      
-        <p>
-            The <code><dfn>register</dfn></code> method is used to register, update, or unregister a payment app with a <a>user agent</a>.
-        </p>
-        <p>
-            Payment apps are uniquely identifed by their <code>payment_app_id</code>. To update the payment options
-            offered by a registered payment app, a website calls <code>register()</code> using the same
-            <code>payment_app_id</code> as was used when registering the app and pass in the new sequence of options. To
-            unregister a payment app the website calls <code>register()</code> with an empty sequence of options.
-        </p>
-<pre class="idl">
-partial interface PaymentApp {
-    static Promise&lt;void&gt; register (URLString payment_app_id, URLString request_url, sequence&lt;PaymentOption&gt; payment_options);
-};
-</pre>
-        <dl>
-            <dt><code>payment_app_id</code> parameter</dt>
-            <dd>An identifier for the payment app. If a payment app is already installed with the same <code><a>request_url</a></code>
-                    the registered payment options will be replaced with the new sequence of options provided.</dd>
-            <dt><code>request_url</code> parameter</dt>
-            <dd>
-                <p>
-                    The <dfn id="payment-app-request-url"><code>request_url</code></dfn> identifies a service that accepts
-                    payment request messages via HTTP POST.
-                </p>
-                <p>
-                    The <code><a>request_url</a></code> is the API entry point for the payment
-                    app and MUST have the same <a>origin</a> as the web application that attempts
-                    to register the payment app.
-                </p>
-		<p class="note" title="Origin for native apps">Native apps could be registered from Web pages, thus allowing the association of an origin to a native app.</p>
-            </dd>
-            <dt><code>payment_options</code> parameter</dt>
-            <dd>
-                <p>
-                    The <dfn id="payment-app-options"><code>payment_options</code></dfn> is a sequence of one or more
-                    options that can be presented to the user for selection when the [[!PAYMENT-REQUEST-API]] is invoked.
-                </p>
-            </dd>
-        </dl>
-
-        <p>The <a><code>register</code></a> method MUST act as follows:</p>
-        <ol>
-            <li>Let <em>promise</em> be a new <a>Promise</a>.</li>
-            <li>Return <em>promise</em> and asynchronously perform the remaining steps.</li>
-            <li>If the <a>origin</a> of <em>request_url</em> does not match the <a>origin</a> of the current document
-                reject <em>promise</em> with a <a><code>SecurityError</code></a>.</li>
-            <li>Let <em>registered_app</em> be the registered payment app where
-                <em>registered_app</em>@[[\request_url]] is equal to <em>request_url</em>.</li>
-            <li>If <em>registered_app</em> is null, let <em>new_app</em> be a new registered payment app and:
-            <ol>
-                <li>Set <em>new_app</em>@[[\\request_url]] to <em>request_url</em>.</li>
-                <li>Set <em>new_app</em>@[[\\payment_options]] to <em>payment_options</em>.</li>
-                <li>Store <em>new_app</em> as a registered payment app.</li>
-            </ol>
-	    </li>
-            <li>Else
-            <ol>
-                <li>If <em>payment_options</em> is an empty sequences, unregister <em>registered_app</em>.</li>
-                <li>Else, set <em>registered_app</em>@[[\\payment_options]] to <em>payment_options</em>.</li>
-            </ol>
-	    </li>
-            <li>Resolve <em>promise</em> with <code>undefined</code>.</li>
-        </ol>
-        <p>The following example shows how to register a payment app:</p>
-           <pre class="example highlight">
-             PaymentApp.register(
-               "https://example.com/paymentapp/v1",
-               [
-                {
-                    label: "Visa ending ****4756",
-                    icon: "...",
-                    enabled_methods: ["https://webpayments.org/payment-methods/card/visa"]
-                },
-                {
-                    label: "My Bob Pay Account",
-                    icon: "...",
-                    enabled_methods: ["https://bobpay.com/"]
-                },
-                {
-                    label: "Add new credit/debit card to ExampleApp",
-                    icon: "...",
-                    enabled_methods: [
-                        "https://webpayments.org/payment-methods/card/visa",
-                        "https://webpayments.org/payment-methods/card/mastercard",
-                        "https://webpayments.org/payment-methods/card/amex" ]
-                }
-               ]
-               ).then(function(value) {
-                  console.log("Installed https://example.com/paymentapp/v1 payment app"); // Success!
-                }, function(reason) {
-                  console.log(reason); // Error!
-               });
-         </pre>
   </section>
+  <section id="register-example">
+  <h3>
+    Registration Example
+  </h3>
+    <p>The following example shows how to register a <a>browser-based payment
+    app</a>:</p>
+       <pre class="example highlight">
+         navigator.serviceWorker.register('/exampleapp.js')
+         .then(function(registration) {
+           return registration.paymentAppManager.setManifest({
+             label: "ExampleApp",
+             icon: "...",
+             options: [
+               {
+                 label: "Visa ending ****4756",
+                 icon: "...",
+                 enabledMethods: ["basic-card#visa"]
+               },
+               {
+                 label: "My Bob Pay Account: john@example.com",
+                 icon: "...",
+                 enabledMethods: ["https://bobpay.com/"]
+               },
+               {
+                 label: "Add new credit/debit card to ExampleApp",
+                 icon: "...",
+                 enabledMethods: [
+                   "basic-card#visa",
+                   "basic-card#mastercard",
+                   "basic-card#amex"
+               }
+             ]
+           });
+         }).then(function() {
+           console.log("Installed payment app from /paymentapp.js"); // Success!
+         }).catch(function(error) {
+           console.log(error);
+         });
+     </pre>
+  </section>
+
+  <section id="native-app-registration">
+  <h3>
+    Native App Registration
+  </h3>
   <p class="issue" title="Registration of native payment apps?">
-      What, if anything, should we say about registering native payment apps?
+      What, if anything, should we say about registering <a>native payment
+      apps</a>?
   </p>
+  <p class="note" title="Origin for native apps">
+    <a>Native payment apps</a> could be registered from Web pages <em>(is this
+    true?)</em>, thus allowing the association of an origin to a <a>native
+    payment app</a>.
+  </p>
+  </section>
 </section>
 <section id="matching">
   <h2>Payment App Matching</h2>
@@ -754,7 +921,8 @@ partial interface PaymentApp {
   <section>
     <h3>Selection by the User</h3>
     <ul>
-      <li>The user agent  <span class='rfc2119'>MUST</span> enable the user to select any <a>displayed payment option</a>.</li>
+      <li>The user agent  <span class='rfc2119'>MUST</span> enable the user to
+      select any <a>displayed payment app</a>.</li>
       <li>If the user selects an unregistered recommended payment app, the user agent <span class='rfc2119'>SHOULD</span>
           offer the user an opportunity to register it.</li>
     </ul>
@@ -767,9 +935,9 @@ partial interface PaymentApp {
       invoking the payment app, providing the request data to the payment app, and returning the payment app response
       through the Payment Request API.
   </p>
+<s>
   <p class="issue" title="Service workers for invoking apps">This specification <em>will</em> describe a service worker approach to launching apps; see <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>. 
 
-  <p class="note" title="Developing payment apps">The Working Group should discuss how to capture good practice for payment app development, with examples that illustrate common payment flows, different platforms, etc.. A public resource (e.g., on github) could foster contributions of good practice information from the developer community.</p>
   <section>
     <h3>Payment App Request Data</h3>
     <p class="issue" title="Need to define the shape of the payment app request data">
@@ -946,6 +1114,107 @@ partial interface PaymentApp {
 
      </p>
   </section>
+</s>
+  <section>
+  <h2>
+    Payment Request Events
+  </h2>
+    <pre class="idl">
+    interface PaymentRequestEvent : ExtendableEvent {
+      // add a functional event's own attributes and methods
+    };
+    </pre>
+    <pre class="idl">
+      partial interface ServiceWorkerGlobalScope {
+        attribute EventHandler onpaymentrequest;
+      };
+    </pre>
+  </section>
+  <section>
+  <h2>
+    <a>PaymentWindow</a> interface
+  </h2>
+  <pre class="idl">
+    interface PaymentWindow {
+      Promise&lt;DOMString&gt; openBody(DOMString body);
+      Promise&lt;DOMString&gt; openUrl(URLString url);
+      void close();
+    };
+  </pre>
+  <p class="note">
+    The actual rendering of the <a>PaymentWindow</a> is an implementation
+    detail. While opening an entirely new window is possible, it is more
+    likely that the contents will be rendered in a way that makes it more
+    obvious that the interactions pertain to the payment transaction. This is
+    an area for potential user agent experimentation and differentiation.
+  </p>
+  <p>
+    When the payment app context is instantiated, the user agent creates an
+    instance of PaymentWindow, called paymentWindow, in the global scope of
+    the realm. If the payment app calls paymentWindow.openBody(body), a new
+    window is created, and the value of "body" is loaded into the window.
+    There is also a convenience method paymentWindow.openUrl(url), which
+    instead fetches the contents of the window from the indicated URL.
+  </p>
+  <p>
+    In the context of the PaymentWindow, there is an injected
+    promise&lt;DOMString&gt; at the global level, called paymentWindowPromise.
+    Once the user interaction is complete, the content in the payment window
+    calls paymentWindowPromise.resolve(string), which causes payment window to
+    close, and the promise returned from openBody() or openUrl() to
+    successfully resolve.  If the content in the payment window calls
+    paymentWindowPromise.reject(), or if the payment window closes prior to
+    calling paymentWindowPromise.resolve(), then the promise returned from
+    openBody() or openUrl() is rejected.
+  </p>
+  <p>
+    The payment app can close the payment window at any time by calling
+    paymentWindow.close().
+  </p>
+    <p class="issue">
+      Rewrite to be spec-like.
+    </p>
+  </section>
+  <section id="post-example">
+  <h3>Example using HTTP POST</h3>
+    <p>
+      This example codes shows how to use this API using a scheme a scheme in
+      which a <code>POST</code> is sent to a URL with the payment request as a
+      body. The response is allowed to be either <code>application/json</code>
+      (which is inferred to contain a payment response), or
+      <code>text/html</code> (which contains content to be rendered to the
+      user).
+    </p>
+    <pre class="example highlight">
+      var contentType;
+      self.addEventListener('paymentrequest', function(e) {
+        fetch("https://www.example.com/bobpay/process", { method: "POST",  body: e.data })
+        .then(function(response) {
+          contentType = response.headers.get("content-type");
+          if (!contentType) {
+            throw new Error("No content type header");
+          }
+          return response.text();
+        }).then(function(body) {
+          if(contentType.indexOf("application/json") !== -1) {
+            self.postMessage(JSON.parse(body));
+          } else if (contentType.indexOf("text/html") !== -1) { {
+            paymentWindow.openBody(body).then(function(response) {
+              self.postMessage(JSON.parse(response));
+            });
+          } else {
+            throw new Error("Unexpected value in content type header");
+          }
+        }).catch(function(e) {
+          self.postMessage(e);
+        });
+      });
+    </pre>
+    <p class="issue">
+      Update to match event-based approach rather than message-based approach.
+    </p>
+  </section>
+
 </section>
 <section id="security">
   <h2>Security and Privacy Considerations</h2>
