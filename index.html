@@ -283,7 +283,7 @@
 <li>Here are preferences the system might support:
   <ul>
 <li>        Accepted payment methods (payment methods the merchant accepts, and no others may be used; part of payment request API)</li>
-<li>        Preferred payment methods (merchant-specified order part of payment request API)</li>
+<li>        Preferred payment methods (payee-specified order part of payment request API)</li>
 <li>        Recommended payment apps (payment apps the merchant prefers, but others may be used)</li>
   </ul>
 </li>
@@ -301,33 +301,33 @@
     <ul>
       <li>Registration provides a way for browsers
 	to remain aware of the user's payment apps across transactions.</li>
-      <li>This design should not require registration as a
+      <li>Registration is not a 
 	prerequisite for using a payment app. In particular, a user
-	should be able to pay with a merchant-recommended payment app
+	should be able to pay with a payee-recommended payment app
 	that the user has not yet registered.</li>
-      <li>When registration is desired, the user registers a payment app with the user agent, which provides developers with primitives for this
-          purpose. For example, when using a Web-based payment app, the user can push a button to register the payment app.
-          When using a native app, the native app can open a Web page that supports registration.</li>
-      <li>During registration, information about enabled payment methods and available payment options is provided to the user agent.
-          The user agent stores this information for subsequent actions (e.g., when matching merchant-accepted payment methods). In this
-          proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
-          registration information. In this proposal, payment apps update the information that a user agent has stored about them
-          by re-calling the registration API.</li>
+      <li>When registration is desired it might happen in a variety of ways:
+	<ul>
+	  <li>This working group will define a user agent primitive available for all types of payment apps.</li>
+	  <li>Native apps and browsers may have platform-specific ways to achieve the same (or similar) result.</li>
+	</ul>
+      </li>
       <li>We expect registrations to happen at various times (e.g., outside and inside of checkout), and with differing levels of
           user consent to modify their configuration within the user agent. In general, explicit consent should not be required
           while the user is within the context of the payment request UI. Here are some examples:
         <ul>
           <li>When the merchant recommends a payment app and the user selects it, registration can happen in that moment without
-              additional user action or consent.</li>
-          <li>When the browser recommends a payment app and the user selects it, registration can happen in that moment without
-              additional user action or consent. (There is an expectation that the display of browser-recommended apps will differ
-              from the display of merchant-recommended apps).</li>
-          <li>When the user installs native payment app, registration can happen as part of the app installation process and
-              requires consent through the user agent it triggers the registration through.</li>
+              additional user action or consent. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/34#issuecomment-245431139">notes from Rouslan</a> on registration upon selection of recommended payment app.</li>
+          <li>When the user installs native payment app, registration could happen either through platform-specific mechanisms (or through this standard API) without additional user action beyond installation.</li>
           <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps, which would require explicit
-              consent from the user.</li>
+              consent from the user. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/34#issuecomment-245431139">notes from Rouslan</a> on gating registration on user activation.</li>
         </ul>
       </li>
+      <li>During registration as defined in this specification,
+	information about enabled payment methods and available payment options is provided to the user agent.
+          The user agent stores this information for subsequent actions (e.g., when matching payee-accepted payment methods). In this
+          proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
+          registration information. In this proposal, payment apps update the information that a user agent has stored about them
+          by re-calling the registration API. (See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/36">issue 36</a>.)</li>
       <li>We expect browsers to distinguish themselves in how they balance different ease of registration and security.</li>
       <li>It is important for merchants and users to be able to trust the
 	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is not available (e.g., potentially in the case of recommended payment apps) other mechanisms should be considered to help establish authenticity (e.g., invocation-time confirmation of a digital signature of a claimed origin).</li>
@@ -336,7 +336,7 @@
   <section>
     <h3>Payment App Identification</h3>
     <ul>
-<li>    For recommended payment apps we will need payment app identifiers (PAIs).</li>
+<li>    For recommended payment apps we will need payment app identifiers (PAIs). See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/35#issuecomment-245747771">discussion around issue 35</a>.</li>
 <li>    A PAI should include origin information. This origin information may be used in a variety of ways:
   <ul>
 <li>        The origin information could enable browsers to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
@@ -349,15 +349,14 @@
     <h3>Payment App Matching</h3>
     <ul>
       <li>When the user invokes the Payment Request API (e.g., by "pushing the Buy button"), the user agent
-          computes the intersection between merchant-accepted payment methods and user-registered payment methods. It
+          computes the intersection between payee-accepted payment methods and user-registered payment methods. It
           does this by comparing Payment Request API data (from the payee) and data provided during registration,
           invoking the comparison algorithm defined in the Payment Method Identifier specification. The result is a list of
           matching payment options and recommended payment apps.</li>
       <li>Using information provided during registration (e.g., an app name or icon),the user agent displays matching
-          payment options for selection by the user. The user agent may also display merchant-specified or user agent-specified recommended payment apps, which are
+          payment options for selection by the user. The user agent may also display payee-recommended payment apps, which are
           displayed distinctly for the user. This mechanism is intended to support use cases such as a merchant
-          recommending their own payment app to the user, or the user agent helping the user find payment apps that are
-        relevant for a transaction but that the user has not yet registered or enabled.
+          recommending their own payment app to the user, or a payment app that they trust for a proprietary payment method.
 	<p class="note" title="Browser selection features not in scope">The user agent may offer features to facilitate selection (e.g., launch a chosen payment app or option every time the
           user wants to pay at a given Web site); those features lie outside the scope of this specification.</p></li>
       <li>The user selects a payment option to make a payment. The user may also select a recommended payment app.</li>
@@ -379,7 +378,7 @@
     <h3>Payment App Invocation and Response</h3>
     <ul>
       <li>Based on information provided at registration, the user agent "launches" the payment app and provides it with
-          input data drawn from the Payment Request API.</li>
+        input data drawn from the Payment Request API. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a> for information about launching the payment app in a secure context.</li>
       <li>The user may interact with the payment app in a variety of ways to authorize payment, cancel the transaction,
           or carry out other activities supported by the payment app. This specification does not address payment app
           behavior other than accepting requests and returning responses to the user agent.</li>
@@ -453,10 +452,10 @@
       </ul>
     </dd>
       <dt><dfn id="dfn-recommended-payment-app">recommended payment app</dfn></dt>
-      <dd>a payment app suggested by the payee or user agent to be registered and used to handle a specific payment request.
+      <dd>a payment app suggested by the payee that may be used to handle a specific payment request.
           <p class="issue" data-number="112" title="Recommended Payment Apps is still under discussion">
               The Working Group has not yet agreed that the system should support recommended payment apps.
-              Inclusion might involve small changes to payment request API.</p>
+              Inclusion might involve small changes to payment request API. The group has also discussed the idea of user agent-recommended payment apps, for example, when the user agent is aware of an app for a proprietary payment method. The current specification does not provide for user agent-recommended apps but could be extended to do so.</p>
       </dd>
       <dt><dfn id="dfn-displayed-payment-app">displayed payment app</dfn></dt>
 	  <dd>A <a>matching payment app</a> or <a>recommended payment app</a> with at least one selectable payment option (i.e. presented by the browser for user selection).</dd>
@@ -545,6 +544,10 @@
     See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/20">issue 20</a> about whether we should have two identifiers (or one) and expectations for dereferencing.
   </p>
 
+    <p class="issue" title="Registration data in manifest">
+    See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/35">issue 33</a> and <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33#issuecomment-245356298">discussion</a> about how to organize registration data. Can or should it be part of a "payment method" manifest? What is relationship to appmanifest for specifying icons, etc.?
+  </p>
+    
     <section>
         <h3>The PaymentOption dictionary</h3>
 <pre class="idl">
@@ -573,7 +576,10 @@ dictionary PaymentOption {
         </dl>
     </section>
     <section>
-        <h3>PaymentApp.register()</h3>
+      <h3>PaymentApp.register()</h3>
+
+      <p class="issue" title="Service workers for invoking apps">This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p> 
+      
         <p>
             The <code><dfn>register</dfn></code> method is used to register, update, or unregister a payment app with a <a>user agent</a>.
         </p>
@@ -719,10 +725,7 @@ partial interface PaymentApp {
     </ul>
 
     <div class="issue" title="Payment app selection user experience consistency">
-        <p>
-            Which of these scenarios do we expect to support through the set of technologies, and should we seek to harmonize
-            the user experience across them?
-        </p>
+        <p>We have identified a number of <a href="https://github.com/w3c/webpayments/wiki/PaymentApp_Notes#user-experience-descriptions">user experiences</a> that we would like to harmonize. Just a few examples here:</p>
         <ol>
           <li>User has no registered payment apps.</li>
           <li>User has apps with supported but no enabled payment methods.</li>
@@ -731,10 +734,6 @@ partial interface PaymentApp {
           <li>User agent wishes to recommend a payment app that supports a payment method for which the user does not
               currently have a supporting payment app.</li>
         </ol>
-        <p>
-            Current ideas for supporting 4 and 5 include (1) using the "recommended payment apps" approach of this
-            spec (2) using payment method identifiers to designated recommended payment apps.
-        </p>
     </div>
 
     <section class="informative">
@@ -742,11 +741,13 @@ partial interface PaymentApp {
       <p>The following are examples of user agent display behavior.</p>
       <ul>
         <li>Display a user-configured preferred payment app at the top of a list of matching payment apps.</li>
-        <li>Enable the user to set a default payment app for a Web site, and display that payment at the top of a list
-            of matching payment apps for transactions with that site.</li>
+	<li>Display a payee-recommended app that the user has also registered at the top of a list.</li>
+        <li>Enable the user to set a default payment app for a Web site, and display that payment at the top of a list for that site.</li>
         <li>Enable the user to set a default payment app for a Web site (e.g., the payment app distributed by that
-            retailer), and display that payment at the top of a list of matching payment apps for transactions with that
-            site.</li>
+            retailer), and display that payment at the top of a list for that
+          site.</li>
+	<li>Based on how frequently the user has selected a payment app, the browser can automatically display that one closer to the top of a list.</li>
+	<li>If the user initiates a purchase on a site with the same origin as that associated with a payment app, display that app at the top of a list.</li>
       </ul>
     </section>
   </section>
@@ -766,11 +767,8 @@ partial interface PaymentApp {
       invoking the payment app, providing the request data to the payment app, and returning the payment app response
       through the Payment Request API.
   </p>
-  <p>
-      This specification defines an HTTP-based mechanism to provide data to the payment app. Payment apps may use
-      a variety of mechanisms to handle the incoming data, including server-side processing, or client-side interception
-      of the HTTP message by a <a>ServiceWorker</a>.
-  </p>
+  <p class="issue" title="Service workers for invoking apps">This specification <em>will</em> describe a service worker approach to launching apps; see <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>. 
+
   <p class="note" title="Developing payment apps">The Working Group should discuss how to capture good practice for payment app development, with examples that illustrate common payment flows, different platforms, etc.. A public resource (e.g., on github) could foster contributions of good practice information from the developer community.</p>
   <section>
     <h3>Payment App Request Data</h3>
@@ -786,15 +784,11 @@ partial interface PaymentApp {
   </section>
   <section>
     <h3>Payment App Invocation</h3>
-    <p class="issue" title="Invocation" data-number="130">
-        The Working Group is still discussing how to invoke payment apps (e.g., via an HTTP POST to
-        <code>request_url</code> or by executing a piece of JS provided at registration). The following
-        algorithm assumes an HTTP POST approach.
-    </p>
-    <p>
-        The payment app is invoked by the user agent making an HTTP request to the app's <code>request_url</code>
-        acording to the following algorithm:
-    </p>
+    <p class="issue" title="Service worker approach to invokation">
+      This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p>
+
+    <p><strong>The following algorithm is to be replace.</strong></p>
+
       <ol>
         <li>Let <var>payment request</var> be the string that is the
           outcome of the steps to prepare the payment app request data.
@@ -869,7 +863,7 @@ partial interface PaymentApp {
         MUST render this content for the user.
     </p>
     <ol>
-      <li>The user agent MUST render the <a>Response</a> in a new secure context.</li>
+      <li>The user agent MUST render the <a>Response</a> in a new secure context. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a>.</li>
       <li>The user agent MUST make the <code>PaymentApp.respond()</code> method available to the page that is
         rendered.</li>
     </ol>
