@@ -304,7 +304,11 @@
       <li>Registration is not a 
 	prerequisite for using a payment app. In particular, a user
 	should be able to pay with a payee-recommended payment app
-	that the user has not yet registered.</li>
+	that the user has not yet registered. Note: this implies
+	that payment apps (at least in some cases) should be designed
+	to process requests without assuming prior registration.
+	There may also be security implications (since we expect to
+	rely on origin information as a security mechanism at registration).</li>
       <li>When registration is desired it might happen in a variety of ways:
 	<ul>
 	  <li>This working group will define a user agent primitive available for all types of payment apps.</li>
