@@ -173,12 +173,13 @@
 	    is defined by the Payment Request Architecture document
         [[PAYMENT-ARCH]].</dd>
         -->
-        <!--
         <dt>Payment Request API</dt>
-        <dd>The terms <dfn>Payment Request API</dfn>,
-            <dfn>PaymentRequest</dfn> and <dfn>PaymentResponse</dfn> are defined by the
+        <dd>The terms
+            <dfn>PaymentRequest</dfn>, <dfn>PaymentResponse</dfn>,
+            and
+            <dfn>user accepts the payment request algorithm</dfn>
+            are defined by the
             Payment Request API specification [[!PAYMENT-REQUEST-API]].</dd>
-        -->
         <!--
         <dt>Payment Method Identifiers</dt>
         <dd>The terms <dfn data-lt="payment method|payment methods">payment method</dfn> and
@@ -188,16 +189,22 @@
         -->
         <dt>HTML5</dt>
         <dd>The terms <dfn>global object</dfn>,<dfn>origin</dfn>, <dfn>queue a task</dfn>,
-            <dfn>browsing context</dfn>, and <dfn>top-level browsing
-                context</dfn> are defined by [[!HTML5]].</dd>
-        <!--
+            <dfn>browsing context</dfn>, <dfn>top-level browsing
+                context</dfn>, <dfn>structured clone</dfn>, and <dfn>current
+                settings object</dfn> are defined by [[!HTML5]].</dd>
             <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language
                 Specification</dt>
-            <dd>The terms <dfn>Promise</dfn>, <dfn>internal slot</dfn>,
+            <dd>The term <dfn>Promise</dfn>
+
+        <!--
+            , <dfn>internal slot</dfn>,
                 <dfn><code>TypeError</code></dfn>, <dfn>JSON.stringify</dfn>,
                 <dfn>JSON.parse</dfn>, <dfn><code>Array</code></dfn>,
                 <dfn><code>type</code></dfn> and the <dfn>[[\GetOwnProperty]]</dfn>
-                operation are defined by [[!ECMA-262-2015]].
+                operation are
+        -->
+                is defined by [[!ECMA-262-2015]].
+        <!--
                 <p>This document uses the format <em>object</em>@[[\slotname]] to
                     mean the internal slot [[\slotname]] of the object
                     <em>object</em>.</p>
@@ -209,12 +216,16 @@
                     MUST behave as if [[!ECMA-262-2015]]'s
                     <code>String.prototype.trim()</code> function had been called on
                     the string <var>x</var>.</p>
+        -->
             </dd>
             <dt>DOM4</dt>
-            <dd>The <code><dfn>Event</dfn></code> type and the terms <dfn>fire
+            <dd>
+            <!--
+                The <code><dfn>Event</dfn></code> type and the terms <dfn>fire
                 an event</dfn>, <dfn>dispatch flag</dfn>, <dfn>stop propagation
                 flag</dfn>, and <dfn>stop immediate propagation flag</dfn> are
                 defined by [[!DOM4]].
+            -->
                 <p><dfn>DOMException</dfn> and the following DOMException types
                     from [[!DOM4]] are used:</p>
                 <table>
@@ -223,13 +234,19 @@
                         <th>Message (optional)</th>
                     </tr>
                     <tr>
+                        <td><code><dfn>AbortError</dfn></code></td>
+                        <td>The operation was aborted</td>
+                    </tr>
+                    <tr>
                         <td><code><dfn>InvalidStateError</dfn></code></td>
                         <td>The object is in an invalid state</td>
                     </tr>
+                    <!--
                     <tr>
                         <td><code><dfn>NotSupportedError</dfn></code></td>
                         <td>The payment method was not supported</td>
                     </tr>
+                    -->
                     <tr>
                         <td><code><dfn>SecurityError</dfn></code></td>
                         <td>The operation is only supported in a secure context</td>
@@ -237,13 +254,28 @@
                 </table>
             </dd>
             <dt>WebIDL</dt>
-            <dd>When this specification says to <dfn>throw</dfn> an error, the
+            <dd>
+            <!--
+                When this specification says to <dfn>throw</dfn> an error, the
                 <a>user agent</a> must throw an error as described in [[!WEBIDL]].
                 When this occurs in a sub-algorithm, this results in termination of
                 execution of the sub-algorithm and all ancestor algorithms until
                 one is reached that explicitly describes procedures for catching
-                exceptions.</dd>
-        -->
+                exceptions.
+            -->
+                <p>The following DOMException types from [[!WEBIDL]] are used:</p>
+                <table>
+                    <tr>
+                        <th>Type</th>
+                        <th>Message (optional)</th>
+                    </tr>
+                    <tr>
+                        <td><code><dfn>NotAllowedError</dfn></code></td>
+                        <td>The request is not allowed by the user agent or the
+                        platform in the current context.</td>
+                    </tr>
+                </table>
+                </dd>
         <dt>Secure Contexts</dt>
         <dd>The term <dfn>secure context</dfn> is defined by the Secure
           Contexts specification [[!POWERFUL-FEATURES]].</dd>
@@ -256,8 +288,14 @@
             <dfn>Context</dfn> and <dfn>Network Error</dfn> are defined in
             [[!FETCH]].</dd>
         <dt>Service Workers</dt>
-        <dd>The term <dfn data-lt="service worker|service workers">service worker</dfn> is defined in
-        [[SERVICE-WORKERS]].</dd>
+        <dd>The terms 
+          <dfn data-lt="service worker|service workers">service worker</dfn>
+          <dfn>service worker registration</dfn>,
+          <dfn>active worker</dfn>,
+          <dfn>installing worker</dfn>,
+          and
+          <dfn>waiting worker</dfn>
+          are defined in [[SERVICE-WORKERS]].</dd>
     </dl>
 </section>
 <section id="model">
@@ -397,8 +435,6 @@
           receive the response (e.g., due to a crash or network
         outage). Network failure may be especially problematic in the
 	case of a push payment; see <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>, and so the Working Group is considering whether the specification should include a standard way to learn how to query a component for payment state information. For example, many systems use backchannel communications, so one idea is for the payee to provide a callback URL. This would allow (but not require) the payment app to communicate with the payee server until such time as all parties are satisfied they share the same view of the payment response. An alternative would be to provide the payment app and the user agent a channel so that communication continues until all aprties are satisfied they share the same view of the payment response. This might involve caching payment responses.</li>
-          </ul>
-      </li>
       <li>This specification does not address communication between the payee server and the payee Web app, or between
           the payment app and other parties (e.g., the payment app distibutor, or directly to the merchant).</li>
     </ul>
@@ -424,6 +460,8 @@
 
     <dt><dfn id="dfn-native-payment-app" data-lt="native payment app|native payment apps">native payment app</dfn></dt>
     <dd>a payment app built with the operating system default technology stack that uses non-Web technologies.</dd>
+    <dt><dfn id="dfn-native-payment-app">ignored payment app</dfn></dt>
+    <dd class="issue">Need a definition for <a>ignored payment app</a></dd>
   </dl>
   <p class="note" title="Payment Apps in scope">
     The Web Payments Working Group intends for this specification to apply to any payment app that the may be invoked by the user agent, whatever technologies have been used to implement the payment app.</p>
@@ -548,15 +586,19 @@
   </p>
   <p>
     Finally, once the <a>payment app</a> is finished with its processing, it
-    calls a <a>PaymentComplete</a> method with the result. This causes the
+    resolves a promise passed to it in the event. This causes the
     <code>Promise&lt;PaymentResponse&gt;</code> returned from
     <code>PaymentRequest.show()</code> to resolve.
   </p>
 </section>
 <section id="registration">
-      <h2>
-        Extensions to the <a>ServiceWorkerRegistration</a> interface
-      </h2>
+    <h2>
+      Payment App Registration
+    </h2>
+    <section>
+    <h3>
+      Extensions to the <a>ServiceWorkerRegistration</a> interface
+    </h3>
       <p>
         The Service Worker specification defines a <code>ServiceWorkerRegistration</code> interface
         [[!SERVICE-WORKERS]], which this specification extends.
@@ -566,6 +608,7 @@
           readonly attribute PaymentAppManager paymentAppManager;
         };
       </pre>
+  </section>
   <section id="payment-app-manager">
   <h2>
     <a>PaymentAppManager</a> interface
@@ -694,9 +737,9 @@
           </li>
           <li>
             If there is no <a>PaymentAppManifest</a> associated with the
-            <a>Service Worker</a>, reject <var>promise</var> with a <a>DOM
-            Exception</a> whose name is "<code><a>AbortError</a></code>" and
-            teminate these steps.
+            <a>Service Worker</a>, reject <var>promise</var> with a 
+            <a>DOMException</a> whose name is "<code><a>AbortError</a></code>"
+            and teminate these steps.
           </li>
           <li>
             Retrieve the <a>PaymentAppManifest</a> associated with the
@@ -725,14 +768,13 @@
         <dl>
             <dt><code>label</code> member</dt>
             <dd>
-                The <dfn id="payment-app-manifest-label"><code>label</code>
-                member</dfn> is a string that represents the label for this
-                <a>payment app</a> as it is usually displayed to the user.
+                The <code>label</code> member is a string that represents the
+                label for this <a>payment app</a> as it is usually displayed
+                to the user.
             </dd>
             <dt><code>icon</code> member</dt>
             <dd>
-                The <dfn id="payment-app-manifest-icon"><code>icon</code>
-                member</dfn> defines an icon for this
+                The <code>icon</code>member defines an icon for this
                 <a>payment app</a> as it is usually displayed to the user.
             </dd>
             <dd class="issue">
@@ -764,21 +806,28 @@
       dictionary PaymentAppOptions {
         DOMString label;
         DOMString? icon;
+        DOMString id;
         sequence&lt;DOMString&gt; enabledMethods;
       };
       </pre>
         <dl>
             <dt><code>label</code> member</dt>
             <dd>
-                The <dfn id="payment-app-option-label"><code>label</code>
-                member</dfn> is a string that represents the label for this
-                option as it is usually displayed to the user when selecting a
-                payment app.
+                The <code>label</code> member is a string that represents the
+                label for this option as it is usually displayed to the user
+                when selecting a payment app.
             </dd>
             <dt><code>icon</code> member</dt>
             <dd class="issue">
                 Need to define how an icon would be represented in this data.
                 Url? Data URL? Size options?
+            </dd>
+            <dt><code>id</code> member</dt>
+            <dd>
+                The <code>id</code> member is an identifier, unique
+                within the <a>PaymentAppManifest</a>, that will be passed to the
+                payment app to indicate which <a>PaymentAppOptions</a> the user
+                selected.
             </dd>
             <dt><code>enabledMethods</code> member</dt>
             <dd>
@@ -805,16 +854,19 @@
                {
                  label: "Visa ending ****4756",
                  icon: "...",
+                 id: "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
                  enabledMethods: ["basic-card#visa"]
                },
                {
                  label: "My Bob Pay Account: john@example.com",
                  icon: "...",
+                 id: "c8126178-3bba-4d09-8f00-0771bcfd3b11",
                  enabledMethods: ["https://bobpay.com/"]
                },
                {
                  label: "Add new credit/debit card to ExampleApp",
                  icon: "...",
+                 id: "new-card",
                  enabledMethods: [
                    "basic-card#visa",
                    "basic-card#mastercard",
@@ -935,245 +987,199 @@
       invoking the payment app, providing the request data to the payment app, and returning the payment app response
       through the Payment Request API.
   </p>
-<s>
-  <p class="issue" title="Service workers for invoking apps">This specification <em>will</em> describe a service worker approach to launching apps; see <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>. 
-
   <section>
     <h3>Payment App Request Data</h3>
+    <pre class="idl">
+      dictionary PaymentData {
+        DOMString origin;
+        sequence&lt;PaymentMethodData&gt; methodData;
+        PaymentItem total;
+      };
+    </pre>
+    <dl>
+      <dt><code>origin</code> attribute</dt>
+      <dd>
+        TODO
+      </dd>
+      <dt><code>methodData</code> attribute</dt>
+      <dd>
+        TODO
+      </dd>
+      <dt><code>total</code> attribute</dt>
+      <dd>
+        TODO
+      </dd>
+    </dl>
     <p class="issue" title="Need to define the shape of the payment app request data">
         Let P be the intersection of payment methods supported by the payee and enabled by the selected payment option.
         Send the data corresponding to P, as well as any global transaction data (total, etc.), and payee origin information (per <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/27">issue 27</a>) to the payment app.
         The details depend on discussions about the shape of the Payment Request API.
     </p>
-    <p class="issue" title="Need to define an algorithm for serializing the payment app request data to JSON">
-        Once we have finalized the shape of the data that is returned from the matching process we must define a
-        deterministic algorithm for serializing this as JSON for transmission over the wire.
-    </p>
   </section>
   <section>
     <h3>Payment App Invocation</h3>
-    <p class="issue" title="Service worker approach to invokation">
-      This section will need to be updated in light of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33">issue 33</a> and the <a href="https://github.com/w3c/webpayments-payment-apps-api/blob/gh-pages/proposals/jsapi.md">draft proposal from Adam Roach</a>.</p>
-
-    <p><strong>The following algorithm is to be replace.</strong></p>
-
       <ol>
-        <li>Let <var>payment request</var> be the string that is the
-          outcome of the steps to prepare the payment app request data.
-        </li>
-        <li>Let <var>app_url</var> be the <code>request_url</code> member of the selected payment app.</li>
-        <li>Let <var>request</var> be a new [[!FETCH]] <a>Request</a>, whose members are set to the following values:
-          <table>
-            <tr>
-              <th>Member</th>
-              <th>Value</th>
-            </tr>
-            <tr>
-              <td><code><a>URL</a></code></td>
-              <td>The value of <var>app_url</var></td>
-            </tr>
-            <tr>
-              <td><code><a>method</a></code></td>
-              <td>The value "<code>POST</code>"</td>
-            </tr>
-            <tr>
-              <td><code><a>header list</a></code></td>
-              <td>
-                <table>
-                  <tr>
-                    <td><code>Accept</code></td>
-                    <td>text/html;application/json</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <td><code><a>body</a></code></td>
-              <td>The value of <var>payment request</var></td>
-            </tr>
-          </table>
-        </li>
-        <li>Await the result of performing a <a>fetch</a> with
-          <var>request</var>, letting <var>response</var> be the result.</li>
-        <li>If <var>response</var> is a <a>network error</a>, terminate this algorithm.</li>
-        <li>Switch on <var>response</var>'s <var>MIME type</var>:
-          <ul>
-            <li>if <code>text/html</code> go to the section below on Payment App Display</li>
-            <li>else if <code>application/json</code> then go to the section below on Payment App Response</li>
-            <li>otherwise reject the <a>Promise</a> created during <a>PaymentRequest.show</a> with an error.</li>
-          </ul>
+        <li>
+          TODO
         </li>
       </ol>
-      <p class="issue" data-number="" title="What are the appriate fetch parameters for this request?">
-          We should get input form Web Platform and WebAppSec on how to best construct this request.
-      </p>
-      <p class="issue" data-number="" title="How do we support long-running payment apps?">
-          A remote payment app may be getting payment authorization from the user via different channel (such as a
-          mobile app) so we need the app to be able to send keep-alive messages back to the browser while this is in
-          progress.
-      </p>
-      <p class="issue" data-number="128" title="Cancelation is treated as an ordinary response">
-          If the user cancels the handling of the payment request then the app should return a response
-          with an appropriate error/response code. Will this be done through the HTTP status code or defined as a value
-          that is set in the response.
-      </p>
-      <div class="issue" data-number="141" title="Handling network and other failures">
-          <p>Communication mail fail at various points in the flow; see design considerations for some ideas for managing this.</p>
-    </div>
+    <section>
+    <h3>
+      Payment Request Events
+    </h3>
+      <pre class="idl">
+      interface PaymentRequestEvent : ExtendableEvent {
+        readonly attribute PaymentData data;
+        readonly attribute Promise&lt;<a>PaymentResponse</a>&gt; payment;
+      };
+      </pre>
+      <dl>
+        <dt><code>data</code> attribute</dt>
+        <dd>
+          TODO
+        </dd>
+        <dt><code>payment</code> attribute</dt>
+        <dd>
+          TODO
+        </dd>
+      </dl>
+
+      <pre class="idl">
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler onpaymentrequest;
+        };
+      </pre>
+      <dl>
+        <dt><code>onpaymentrequest</code> attribute</dt>
+        <dd>
+          TODO
+        </dd>
+      </dl>
+
+    </section>
   </section>
   <section>
-    <h3>Payment App Display</h3>
-    <p class="issue" title="Payment app instantiation" data-number="143">
-        The Working Group is still discussing how payment apps are displayed for user interaction.
+  <h3>
+    Payment App Display: the <a>PaymentWindow</a> interface
+  </h3>
+    <pre class="idl">
+      interface PaymentWindow {
+        Promise&lt;DOMString&gt; openBody(DOMString body);
+        Promise&lt;DOMString&gt; openUrl(URLString url);
+        void close();
+      };
+    </pre>
+    <p class="note">
+      The actual rendering of the <a>PaymentWindow</a> is an implementation
+      detail. While opening an entirely new window is possible, it is more
+      likely that the contents will be rendered in a way that makes it more
+      obvious that the interactions pertain to the payment transaction. This is
+      an area for potential user agent experimentation and differentiation.
     </p>
     <p>
-        Payment apps are invoked via an HTTP request. If the resulting HTTP response body is text/html then the user agent
-        MUST render this content for the user.
+      When the payment app context is instantiated, the user agent creates an
+      instance of PaymentWindow, called paymentWindow, in the global scope of
+      the realm. If the payment app calls paymentWindow.openBody(body), a new
+      window is created, and the value of "body" is loaded into the window.
+      There is also a convenience method paymentWindow.openUrl(url), which
+      instead fetches the contents of the window from the indicated URL.
     </p>
-    <ol>
-      <li>The user agent MUST render the <a>Response</a> in a new secure context. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a>.</li>
-      <li>The user agent MUST make the <code>PaymentApp.respond()</code> method available to the page that is
-        rendered.</li>
-    </ol>
-        <p>
-        This specification does not otherwise prescribe how user agents render the payment app. This may be in a new tab/window, in
-        a special modal dialogue specifically for this purpose, in an iframe embedded in the web page of the payee
-        website or any other mechanism the user agent defines.
+    <p>
+      In the context of the PaymentWindow, there is an injected
+      promise&lt;DOMString&gt; at the global level, called paymentWindowPromise.
+      Once the user interaction is complete, the content in the payment window
+      calls paymentWindowPromise.resolve(string), which causes payment window to
+      close, and the promise returned from openBody() or openUrl() to
+      successfully resolve.  If the content in the payment window calls
+      paymentWindowPromise.reject(), or if the payment window closes prior to
+      calling paymentWindowPromise.resolve(), then the promise returned from
+      openBody() or openUrl() is rejected.
     </p>
-    <section>
-        <h4>The PaymentAppResponse dictionary</h4>
-        <p>
-            A payment app that runs in the user agent responds to a payment request by returning a new
-            <code>PaymentAppResponse</code> via the <code>PaymentApp.respond()</code> method.
-        </p>
-<pre class="idl">
-dictionary PaymentAppResponse {
-    DOMString method;
-    object details;
-};
-</pre>
-        <dl>
-            <dt><code>method</code> member</dt>
-            <dd>
-                The <dfn id="payment-app-response-method"><code>method</code> member</dfn> is the payment method
-                identifer of the payment method used to handle the payment request.
-            </dd>
-            <dt><code>details</code> member</dt>
-            <dd>
-                The <dfn id="payment-app-response-details"><code>details</code></dfn> member contains the payment method
-                specific data that is expected in a payment response.
-            </dd>
-        </dl>
-    </section>
-    <section>
-      <h4>PaymentApp.respond()</h4>
-      <p>
-        The payment app submits the <code>PaymentAppResponse</code> by calling the <code>respond()</code> method and
-          passing this in as a parameter.
-      </p>
-<pre class="idl">
-partial interface PaymentApp {
-    static void respond (PaymentAppResponse response);
-};
-</pre>
-      <p>The <a><code>respond</code></a> method MUST act as follows:</p>
-      <p class="issue" title="Define algorithm for passing response back to calling context">
-        This should be a light algorithm that simply hands off to the steps defined in Payment Request
-      </p>
-      <p>The following example shows how to respond to a payment request:</p>
-      <pre class="example highlight">
-             PaymentApp.respond(
-               "https://webpayments.org/payment-methods/card/visa",
-               {
-                 card_number :  "1232343451234",
-                 expiry_month : "12",
-                 expiry_year :  "2020",
-                 cvv :          "123"
-               });
-      </pre>
-    </section>
+    <p>
+      The payment app can close the payment window at any time by calling
+      paymentWindow.close().
+    </p>
+    <p class="issue">
+      Need to make sure the process prevents the window from being opened except
+      when a payment promise is outstanding.
+    </p>
+    <p class="issue">
+      Rewrite to be spec-like.
+    </p>
   </section>
   <section>
     <h3>Payment App Response</h3>
     <p>
-      The user agent receives a response from the payment app in one of two forms:</p>
-    <ol>
-      <li>a JSON serialized
-        <code>PaymentAppResponse</code> sent as a response to the HTTP request that invoked the app</li>
-      <li>a
-        <code>PaymentAppResponse</code> dictionary instance submitted via the <code>PaymentApp.respond()</code> method</li>
-    </ol>
-      <p>
-          The user agent MUST use this <code>PaymentAppResponse</code> to resolve the promise that was created
-          by <a>PaymentRequest.show</a> when the user agent executed the <a>user accepts the payment request algorithm</a>
-          as defined in [[!PAYMENT-REQUEST-API]].
-      </p>
-     <p class="issue" title="Generic callback back-channel for the payment response transmission">
-       Some payment methods might require a back channel to guarantee payment response delivery (especially push payment methods).
-       Should it be part of the generic portion of paymentRequest and paymentResponse?
-
-     </p>
-  </section>
-</s>
-  <section>
-  <h2>
-    Payment Request Events
-  </h2>
-    <pre class="idl">
-    interface PaymentRequestEvent : ExtendableEvent {
-      // add a functional event's own attributes and methods
-    };
-    </pre>
-    <pre class="idl">
-      partial interface ServiceWorkerGlobalScope {
-        attribute EventHandler onpaymentrequest;
-      };
-    </pre>
-  </section>
-  <section>
-  <h2>
-    <a>PaymentWindow</a> interface
-  </h2>
-  <pre class="idl">
-    interface PaymentWindow {
-      Promise&lt;DOMString&gt; openBody(DOMString body);
-      Promise&lt;DOMString&gt; openUrl(URLString url);
-      void close();
-    };
-  </pre>
-  <p class="note">
-    The actual rendering of the <a>PaymentWindow</a> is an implementation
-    detail. While opening an entirely new window is possible, it is more
-    likely that the contents will be rendered in a way that makes it more
-    obvious that the interactions pertain to the payment transaction. This is
-    an area for potential user agent experimentation and differentiation.
-  </p>
-  <p>
-    When the payment app context is instantiated, the user agent creates an
-    instance of PaymentWindow, called paymentWindow, in the global scope of
-    the realm. If the payment app calls paymentWindow.openBody(body), a new
-    window is created, and the value of "body" is loaded into the window.
-    There is also a convenience method paymentWindow.openUrl(url), which
-    instead fetches the contents of the window from the indicated URL.
-  </p>
-  <p>
-    In the context of the PaymentWindow, there is an injected
-    promise&lt;DOMString&gt; at the global level, called paymentWindowPromise.
-    Once the user interaction is complete, the content in the payment window
-    calls paymentWindowPromise.resolve(string), which causes payment window to
-    close, and the promise returned from openBody() or openUrl() to
-    successfully resolve.  If the content in the payment window calls
-    paymentWindowPromise.reject(), or if the payment window closes prior to
-    calling paymentWindowPromise.resolve(), then the promise returned from
-    openBody() or openUrl() is rejected.
-  </p>
-  <p>
-    The payment app can close the payment window at any time by calling
-    paymentWindow.close().
-  </p>
-    <p class="issue">
-      Rewrite to be spec-like.
+      The user agent receives a successful response from the payment app
+      through resolution of the Promise sent in the <code>payment</code>
+      attribute of the corresponding <a>PaymentRequestEvent</a> dictionary.
+      The promise MUST be resolved with a <code>PaymentResponse</code>
+      dictionary instance containing the payment response information.
     </p>
+    <p>
+      When this promise is resolved, the user agent MUST run the <a>user
+      accepts the payment request algorithm</a> as defined in
+      [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with:
+    </p>
+    <ol>
+      <li>
+        Set <var>appResponse</var> to the <code>PaymentResponse</code> used to
+        resolve the <a>PaymentRequestEvent</a><code>.payment</code> promise.
+      </li>
+      <li>
+        If <var>appResponse</var>.<code>methodName</code> is not present or
+        not set to one of the values from
+        <a>PaymentRequestEvent</a>.<code>data</code> , reject the promise
+        created by <code>PaymentRequest.show()</code> with <a>DOMException</a>
+        whose value "<a>InvalidStateError</a>" and terminate these steps.
+      </li>
+      <li>
+        Create a <a>structured clone</a> of
+        <var>appResponse</var>.<code>methodName</code>
+        and assign it to
+        <var>response</var>.<code>methodName</code>.
+      </li>
+      <li>
+        If <var>appResponse</var>.<code>details</code> is not pressent
+        reject the promise created by
+        <code>PaymentRequest.show()</code> with a <a>DOMException</a> whose
+        value is "<a>InvalidStateError</a>" and terminate these steps.
+      </li>
+      <li>
+        Create a <a>structured clone</a> of
+        <var>appResponse</var>.<code>details</code>
+        and assign it to
+        <var>response</var>.<code>details</code>.
+      </li>
+    </ol>
+    <p>
+      The user agent receives a failure response from the payment app through
+      rejection of the promise.  The user agent MUST use the rejection reason
+      to reject the promise that was created by
+      <code>PaymentRequest.show()</code>.
+    </p>
+
+    <p>The following example shows how to respond to a payment request:</p>
+    <pre class="example highlight">
+           paymentRequestEvent.payment.resolve(
+             {
+               methodName: "basic-card#visa",
+               details: {
+                 card_number :  "1232343451234",
+                 expiry_month : "12",
+                 expiry_year :  "2020",
+                 cvv :          "123"
+                }
+             });
+    </pre>
+     <p class="issue" title="Generic callback back-channel for the payment
+     response transmission">
+       Some payment methods might require a back channel to guarantee payment
+       response delivery (especially push payment methods).  Should it be part
+       of the generic portion of paymentRequest and paymentResponse? [Ed Note:
+       the "complete()" attribute of the "PaymentResponse" interface would serve
+       this purpose quite cleanly.]
+     </p>
   </section>
   <section id="post-example">
   <h3>Example using HTTP POST</h3>
@@ -1188,7 +1194,8 @@ partial interface PaymentApp {
     <pre class="example highlight">
       var contentType;
       self.addEventListener('paymentrequest', function(e) {
-        fetch("https://www.example.com/bobpay/process", { method: "POST",  body: e.data })
+        fetch("https://www.example.com/bobpay/process",
+          { method: "POST",  body: JSON.stringify(e.data) })
         .then(function(response) {
           contentType = response.headers.get("content-type");
           if (!contentType) {
@@ -1197,22 +1204,19 @@ partial interface PaymentApp {
           return response.text();
         }).then(function(body) {
           if(contentType.indexOf("application/json") !== -1) {
-            self.postMessage(JSON.parse(body));
+            e.payment.resolve(JSON.parse(body));
           } else if (contentType.indexOf("text/html") !== -1) { {
             paymentWindow.openBody(body).then(function(response) {
-              self.postMessage(JSON.parse(response));
+              e.payment.resolve(JSON.parse(response));
             });
           } else {
             throw new Error("Unexpected value in content type header");
           }
-        }).catch(function(e) {
-          self.postMessage(e);
+        }).catch(function(err) {
+          payment.reject(err);
         });
       });
     </pre>
-    <p class="issue">
-      Update to match event-based approach rather than message-based approach.
-    </p>
   </section>
 
 </section>
