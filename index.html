@@ -191,7 +191,8 @@
         <dd>The terms <dfn>global object</dfn>,<dfn>origin</dfn>, <dfn>queue a task</dfn>,
             <dfn>browsing context</dfn>, <dfn>top-level browsing
                 context</dfn>, <dfn>structured clone</dfn>, 
-                <dfn>event handler</dfn>, <dfn>event handler event type</dfn>
+                <dfn>event handler</dfn>, <dfn>event handler event type</dfn>,
+                <dfn>trusted event</dfn>,
                 and <dfn>current settings object</dfn> are defined by
                 [[!HTML5]].</dd>
             <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language
@@ -296,6 +297,7 @@
           <dfn>active worker</dfn>,
           <dfn>installing worker</dfn>,
           <dfn>waiting worker</dfn>,
+          <dfn>handle functional event</dfn>,
           and
           <dfn data-lt="scope url|scope urls">scope URL</dfn>
           are defined in [[SERVICE-WORKERS]].</dd>
@@ -1038,7 +1040,7 @@
       payment app, providing the request data to the payment app, and
       returning the payment app response through the Payment Request API.
   </p>
-  <section>
+  <section id="sec-app-request-data">
     <h3>Payment App Request Data</h3>
     The <a>payment app request data</a> is conveyed using the following
     dictionary:
@@ -1225,14 +1227,22 @@
   </section>
   <section>
     <h3>Payment App Invocation</h3>
-      <ol>
-        <li>
-          TODO
-        </li>
-      </ol>
+    <p>
+      <a>Payment apps</a> are invoked when a <a>payee</a> requests a payment
+      by calling <code>PaymentRequest.show()</code> and the user selects a
+      payment app (or has one implicitly selected by previously established
+      user preferences). If the user selects a <a>browser-based payment
+      app</a> to service the request, the <a>service worker</a> corresponding
+      to that application receives an event with the
+      <a>PaymentAppRequestData</a> containing information about the payment
+      being requested. The event also contains a function that allows the
+      payment app to provide a <a>payment response</a> back to the
+      <a>payee</a>. Ths process is formally described in the following
+      sections.
+    </p>
     <section>
     <h3>
-      Payment Request Events
+      Extension to <code>ServiceWorkerGlobalScope</code>
     </h3>
       <p>
         The Service Worker specification defines a
@@ -1255,7 +1265,15 @@
 
       <p>The <a>PaymentRequestEvent</a> interface represents a received
       <a>payment request</a>.
-
+    </section>
+    <section>
+    <h3>
+      The <code>paymentrequest</code> Event
+    </h3>
+      <p>
+        The <a>PaymentRequestEvent</a> represents a received <a>payment
+        request</a>.
+      </p>
       <pre class="idl">
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
@@ -1276,8 +1294,37 @@
           <a>PaymentResponse</a> when the payment successfully completes.
         </dd>
       </dl>
-
-
+        <p>
+          Upon receiving a <a>payment request</a> by way of
+          <code>PaymentRequest.show()</code> and subsequent user selection of a
+          <a>browser-based payment app</a>, the <a>user agent</a> MUST run
+          the following steps:
+        </p>
+        <ol>
+          <li>Let <var>registration</var> be the <a>service worker
+          registration</a> corresponding to the <a>browser-based payment app</a>
+          selected by the user.
+          </li>
+          <li>If <var>registration</var> is not found, abort these steps.
+          </li>
+          <li>Invoke the <a>Handle Functional Event</a> algorithm with a
+          <a>service worker registration</a> of <var>registration</var> and
+          <var>callbackSteps</var> set to the following steps:
+            <ol>
+              <li>Set <var>global</var> to the global object that was provided
+              as an argument.  </li> <li>Create a <a>trusted event</a>,
+              <var>e</var>, that uses the
+              <code><a>PaymentRequestEvent</a></code> interface, with the
+              event type <code>paymentrequest</code>, which does not bubble,
+              is not cancelable, and has no default action.  </li>
+              <li>Set the <code>data</code> attribute of
+              <var>e</var> to a new <a>PaymentAppRequestData</a> instance,
+              populated as described in <a href="#sec-app-request-data"></a>.
+              </li>
+              <li>Dispatch <var>e</var> to <var>global</var>.
+            </ol>
+          </li>
+        </ol>
     </section>
   </section>
   <section>
