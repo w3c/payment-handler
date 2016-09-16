@@ -254,6 +254,10 @@
                         <td><code><dfn>SecurityError</dfn></code></td>
                         <td>The operation is only supported in a secure context</td>
                     </tr>
+                    <tr>
+                        <td><code><dfn>OperationError</dfn></code></td>
+                        <td>The operation failed for an operation-specific reason.</td>
+                    </tr>
                 </table>
             </dd>
             <dt>WebIDL</dt>
@@ -280,7 +284,7 @@
                 </table>
                 </dd>
         <dt>Secure Contexts</dt>
-        <dd>The term <dfn>secure context</dfn> is defined by the Secure
+        <dd>The terms <dfn>secure context</dfn> is defined by the Secure
           Contexts specification [[!POWERFUL-FEATURES]].</dd>
         <dt>URL</dt>
         <dd>The <dfn>URL</dfn> concept and <dfn>URL parser</dfn> are
@@ -298,6 +302,7 @@
           <dfn>installing worker</dfn>,
           <dfn>waiting worker</dfn>,
           <dfn>handle functional event</dfn>,
+          <dfn>extend lifetime promises</dfn>,
           and
           <dfn data-lt="scope url|scope urls">scope URL</dfn>
           are defined in [[SERVICE-WORKERS]].</dd>
@@ -478,7 +483,12 @@
        as to be <a>service worker</a> <a>scope URLs</a>. As such, they are not
        expected to be dereferenced.
     </dd>
-
+    <dt><dfn>payment app window</dfn></dt>
+    <dd>
+      A <a>service worker</a> <code>WindowClient</code> used by <a>browser-based
+      payment apps</a> to interact with the user when doing so is necessary to
+      complete the payment transaction.
+    </dd>
   </dl>
   <p class="note" title="Payment Apps in scope">
     The Web Payments Working Group intends for this specification to apply to any payment app that the may be invoked by the user agent, whatever technologies have been used to implement the payment app.</p>
@@ -614,6 +624,12 @@
           method identifiers</a>.</li>
     </ul>
 
+<p class="note">
+  The use of service workers restricts <a>browser-based payment apps</a> so
+  that they must run only in secure contexts. The introduction of this
+  restriction is deliberate, due to the sensitivity of the role that payment
+  apps play.
+</p>
 
 <p>Here is the flow envisioned by this document:</p>
   <ol>
@@ -630,8 +646,8 @@
     <li>Once active, the <a>payment app</a> performs whatever steps are
         necessary to authenticate the user, process the payment, and return
         payment information to the <a>payee</a>. If interaction with the user
-        is necessary, the <a>payment app</a> can open a <a>PaymentWindow</a>
-        for that purpose.</li>
+        is necessary, the <a>payment app</a> can open a <a>payment app
+        window</a> for that purpose.</li>
     <li>Finally, once the <a>payment app</a> is finished with its processing, it
         resolves a <a>promise</a> passed to it in the event. This causes the
         <code>Promise&lt;PaymentResponse&gt;</code> returned from
@@ -676,7 +692,7 @@
             properties associated with the <a>payment app</a>.
         </p>
         <p>The <code>setManifest</code> method, when invoked, MUST run the
-        following steps:
+        following steps or their equivalent:
         <ol>
           <li>
             Let <em>promise</em> be a new <a>Promise</a>.
@@ -767,7 +783,7 @@
             <a>payment app</a>.
         </p>
         <p>The <code>getManifest</code> method, when invoked, MUST run the
-        following steps:
+        following steps or their equivalent:
         <ol>
           <li>
             Let <em>promise</em> be a new <a>Promise</a>.
@@ -836,14 +852,6 @@
                 payment methods enabled by this option.
             </dd>
         </dl>
-    <p class="issue" title="Registration data in manifest">
-      See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/35">
-      issue 33</a> and 
-      <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/33#issuecomment-245356298">discussion</a>
-      about how to organize registration data. Can or should it be part of a
-      "payment method" manifest? What is relationship to appmanifest for
-      specifying icons, etc.?
-    </p>
   </section>
   <section id="payment-app-options">
   <h2>
@@ -891,7 +899,7 @@
   </h3>
     <p>The following example shows how to register a <a>browser-based payment
     app</a>:</p>
-       <pre class="example highlight">
+       <pre class="example highlight" title="Payment App Registration">
          navigator.serviceWorker.register('/exampleapp.js')
          .then(function(registration) {
            return registration.paymentAppManager.setManifest({
@@ -1094,7 +1102,7 @@
       </h3>
       <p>
         To initialize the value of the <code>methodData</code>, the user agent
-        MUST perform the following steps:
+        MUST perform the following steps or their equivalent:
       </p>
       <ol>
         <li>
@@ -1159,7 +1167,7 @@
       </h3>
       <p>
         To initialize the value of the <code>modifiers</code>, the user agent
-        MUST perform the following steps:
+        MUST perform the following steps or their equivalent:
       </p>
       <ol>
         <li>
@@ -1298,30 +1306,42 @@
           Upon receiving a <a>payment request</a> by way of
           <code>PaymentRequest.show()</code> and subsequent user selection of a
           <a>browser-based payment app</a>, the <a>user agent</a> MUST run
-          the following steps:
+          the following steps or their equivalent:
         </p>
         <ol>
           <li>Let <var>registration</var> be the <a>service worker
           registration</a> corresponding to the <a>browser-based payment app</a>
           selected by the user.
           </li>
-          <li>If <var>registration</var> is not found, abort these steps.
+          <li>If <var>registration</var> is not found, reject the Promise that
+            was created by <code>PaymentRequest.show()</code> with a
+            <a>DOMException</a> whose value "<a>InvalidStateError</a>" and
+            terminate these steps.
           </li>
           <li>Invoke the <a>Handle Functional Event</a> algorithm with a
           <a>service worker registration</a> of <var>registration</var> and
           <var>callbackSteps</var> set to the following steps:
             <ol>
               <li>Set <var>global</var> to the global object that was provided
-              as an argument.  </li> <li>Create a <a>trusted event</a>,
-              <var>e</var>, that uses the
-              <code><a>PaymentRequestEvent</a></code> interface, with the
-              event type <code>paymentrequest</code>, which does not bubble,
-              is not cancelable, and has no default action.  </li>
+                  as an argument.  </li>
+              <li>Create a <a>trusted event</a>,
+                  <var>e</var>, that uses the
+                  <code><a>PaymentRequestEvent</a></code> interface, with the
+                  event type <code>paymentrequest</code>, which does not bubble,
+                  is not cancelable, and has no default action.  </li>
               <li>Set the <code>data</code> attribute of
-              <var>e</var> to a new <a>PaymentAppRequestData</a> instance,
-              populated as described in <a href="#sec-app-request-data"></a>.
+                  <var>e</var> to a new <a>PaymentAppRequestData</a> instance,
+                  populated as described in
+                  <a href="#sec-app-request-data"></a>.
               </li>
-              <li>Dispatch <var>e</var> to <var>global</var>.
+              <li>Dispatch <var>e</var> to <var>global</var>.</li>
+              <li>Wait for all of the promises in the <a>extend lifetime
+                  promises</a> of <var>e</var> to resolve.</li>
+              <li>If the <a>payment app</a> has not provided a <a>payment app
+                  response</a> as described in <a
+                  href="#sec-payment-app-response"></a>, reject the Promise that
+                  was created by <code>PaymentRequest.show()</code> with a
+                  <a>DOMException</a> whose value "<a>OperationError</a>".
             </ol>
           </li>
         </ol>
@@ -1329,54 +1349,60 @@
   </section>
   <section>
   <h3>
-    Payment App Display: the <a>PaymentWindow</a> interface
+    Payment App Display
   </h3>
-    <pre class="idl">
-      interface PaymentWindow {
-        Promise&lt;DOMString&gt; openBody(DOMString body);
-        Promise&lt;DOMString&gt; openUrl(URLString url);
-        void close();
-      };
-    </pre>
+    <p>
+      Payment Apps that require user input can open a payment window using the
+      <code>clients.openWindow()</code> method defined in [[!SERVICE-WORKERS]].
+      Absent user perferences that override such behavior, user interaction is
+      required during payment requests, in the form of payment app selection. As
+      a consquence, the user agent MUST treat a <a>paymentrequest</a> event as
+      user interaction for the purposes of determining whether the <a>service
+      worker</a> is allowed to open a window.
+    </p>
     <p class="note">
-      The actual rendering of the <a>PaymentWindow</a> is an implementation
-      detail. While opening an entirely new window is possible, it is more
-      likely that the contents will be rendered in a way that makes it more
-      obvious that the interactions pertain to the payment transaction. This is
-      an area for potential user agent experimentation and differentiation.
+      The actual rendering of a <a>payment app window</a> is a browser
+      implementation detail. While opening an entirely new window is possible,
+      it is more likely that the contents will be rendered in a way that makes
+      it more obvious that the interactions pertain to the payment
+      transaction. This is an area for potential user agent experimentation
+      and differentiation. The opening of a <a>payment app window</a> versus
+      other types of windows can be distinguished based on the event type the
+      user agent is using to grant permission to open a window.
+    </p>
+    <p><em>The remainder of this section is a non-normative explanation of how
+    the service worker <code>WindowClient</code> class can be used to interact
+    with users.</em></p>
+    <p>
+      Upon calling clients.openWindow(), the payment app receives a
+      <a>Promise</a> which resolves to a <code>WindowClient</code>. For the
+      purposes of this discussion, we will refer to this
+      <code>WindowClient</code> as <var>client</var>.  The payment app can use
+      the <var>client</var>.<code>postMessage()</code> method to send messages
+      to the <a>payment app window</a>.
     </p>
     <p>
-      When the payment app context is instantiated, the user agent creates an
-      instance of PaymentWindow, called paymentWindow, in the global scope of
-      the realm. If the payment app calls paymentWindow.openBody(body), a new
-      window is created, and the value of "body" is loaded into the window.
-      There is also a convenience method paymentWindow.openUrl(url), which
-      instead fetches the contents of the window from the indicated URL.
-    </p>
-    <p>
-      In the context of the PaymentWindow, there is an injected
-      promise&lt;DOMString&gt; at the global level, called paymentWindowPromise.
-      Once the user interaction is complete, the content in the payment window
-      calls paymentWindowPromise.resolve(string), which causes payment window to
-      close, and the promise returned from openBody() or openUrl() to
-      successfully resolve.  If the content in the payment window calls
-      paymentWindowPromise.reject(), or if the payment window closes prior to
-      calling paymentWindowPromise.resolve(), then the promise returned from
-      openBody() or openUrl() is rejected.
-    </p>
-    <p>
-      The payment app can close the payment window at any time by calling
-      paymentWindow.close().
+      When a <a>payment app window</a> receives the <code>message</code> event
+      from the payment app, this event will contain a <code>source</code>
+      attribute which indicates the payment app's service worker. The payment
+      app window can then call <code>source.postMessage()</code> to send a
+      response to the payment app. Once the payment app window has complete its
+      interaction with the user, it closes the window and uses this
+      <code>postMessage()</code> call to return information to the payment app.
     </p>
     <p class="issue">
-      Need to make sure the process prevents the window from being opened except
-      when a payment promise is outstanding.
+      In order for this approach to work, we have to treat a
+      <a>paymentrequest</a> as permission to open a popup, which is a formal
+      property relied up on by [[!SERVICE-WORKERS]]. We need to be careful
+      that this does not become an end-run around exiting pop-up protections.
     </p>
     <p class="issue">
-      Rewrite to be spec-like.
+      Do we want to define a new <code>FrameType</code> for <a>payment app
+      window</a>s? This requires input from someone with detailed knowledge of
+      service worker design.
     </p>
   </section>
-  <section>
+  <section id="sec-payment-app-response">
     <h3>Payment App Response</h3>
     <p>
       The user agent receives a successful response from the payment app
@@ -1389,7 +1415,8 @@
     <p>
       When this Promise is resolved, the user agent MUST run the <a>user
       accepts the payment request algorithm</a> as defined in
-      [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with:
+      [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with these steps or
+      their equiivalent:
     </p>
     <ol>
       <li>
@@ -1410,7 +1437,7 @@
         <var>response</var>.<code>methodName</code>.
       </li>
       <li>
-        If <var>appResponse</var>.<code>details</code> is not present
+        If <var>appResponse</var>.<code>details</code> is not present,
         reject the Promise created by
         <code>PaymentRequest.show()</code> with a <a>DOMException</a> whose
         value is "<a>InvalidStateError</a>" and terminate these steps.
@@ -1430,7 +1457,7 @@
     </p>
 
     <p>The following example shows how to respond to a payment request:</p>
-    <pre class="example highlight">
+    <pre class="example highlight" title="Sending a Payment Response">
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
         /* ... processing may occur here ... */
         accept({
@@ -1463,10 +1490,13 @@
       <code>text/html</code> (which contains content to be rendered to the
       user).
     </p>
-    <pre class="example highlight">
+    <pre class="example highlight" title="Simple POST-based Payment App"
+    id="example-post-payment-app">
       var contentType;
+      var paymentPromise;
+      /* Handle payment request from a payee */
       self.addEventListener('paymentrequest', function(e) {
-        e.respondWith(new Promise(function(accept, reject) {
+        paymentPromise = new Promise(function(accept, reject) {
           fetch("https://www.example.com/bobpay/process",
             { method: "POST",  body: JSON.stringify(e.data) })
           .then(function(response) {
@@ -1477,10 +1507,14 @@
             return response.text();
           }).then(function(body) {
             if(contentType.indexOf("application/json") !== -1) {
+              /* Respond to the payment request with the received body */
               accept(JSON.parse(body));
             } else if (contentType.indexOf("text/html") !== -1) { {
-              paymentWindow.openBody(body).then(function(response) {
-                accept(JSON.parse(response));
+              /* Open a new payment window and populate it with the
+                 document returned from the response */
+              var url = "data:text/html;base64," + btoa(body);
+              clients.openWindow(url).then(function(windowClient) {
+                windowClient.postMessage(e.data);
               });
             } else {
               throw new Error("Unexpected value in content type header");
@@ -1488,9 +1522,51 @@
           }).catch(function(err) {
             reject(err);
           });
-        });
+        e.respondWith(paymentPromise);
+      });
+
+      /* Handle payment response from a payment app window */
+      self.addEventListener('message', function(e) {
+        if (e.data.hasOwnProperty('name')) {
+          paymentPromise.reject(e.data);
+        } else {
+          paymentPromise.resolve(e.data);
+        }
       });
     </pre>
+    <p>Using the simple scheme described above, a trivial HTML page that is
+    loaded into the <a>payment app window</a> to implement the <em>basic
+    card</em> scheme might look like the following:</p>
+    <pre class="example highlight" title="Simple Payment App Window">
+&lt;html&gt; &lt;body&gt; &lt;form id="form"&gt;
+&lt;table&gt;
+  &lt;tr&gt;&lt;th&gt;Card Number:&lt;/th&gt;&lt;td&gt;&lt;input name="card_number"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Expiration Month:&lt;/th&gt;&lt;td&gt;&lt;input name="expiry_month"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Expiration Year:&lt;/th&gt;&lt;td&gt;&lt;input name="expiry_year"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;CVV:&lt;/th&gt;&lt;td&gt;&lt;input name="cvv"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="submit" value="Pay"&gt;&lt;/td&gt;&lt;/tr&gt;
+&lt;/table&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+window.addEventListener("message", function(e) {
+  var form = document.getElementById("form");
+  /* Note: message sent from payment app is available in e.data */
+  form.onsubmit = function() {
+    var details = {};
+    ["card_number","expiry_month","expiry_year","cvv"].forEach(function(field) {
+      details[field] = form.elements[field].value;
+    });
+    e.source.postMessage({
+      methodName: "basic-card#visa",
+      details: details
+    });
+    window.close();
+  }
+});
+&lt;/script&gt; &lt;/body&gt; &lt;/html&gt;
+    </pre>
+
   </section>
 
 </section>
