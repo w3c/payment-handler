@@ -449,9 +449,9 @@
           (yet) address scenarios where the user agent does not
           receive the response (e.g., due to a crash or network
         outage). Network failure may be especially problematic in the
-	case of a push payment; see <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>, and so the Working Group is considering whether the specification should include a standard way to learn how to query a component for payment state information. For example, many systems use backchannel communications, so one idea is for the payee to provide a callback URL. This would allow (but not require) the payment app to communicate with the payee server until such time as all parties are satisfied they share the same view of the payment response. An alternative would be to provide the payment app and the user agent a channel so that communication continues until all aprties are satisfied they share the same view of the payment response. This might involve caching payment responses.</li>
+	case of a push payment; see <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>, and so the Working Group is considering whether the specification should include a standard way to learn how to query a component for payment state information. For example, many systems use backchannel communications, so one idea is for the payee to provide a callback URL. This would allow (but not require) the payment app to communicate with the payee server until such time as all parties are satisfied they share the same view of the payment response. An alternative would be to provide the payment app and the user agent a channel so that communication continues until all parties are satisfied they share the same view of the payment response. This might involve caching payment responses.</li>
       <li>This specification does not address communication between the payee server and the payee Web app, or between
-          the payment app and other parties (e.g., the payment app distibutor, or directly to the merchant).</li>
+          the payment app and other parties (e.g., the payment app distributor, or directly to the merchant).</li>
     </ul>
   </section>
 </section>
@@ -483,7 +483,7 @@
     payment app identifier</dfn></dt>
     <dd>
        A unique identifier for a <a>payment app</a> (e.g., from a <a>payment
-       method</a> manifest file). This specification defines thses identifiers
+       method</a> manifest file). This specification defines these identifiers
        as to be <a>service worker</a> <a>scope URLs</a>. As such, they are not
        expected to be dereferenced.
     </dd>
@@ -539,7 +539,7 @@
       <dt><dfn id="dfn-selected-payment-app">selected payment app</dfn></dt>
       <dd>the payment app whose option has been selected by the user to make a payment, but not yet invoked.</dd>
 
-      <dt><a>invoked payment app</a></dt>
+      <dt><dfn id="dfn-invoked-payment-app">invoked payment app</dfn></dt>
       <dd>the <a>selected payment app</a> that the user agent has invoked (executed) and passed payment app input data.</dd>
   </dl>
 
@@ -783,7 +783,7 @@
       </h3>
         <p>
             The <code><dfn>getManifest</dfn></code> method is used to
-            retreive the properties associated with a registered
+            retrieve the properties associated with a registered
             <a>payment app</a>.
         </p>
         <p>The <code>getManifest</code> method, when invoked, MUST run the
@@ -806,14 +806,14 @@
             If there is no <a>PaymentAppManifest</a> associated with the
             <a>Service Worker</a>, reject <var>promise</var> with a 
             <a>DOMException</a> whose name is "<code><a>AbortError</a></code>"
-            and teminate these steps.
+            and terminate these steps.
           </li>
           <li>
             Retrieve the <a>PaymentAppManifest</a> associated with the
             <a>Service Worker</a>.
           </li>
           <li>
-            Let <var>manifest</var> be the retreved <a>PaymentAppManifest</a>.
+            Let <var>manifest</var> be the retrieved <a>PaymentAppManifest</a>.
           </li>
           <li>
             Resolve <em>promise</em> with <var>manifest</var>.
@@ -1249,7 +1249,7 @@
       <a>PaymentAppRequestData</a> containing information about the payment
       being requested. The event also contains a function that allows the
       payment app to provide a <a>payment response</a> back to the
-      <a>payee</a>. Ths process is formally described in the following
+      <a>payee</a>. This process is formally described in the following
       sections.
     </p>
     <section>
@@ -1332,7 +1332,7 @@
                   <var>e</var>, that uses the
                   <code><a>PaymentRequestEvent</a></code> interface, with the
                   event type <code>paymentrequest</code>, which does not bubble,
-                  is not cancelable, and has no default action.  </li>
+                  cannot be canceled, and has no default action.  </li>
               <li>Set the <code>data</code> attribute of
                   <var>e</var> to a new <a>PaymentAppRequestData</a> instance,
                   populated as described in
@@ -1358,9 +1358,9 @@
     <p>
       Payment Apps that require user input can open a payment window using the
       <code>clients.openWindow()</code> method defined in [[!SERVICE-WORKERS]].
-      Absent user perferences that override such behavior, user interaction is
+      Absent user preferences that override such behavior, user interaction is
       required during payment requests, in the form of payment app selection. As
-      a consquence, the user agent MUST treat a <a>paymentrequest</a> event as
+      a consequence, the user agent MUST treat a <a>paymentrequest</a> event as
       user interaction for the purposes of determining whether the <a>service
       worker</a> is allowed to open a window.
     </p>
@@ -1420,7 +1420,7 @@
       When this Promise is resolved, the user agent MUST run the <a>user
       accepts the payment request algorithm</a> as defined in
       [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with these steps or
-      their equiivalent:
+      their equivalent:
     </p>
     <ol>
       <li>
@@ -1602,9 +1602,9 @@ window.addEventListener("message", function(e) {
     </ul>
   </section>
   <section>
-    <h3>Incognito Mode</h3>
+    <h3>Private Browsing Mode</h3>
     <ul>
-      <li>When the Payment Request API is invoked in a browser's "incognito mode," the browser should launch browser-based payment apps in an incognito context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
+      <li>When the Payment Request API is invoked in a "private browsing mode," the browser should launch browser-based payment apps in a private context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
     </ul>
   </section>
 </section>
