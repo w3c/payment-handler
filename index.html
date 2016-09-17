@@ -1062,6 +1062,7 @@
         sequence&lt;PaymentMethodData&gt; methodData;
         PaymentItem total;
         sequence&lt;PaymentDetailsModifier&gt; modifiers;
+        DOMString optionId;
       };
     </pre>
     <dl>
@@ -1098,6 +1099,12 @@
         per-payment-method basis).  It is populated from the
         <a>PaymentRequest</a> using the <a>Modifiers Population Algorithm</a>
         defined below.
+      </dd>
+      <dt><code>optionId</code> attribute</dt>
+      <dd>
+        This attribute indicates which <a>PaymentAppOption</a> the user
+        selected. It corresponds to the <code>id</code> field provided during
+        payment app registration.
       </dd>
     </dl>
     <section>
