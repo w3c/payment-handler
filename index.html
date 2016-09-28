@@ -121,7 +121,7 @@
     <ul>
       <li>How users register and unregister payment apps with the user agent.</li>
       <li>How the user agent matches payment methods supported by the payee with those enabled in registered payment apps.</li>
-      <li>How the user agent displays information about payment options to the user for selection.</li>
+      <li>How the user agent displays information about payment apps to the user for selection.</li>
       <li>How the user agent invokes a payment app, communicates input/response data with it, and returns the response data to the underlying Payment Request API.</li>
     </ul>
   <p>Payment apps may be implemented in a variety of ways: as Web applications, native operating system applications,
@@ -369,20 +369,20 @@
         <ul>
           <li>When the merchant recommends a payment app and the user selects it, registration can happen in that moment without
               additional user action or consent. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/34#issuecomment-245431139">notes from Rouslan</a> on registration upon selection of recommended payment app.</li>
+          <li>When browser recommends a payment app and the user selects it, registration can happen in that moment without additional user action or consent.</li>
           <li>When the user installs native payment app, registration could happen either through platform-specific mechanisms (or through this standard API) without additional user action beyond installation.</li>
           <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps, which would require explicit
               consent from the user. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/34#issuecomment-245431139">notes from Rouslan</a> on gating registration on user activation.</li>
         </ul>
       </li>
-      <li>During registration as defined in this specification,
-	information about enabled payment methods and available payment options is provided to the user agent.
+      <li>During registration as defined in this specification, information about enabled payment methods and display display details of the payment app is provided to the user agent.
           The user agent stores this information for subsequent actions (e.g., when matching payee-accepted payment methods). In this
           proposal, there are no requirements for a payment app to be able to respond to user agent queries for updated
           registration information. In this proposal, payment apps update the information that a user agent has stored about them
           by re-calling the registration API. (See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/36">issue 36</a>.)</li>
       <li>We expect browsers to distinguish themselves in how they balance different ease of registration and security.</li>
       <li>It is important for merchants and users to be able to trust the
-	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is not available (e.g., potentially in the case of recommended payment apps) other mechanisms should be considered to help establish authenticity (e.g., invocation-time confirmation of a digital signature of a claimed origin).</li>
+	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is not available (e.g., native payment apps) other mechanisms should be considered to help establish authenticity (e.g., origin-bound confirmation of a digital signature of a native payment app).</li>
     </ul>
   </section>
   <section>
@@ -394,7 +394,7 @@
 <li>        The origin information could enable browsers to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
 <li>        For a "proprietary" payment method with an associated origin, the browser can do some (security) checks by comparing the origin of the payment method and the payment app.</li>
   </ul>
-<li>    A PAI should allow for granularity (e.g., payment app versioning); we should consider URLs.</li>
+<li>    A PAI should allow for granularity (e.g., payment app versioning) in the form of constrained URLs that includes only the origin and a case-sensitive path without trailing slash .</li>
 </ul>
   </section>
   <section>
@@ -407,7 +407,7 @@
           [[!METHOD-IDENTIFIERS]]. The result is a list of
           matching payment options and recommended payment apps.</li>
       <li>Using information provided during registration (e.g., an app name or icon),the user agent displays matching
-          payment options for selection by the user. The user agent may also display payee-recommended payment apps, which are
+          payment options for selection by the user. The user agent may also display payee-recommended and user-agent-recommended payment apps, which are
           displayed distinctly for the user. This mechanism is intended to support use cases such as a merchant
           recommending their own payment app to the user, or a payment app that they trust for a proprietary payment method.
 	<p class="note" title="Browser selection features not in scope">The user agent may offer features to facilitate selection (e.g., launch a chosen payment app or option every time the
@@ -495,7 +495,7 @@
     </dd>
   </dl>
   <p class="note" title="Payment Apps in scope">
-    The Web Payments Working Group intends for this specification to apply to any payment app that the may be invoked by the user agent, whatever technologies have been used to implement the payment app.</p>
+    The Web Payments Working Group intends for this specification to apply to any payment app that may be invoked by the user agent, whatever technologies have been used to implement the payment app.</p>
   </section>
   <section>
   <h3>Payment App Registration States</h3>
@@ -531,7 +531,7 @@
       <dd>a payment app suggested by the payee that may be used to handle a specific payment request.
           <p class="issue" data-number="112" title="Recommended Payment Apps is still under discussion">
               The Working Group has not yet agreed that the system should support recommended payment apps.
-              Inclusion might involve small changes to payment request API. The group has also discussed the idea of user agent-recommended payment apps, for example, when the user agent is aware of an app for a proprietary payment method. The current specification does not provide for user agent-recommended apps but could be extended to do so.</p>
+              Inclusion might involve small changes to payment request API. The group has also discussed the idea of user agent-recommended payment apps, for example, when the user agent is aware of an app for a proprietary payment method. </p>
       </dd>
       <dt><dfn id="dfn-displayed-payment-app">displayed payment app</dfn></dt>
 	  <dd>A <a>matching payment app</a> or <a>recommended payment app</a> with at least one selectable payment option (i.e. presented by the browser for user selection).</dd>
@@ -695,8 +695,12 @@
             service worker to process <a>payment requests</a>, and to set the
             properties associated with the <a>payment app</a>.
         </p>
-        <p>The <code>setManifest</code> method, when invoked, MUST run the
-        following steps or their equivalent:
+        <p>The following algorithm provides an <dfn>extension point</dfn>: other
+        specifications that add new members to the manifest are encouraged to
+        hook themselves into this specification at this point in the
+        algorithm.</p>
+        <p>The <code>setManifest</code> method, when invoked,
+        MUST run the following steps or their equivalent:
         <ol>
           <li>
             Let <em>promise</em> be a new <a>Promise</a>.
@@ -710,6 +714,18 @@
             context</a>, reject <var>promise</var> with a
             <code><a>DOMException</a></code> whose name is
             "<code><a>SecurityError</a></code>" and terminate these steps.
+          </li>
+          <li>
+            <a>Extension point</a>: if the user agent has custom steps to invoke
+            when registering payment apps, execute these steps, possibly
+            rejecting <var>promise</var> with a <code><a>DOMException</a></code>
+            whose name is "<code><a>OperationError</a></code>" and terminate
+            these steps.
+            <div class="note">
+              The <a>extension point</a> is meant to help avoid
+              <a href="https://annevankesteren.nl/2014/02/monkey-patch">issues
+                related to monkey patching</a>.
+            </div>
           </li>
           <li>
             Let <var>manifest</var> be the value of the <code>manifest</code>
@@ -739,6 +755,13 @@
             </ol>
           </li>
           <li>
+            Let <var>paymentMethods</var> be a list of URLs from <var>manifest</var> section
+            on supported payment methods. Ensure that the payment methods either allow
+            any payment app to use their name indiscriminately or specifically allow this
+            payment app. Otherwise, reject with a <code><a>DOMException</a></code> whose
+            name is "<code><a>NotAllowedError</a></code>" and terminate these steps.
+          </li>
+          <li>
             Ask the user whether they allow the <a>payment app</a> to be
             registered to handle the indicated <a>payment methods</a>
             unless a prearranged trust relationship applies or the user has
@@ -753,7 +776,7 @@
           <li>
             Register the <a>payment app</a> with the browser for future use,
             associating <var>manifest</var>'s <code>label</code> and
-            <code>icon</code> with the payment app for user reference.
+            <code>icon</code> set with the payment app for user reference.
           </li>
           <li>
             For each <a>PaymentAppOption</a> present in the
@@ -846,7 +869,9 @@
             </dd>
             <dd class="issue">
                 Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options?
+                Url? Data URL? Size options? <a
+                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
+                App Manifest</a> may be used for inspiration.
             </dd>
             <dt><code>options</code> member</dt>
             <dd>
@@ -854,6 +879,20 @@
                 id="payment-app-manifest-options"><code>options</code></dfn>
                 member lists the <a>payment method identifiers</a> of the
                 payment methods enabled by this option.
+            </dd>
+            <dd class="issue">
+                <p>Options are an extra layer of abstraction, because they allow
+                  flattening of payment apps. The flattening may result in unique
+                  UX challenges. For example, if two payment apps both have
+                  "<em>Visa ending in ***4756</em>" payment option, then users may
+                  be confused when they see two such labels in UI. One solution
+                  is to prepend the payment app name, e.g., "<em>ExampleApp Visa
+                  ending in ***4756</em>". However, when only one app is
+                  installed, the text "<em>ExampleApp</em>" is redundant.</p>
+                <p>It may be simpler for implementers to remove payment options
+                  from this spec. A medium level of complexity is to specify
+                  payment options, but give user agents choice of whether payment
+                  options are supported.</p>
             </dd>
         </dl>
   </section>
@@ -879,7 +918,9 @@
             <dt><code>icon</code> member</dt>
             <dd class="issue">
                 Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options?
+                Url? Data URL? Size options? <a
+                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
+                App Manifest</a> may be used for inspiration.
             </dd>
             <dt><code>id</code> member</dt>
             <dd>
@@ -896,6 +937,19 @@
                 payment methods enabled by this option.
             </dd>
         </dl>
+  </section>
+  <section id="payment-app-manifest-location">
+    <h3>
+      Payment App Manifest Location
+    </h3>
+      <p>Aside from <code>ServiceWorker</code> registration, it's useful for user agents to
+      download the <a>payment app manifest</a> from a well defined location. This allows
+      for merchants to recommend payment apps via the URL of the payment app.</p>
+      <div class="issue">
+        How to map payment app URL to the location of the manifest file? For example, how
+        to map <code>https://bobpay.com</code> to
+        <code>https://bobpay.com/payment-manifest.json</code>?
+      </div>
   </section>
   <section id="register-example">
   <h3>
@@ -950,14 +1004,22 @@
   <h3>
     Native App Registration
   </h3>
+  <p>
+    Information required for payment apps should be present in the <a>payment
+    app manifest</a> under an <a>extension point</a>. For example,
+    information for Android native payment apps may live under
+    <code>"android"</code> section of the app manifest. This specification does
+    not define the contents of native app descriptions. This is defined
+    elsewhere.
+  </p>
   <p class="issue" title="Registration of native payment apps?">
-      What, if anything, should we say about registering <a>native payment
+      What else, if anything, should we say about registering <a>native payment
       apps</a>?
   </p>
   <p class="note" title="Origin for native apps">
-    <a>Native payment apps</a> could be registered from Web pages <em>(is this
-    true?)</em>, thus allowing the association of an origin to a <a>native
-    payment app</a>.
+    <a>Native payment apps</a> on some platforms (e.g., on Android) can claim
+    ownership of their origins. To verify origin ownership, user agents need to
+    perform extra steps that are not defined in this specification.
   </p>
   </section>
 </section>
