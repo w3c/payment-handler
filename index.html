@@ -339,7 +339,7 @@
   <ul>
     <li>   Filter payment apps (to matching payment methods)</li>
 <li>        Order payment apps (according to merchant specified order)</li>
-<li>        Display recommended payment apps (according to merchant recommended payment app order)</li>
+<li>        Display recommended payment apps (according to merchant-recommended payment app order)</li>
     </ul>
 </li>
 </ul>
@@ -351,7 +351,7 @@
 	to remain aware of the user's payment apps across transactions.</li>
       <li>Registration is not a 
 	prerequisite for using a payment app. In particular, a user
-	should be able to pay with a payee-recommended payment app
+	should be able to pay with a merchant-recommended payment app
 	that the user has not yet registered. Note: this implies
 	that payment apps (at least in some cases) should be designed
 	to process requests without assuming prior registration.
@@ -407,7 +407,7 @@
           [[!METHOD-IDENTIFIERS]]. The result is a list of
           matching payment apps and recommended payment apps.</li>
       <li>Using information provided during registration (e.g., an app name or icon),the user agent displays matching
-          payment apps for selection by the user. The user agent may also display payee-recommended and user-agent-recommended payment apps, which are
+          payment apps for selection by the user. The user agent may also display merchant-recommended and user-agent-recommended payment apps, which are
           displayed distinctly for the user. This mechanism is intended to support use cases such as a merchant
           recommending their own payment app to the user, or a payment app that they trust for a proprietary payment method.
 	<p class="note" title="Browser selection features not in scope">The user agent may offer features to facilitate selection (e.g., launch a chosen payment app every time the
@@ -531,7 +531,7 @@
       <dd>a payment app suggested by the payee or user agent that may be used to handle a specific payment request.
           <p class="issue" data-number="112" title="Recommended Payment Apps is still under discussion">
               The Working Group has not yet agreed that the system should support recommended payment apps.
-              Inclusion might involve small changes to payment request API.
+              Inclusion might involve small changes to payment request API. 
       </dd>
       <dt><dfn id="dfn-displayed-payment-app">displayed payment app</dfn></dt>
 	  <dd>A <a>matching payment app</a> or <a>recommended payment app</a> with at least one matching payment method (i.e., presented by the browser for user selection).</dd>
@@ -1010,6 +1010,7 @@
           <li>enabled payment methods across all registered payment apps.</li>
           <li>supported payment methods of recommended but unregistered payment apps.</li>
       </ul>
+      <p>The Working Group will also need to discuss whether the user agent may limit matching to trusted apps (e.g., whitelisted or recommended).</p>
   </div>
 </section>
 <section id="selection">
@@ -1040,7 +1041,7 @@
       <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds
           to the order of supported payment methods supplied by the payee, except where the user agent enables the user
           to override this order.</li>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display any payee-recommended apps in the order specified
+      <li>The user agent <span class='rfc2119'>SHOULD</span> display any merchant-recommended apps in the order specified
           by the payee.</li>
     </ul>
 
@@ -1061,7 +1062,7 @@
       <p>The following are examples of user agent display behavior.</p>
       <ul>
         <li>Display a user-configured preferred payment app at the top of a list of matching payment apps.</li>
-	<li>Display a payee-recommended app that the user has also registered at the top of a list.</li>
+	<li>Display a merchant-recommended app that the user has also registered at the top of a list.</li>
         <li>Enable the user to set a default payment app for a Web site (e.g., the payment app distributed by that
             retailer), and display that payment at the top of a list for that
           site.</li>
