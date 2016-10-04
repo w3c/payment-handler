@@ -1008,7 +1008,11 @@
           <li>enabled payment methods across all registered payment apps.</li>
           <li>supported payment methods of recommended but unregistered payment apps.</li>
       </ul>
-      <p>The Working Group will also need to discuss whether the user agent may limit matching to trusted apps (e.g., whitelisted or recommended).</p>
+      <p>The Working Group will also need to discuss:</p>
+      <ul>
+	<li>The fact that payment method identifiers will form the basis of matching, but that there may be additional payment method specific data when there is payment method specific filtering. E.g., Basic Card defines a simple filtering mechanism. How much of that data should payment apps provide to the user agent for matching, and in what form?</li>
+	<li>Mechanisms to make it easy to use trusted apps (e.g., white listing by the browser or merchnat) and hard to use risky apps (e.g., warnings to the user and explicit user overrides as done today with untrusted certificates).</li>
+      </ul>
   </div>
 </section>
 <section id="selection">
