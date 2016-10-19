@@ -425,7 +425,7 @@
       <li>The system should minimize user interaction for payment app registration, payment app selection, and payment credentials selection. Ideas include:
 	<ul>
 	  <li>When only one payment app matches, the user agent does not require user selection to launch it.</li>
-	  <li>The user agent displays payment options for direct selection by the user, avoiding the need for the user to make a second selection within the payment app context. The payment app provides the user agent with sufficient information to display payment apps. It is still possible to launch the payment app upon selection, and in some cases the payment app may return a response without further user interaction, depending on the nature of the payment method.</li>
+	  <li>The user agent displays payment options for direct selection by the user. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual registered cards. If the user can select an option directly, that could contribute to reducing the total number of required user actions. Within the payment apps task force, it has been suggested that this specification support payment apps providing payment option information to user agents, but that user agents would have discretion whether to display it.</li>
 	</ul>
       </li>
       <li>It is likely that this specification will include <em>guidance</em> rather than requirements about specific user experience optimizations.</li>
@@ -1013,10 +1013,10 @@
           <li>enabled payment methods across all registered payment apps.</li>
           <li>supported payment methods of recommended but unregistered payment apps.</li>
       </ul>
-      <p>The Working Group will also need to discuss:</p>
+      <p>The Working Group should discuss:</p>
       <ul>
-	<li>The fact that payment method identifiers will form the basis of matching, but that there may be additional payment method specific data when there is payment method specific filtering. E.g., Basic Card defines a simple filtering mechanism. How much of that data should payment apps provide to the user agent for matching, and in what form?</li>
-	<li>Mechanisms to make it easy to use trusted apps (e.g., white listing by the browser or merchnat) and hard to use risky apps (e.g., warnings to the user and explicit user overrides as done today with untrusted certificates).</li>
+	<li>How matching takes place for payment-method specific filtering. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/63">issue 63</a></li>
+	<li>Good practice around making it easy for users to use trusted apps (e.g., white listing by the browser or merchant) and hard to use risky apps (e.g., warnings to the user and explicit user overrides as done today with untrusted certificates).</li>
       </ul>
   </div>
 </section>
