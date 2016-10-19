@@ -190,7 +190,7 @@
         <dt>HTML5</dt>
         <dd>The terms <dfn>global object</dfn>,<dfn>origin</dfn>, <dfn>queue a task</dfn>,
             <dfn>browsing context</dfn>, <dfn>top-level browsing
-                context</dfn>, <dfn>structured clone</dfn>, 
+                context</dfn>, <dfn>structured clone</dfn>,
                 <dfn>event handler</dfn>, <dfn>event handler event type</dfn>,
                 <dfn>trusted event</dfn>,
                 and <dfn>current settings object</dfn> are defined by
@@ -295,7 +295,7 @@
             <dfn>Context</dfn> and <dfn>Network Error</dfn> are defined in
             [[!FETCH]].</dd>
         <dt>Service Workers</dt>
-        <dd>The terms 
+        <dd>The terms
           <dfn data-lt="service worker|service workers">service worker</dfn>
           <dfn>service worker registration</dfn>,
           <dfn>active worker</dfn>,
@@ -349,7 +349,7 @@
     <ul>
       <li>Registration provides a way for user agents
 	to remain aware of the user's payment apps across transactions.</li>
-      <li>Registration is not a 
+      <li>Registration is not a
 	prerequisite for using a payment app. In particular, a user
 	should be able to pay with a merchant-recommended payment app
 	that the user has not yet registered. Note: this implies
@@ -357,6 +357,11 @@
 	to process requests without assuming prior registration.
 	There may also be security implications (since we expect to
 	rely on origin information as a security mechanism at registration).</li>
+      <li>The payee should provide all data necessary to display and invoke a
+        recommended payment app in the payment request. Invocation of a payment
+        app that is not registered can use the same mechanism as a registered
+        payment app except all data should be considered ephemeral and the user
+        agent does not remember the app.</li>
       <li>When registration is desired it might happen in a variety of ways:
 	<ul>
 	  <li>This working group will define an API available for all types of payment apps.</li>
@@ -801,7 +806,7 @@
           </li>
           <li>
             If there is no <a>PaymentAppManifest</a> associated with the
-            <a>Service Worker</a>, reject <var>promise</var> with a 
+            <a>Service Worker</a>, reject <var>promise</var> with a
             <a>DOMException</a> whose name is "<code><a>AbortError</a></code>"
             and terminate these steps.
           </li>
@@ -1362,6 +1367,11 @@
           <li>Let <var>registration</var> be the <a>service worker
           registration</a> corresponding to the <a>user agent-based payment app</a>
           selected by the user.
+          </li>
+          <li>If <var>registration</var> is not found and the selected app
+            is a <a>recommended app</a>, register the service worker as described
+            in <a href="#h-registration"></a>, skipping user consent and user
+            agent registration for future use in <a href="#h-set-manifest"></a> (steps 9-11).
           </li>
           <li>If <var>registration</var> is not found, reject the Promise that
             was created by <code>PaymentRequest.show()</code> with a
