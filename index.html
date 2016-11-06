@@ -480,8 +480,7 @@
     <dt><dfn id="dfn-native-payment-app" data-lt="native payment app|native payment apps">native payment app</dfn></dt>
     <dd>a payment app built with the operating system default technology stack that uses non-Web technologies.</dd>
     <dt><dfn id="dfn-native-payment-app">ignored payment app</dfn></dt>
-    <dd class="issue">Need a definition for <a>ignored payment app</a></dd>
-
+    <dd class="issue">An app that the user has configured to not be displayed, or that the user agent ignores for security reasons.</dd>
     <dt><dfn id="dfn-payment-app-identifier"
          data-lt="payment app identifier|payment app identifiers">
     payment app identifier</dfn></dt>
@@ -1038,18 +1037,20 @@
       payment apps and a list of recommended payment apps. The user agent will present this list of payment apps to the user
       so they can select how they want to handle the payment request.
     </p>
+    <p>For the display of matching payment apps:</p>
+
     <ul>
-      <li>The user agent <span class='rfc2119'>MUST</span> display all matching payment apps.</li>
-      <li>The user agent <span class='rfc2119'>MAY</span> display recommended payment apps.</li>
-      <li>In its display, the user agent <span class='rfc2119'>MUST</span> distinguish recommended payment apps from
-          registered payment apps.</li>
-      <li>The user agent <span class='rfc2119'>MAY</span> allow the user to configure the display of matching payment
-          apps to control the ordering and define preselected defaults.</li>
-      <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds
-          to the order of supported payment methods supplied by the payee, except where the user agent enables the user
-          to override this order.</li>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display any merchant-recommended apps in the order specified
-          by the payee.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> display any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> favor user-side order preferences (based on user configuration or behavior) over payee-side order preferences.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
+    </ul>
+
+    <p>For the display of recommended payment apps:</p>
+    <ul>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> distinguish recommended payment apps from registered payment apps.</li>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> display any merchant-recommended apps in the order specified by the payee.</li>
     </ul>
 
     <div class="issue" title="Payment app selection user experience consistency">
@@ -1068,13 +1069,12 @@
       <h4>Examples of Ordering of Selectable Payment Apps</h4>
       <p>The following are examples of user agent display behavior.</p>
       <ul>
-        <li>Display a user-configured preferred payment app at the top of a list of matching payment apps.</li>
-	<li>Display a merchant-recommended app that the user has also registered at the top of a list.</li>
-        <li>Enable the user to set a default payment app for a Web site (e.g., the payment app distributed by that
-            retailer), and display that payment at the top of a list for that
-          site.</li>
-	<li>Based on how frequently the user has selected a payment app, the user agent can automatically display that one closer to the top of a list.</li>
-	<li>If the user initiates a purchase on a site with the same origin as that associated with a payment app, display that app at the top of a list.</li>
+	<li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
+	<li>Enable the user to set a preferred order for a given site or for all sites.</li>
+	<li>Display a payment app that is both registered by the user
+	  and merchant-recommended at the top of a list.</li>
+	<li>Display a payment app that is both registered by the user
+	  and corresponds to the origin of the site being visited at the top of a list.</li>
       </ul>
     </section>
   </section>
