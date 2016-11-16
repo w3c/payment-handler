@@ -1135,6 +1135,10 @@
         <code>total</code> field of the <code>PaymentDetails</code> provided
         when the corresponding <a>PaymentRequest</a> object was instantiated.
       </dd>
+      <dd class="issue">Is the specification missing the top level "displayItems"?
+      </dd>
+      <dd class="issue">Keep an eye on <a href="https://github.com/w3c/browser-payment-api/issues/287">issue 287</a>. If the user agent generates a transaction ID, that ID must be passed to the payment app. If the merchant provides the transaction ID, that ID is already available through methodData.
+      </dd>
       <dt><code>modifiers</code> attribute</dt>
       <dd>
         This sequence of <code>PaymentDetailsModifier</code> dictionaries
