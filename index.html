@@ -324,9 +324,9 @@
     <h3>Decoupling and Trust</h3>
     <ul>
 <li>    A goal of this system is to decouple the payment methods used to pay from the software (payment apps) that implement those payment methods. By decoupling, merchants (and their payment service providers) can lower the cost of creating a checkout experience, users can have more choice in the software they use to pay, and payment app providers can innovate without imposing an integration burden on merchants.</li>
-<li> User choice of payment apps that support a given payment method will depend on the payment method. For example, there may only be one app authorized to support a payment method owned by a company, while there may be many apps that support basic credit card payments or credit transfers.</li>
+<li>User choice of payment apps that support a given payment method will depend in part on the willingness of the payment method owner to license implementations (e.g., via a manifest other mechanism). For example, there may only be one app authorized to support a payment method owned by a company, while there may be many apps that support basic credit card payments or credit transfers.</li>
 <li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. The merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information; of course when there is only one payment app for a given payment method that information is already publicly known. See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a> for discussion about how merchant may track progress of a push payment.</li>
-<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for some payment methods, but for traditional card payments, merchants (or their PSPs) will be entrusting some portion of data collection to third party payment apps.</li>
+<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for some payment methods, but for traditional card payments, merchants (or their PSPs) will be entrusting some portion of data collection to the browser or third party payment apps.</li>
 <li>The design therefore includes support for merchants to recommend payment apps and suggest the ordering of payment methods. The design should endeavor not to constrain how user agents make use of this information, only provide guidance to user agent makers about taking into account both merchant and user preferences.</li>
 <li>Here are preferences the system might support:
   <ul>
@@ -397,7 +397,7 @@
 <li>    A PAI should include origin information. This origin information may be used in a variety of ways:
   <ul>
 <li>        The origin information could enable user agents to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
-<li>        For a payment method with an associated origin, the user agent can do some (security) checks by comparing the origin of the payment method and the payment app.</li>
+<li>        For a payment method with an associated origin, the user agent can do some (security) checks by comparing the origin of the payment method and any authorized payment app.</li>
   </ul>
 <li>    A PAI should allow for granularity (e.g., payment app versioning) in the form of constrained URLs. <strong>Note:</strong> The Working Group is discussing a constrained syntax for payment method identifiers (e.g., origin, case-sensitive path, no trailing slash) and we should consider aligning with that preference.</li>
 </ul>
@@ -1048,7 +1048,7 @@
 
     <p>For the display of recommended payment apps:</p>
     <ul>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps and configuration to not display recommended payment apps.</li>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps and allow configuration to not display recommended payment apps.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> distinguish recommended payment apps from registered payment apps.</li>
       <li>The user agent <span class='rfc2119'>SHOULD</span> display any merchant-recommended apps in the order specified by the payee.</li>
     </ul>
