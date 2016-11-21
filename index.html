@@ -1341,8 +1341,7 @@
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequestData data;
-        void respondWith((<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;
-        or <a>PaymentResponse</a>) r);
+        void respondWith(<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;response);
       };
       </pre>
       <dl>
