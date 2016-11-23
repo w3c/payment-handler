@@ -1520,6 +1520,9 @@
       <code>PaymentRequest.show()</code>.
     </p>
 
+    <p class="issue" title="Handling cancelation and failure">
+      See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/37">issue 37</a> for discussion of payment app cancellation and also resulting user agent behavior. At the 23 November 2016 payment apps task force meeting, there was consensus that in case of payment app failure or cancelation, the user agent should not be prohibited from offering the user alternative matching payment apps.</p>
+
     <p>The following example shows how to respond to a payment request:</p>
     <pre class="example highlight" title="Sending a Payment Response">
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
@@ -1538,8 +1541,7 @@
      <p class="issue" title="Generic callback back-channel for the payment
      response transmission">
        Some payment methods might require a back channel to guarantee payment
-       response delivery (especially push payment methods).  Should it be part
-       of the generic portion of paymentRequest and paymentResponse? [Ed Note:
+       response delivery (especially push payment methods). See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>. [Ed Note:
        the "complete()" attribute of the "PaymentResponse" interface would serve
        this purpose quite cleanly.]
      </p>
