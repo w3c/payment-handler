@@ -753,8 +753,8 @@
           </li>
           <li>
             Register the <a>payment app</a> with the user agent for future use,
-            associating <var>manifest</var>'s <code>label</code> and
-            <code>icon</code> set with the payment app for user reference.
+            associating <var>manifest</var>'s <code>name</code> and
+            <code>icons</code> set with the payment app for user reference.
           </li>
           <li>
             For each <a>PaymentAppOption</a> present in the
@@ -763,7 +763,7 @@
               <li>
                 Add a new payment option to the <a>payment app</a>'s
                 registration, associating it with the <a>PaymentAppOption</a>
-                <code>label</code> and <code>icon</code> fields.
+                <code>name</code> and <code>icons</code> fields.
               </li>
               <li>
                 For each <a>payment method</a> indicated in the
@@ -826,30 +826,24 @@
   <h2>
     <a>PaymentAppManifest</a> interface
   </h2>
+  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/69">Issue 69</a>: The Payment Apps Task Force has a goal of alignment with the draft <a href="https://github.com/w3c/manifest">Web App Manifest</a> specification for data used to display payment app and options for selection by the user. More work is necessary to determine whether the Payment App API should reference (part of) the Web App Manifest specification, import definitions while that specification remains a draft, or define new terms.</p>
       <pre id="payment-app-manifest-idl" class="idl">
       dictionary PaymentAppManifest {
-        DOMString label;
-        DOMString? icon;
-        sequence&lt;PaymentAppOption&gt; options;
+        required DOMString name;
+        sequence&lt;ImageObject&gt; icons;
+        required sequence&lt;PaymentAppOption&gt; options;
       };
       </pre>
         <dl>
-            <dt><code>label</code> member</dt>
+            <dt><code>name</code> member</dt>
             <dd>
-                The <code>label</code> member is a string that represents the
+                The <code>name</code> member is a string that represents the
                 label for this <a>payment app</a> as it is usually displayed
                 to the user.
             </dd>
-            <dt><code>icon</code> member</dt>
+            <dt><code>icons</code> member</dt>
             <dd>
-                The <code>icon</code>member defines an icon for this
-                <a>payment app</a> as it is usually displayed to the user.
-            </dd>
-            <dd class="issue">
-                Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options? <a
-                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
-                App Manifest</a> may be used for inspiration.
+                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
             </dd>
             <dt><code>options</code> member</dt>
             <dd>
@@ -880,26 +874,24 @@
   </h2>
       <pre id="payment-app-options-idl" class="idl">
       dictionary PaymentAppOption {
-        DOMString label;
-        DOMString? icon;
-        DOMString id;
+        required DOMString name;
+        sequence&lt;ImageObjects&gt; icons;
+        required DOMString id;
         sequence&lt;DOMString&gt; enabledMethods;
       };
       </pre>
-        <dl>
-            <dt><code>label</code> member</dt>
+      <dl>
+	<dt><code>name</code> member</dt>
+        <dd>
+          The <code>name</code> member is a string that represents the
+                label for this <a>payment app</a> as it is usually displayed
+                to the user.
+            </dd>
+            <dt><code>icons</code> member</dt>
             <dd>
-                The <code>label</code> member is a string that represents the
-                label for this option as it is usually displayed to the user
-                when selecting a payment app.
+                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
             </dd>
-            <dt><code>icon</code> member</dt>
-            <dd class="issue">
-                Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options? <a
-                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
-                App Manifest</a> may be used for inspiration.
-            </dd>
+
             <dt><code>id</code> member</dt>
             <dd>
                 The <code>id</code> member is an identifier, unique
@@ -938,24 +930,29 @@
          navigator.serviceWorker.register('/exampleapp.js')
          .then(function(registration) {
            return registration.paymentAppManager.setManifest({
-             label: "ExampleApp",
-             icon: "...",
+             name: "ExampleApp",
+             icons: [
+                {
+                  "src": "icon/lowres.webp",
+                  "sizes": "48x48",
+                  "type": "image/webp"
+                },{
+                  "src": "icon/lowres",
+                  "sizes": "48x48"
+                } ]
              options: [
                {
-                 label: "Visa ending ****4756",
-                 icon: "...",
+                 name: "Visa ending ****4756",
                  id: "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
                  enabledMethods: ["basic-card#visa"]
                },
                {
-                 label: "My Bob Pay Account: john@example.com",
-                 icon: "...",
+                 name: "My Bob Pay Account: john@example.com",
                  id: "c8126178-3bba-4d09-8f00-0771bcfd3b11",
                  enabledMethods: ["https://bobpay.com/"]
                },
                {
-                 label: "Add new credit/debit card to ExampleApp",
-                 icon: "...",
+                 name: "Add new credit/debit card to ExampleApp",
                  id: "new-card",
                  enabledMethods: [
                    "basic-card#visa",
