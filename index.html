@@ -425,7 +425,7 @@
       <li>The system should minimize user interaction for payment app registration, payment app selection, and payment credentials selection. Ideas include:
 	<ul>
 	  <li>When only one payment app matches, the user agent does not require user selection to launch it.</li>
-	  <li>The user agent displays payment options for direct selection by the user. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual registered cards. If the user can select an option directly, that could contribute to reducing the total number of required user actions. Within the payment apps task force, it has been suggested that this specification support payment apps providing payment option information to user agents, but that user agents would have discretion whether to display it.</li>
+	  <li>The user agent displays payment options for direct selection by the user. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual registered cards. If the user can select an option directly, that could contribute to reducing the total number of required user actions. </li>
 	</ul>
       </li>
       <li>It is likely that this specification will include <em>guidance</em> rather than requirements about specific user experience optimizations.</li>
@@ -769,7 +769,7 @@
                 For each <a>payment method</a> indicated in the
                 <a>PaymentAppOption</a>'s <code>enabledMethods</code>
                 field, associate the payment option and the <a>payment app</a>
-                with the payment method for future use.
+                with the payment method.
               </li>
             </ol>
           </li>
@@ -861,10 +861,6 @@
                   is to prepend the payment app name, e.g., "<em>ExampleApp Visa
                   ending in ***4756</em>". However, when only one app is
                   installed, the text "<em>ExampleApp</em>" is redundant.</p>
-                <p>It may be simpler for implementers to remove payment options
-                  from this spec. A medium level of complexity is to specify
-                  payment options, but give user agents choice of whether payment
-                  options are supported.</p>
             </dd>
         </dl>
   </section>
@@ -896,15 +892,15 @@
             <dd>
                 The <code>id</code> member is an identifier, unique
                 within the <a>PaymentAppManifest</a>, that will be passed to the
-                payment app to indicate which <a>PaymentAppOption</a> the user
-                selected.
+                payment app to indicate the <a>PaymentAppOption</a> selected
+                by the user.
             </dd>
             <dt><code>enabledMethods</code> member</dt>
             <dd>
                 The <dfn
                 id="payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
                 member lists the <a>payment method identifiers</a> of the
-                payment methods enabled by this option.
+                payment methods enabled by this option. <span class="issue">When the merchant has provided a filter, it may be necessary to provide <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/63#issuecomment-264283996">additional information</a> about conditions under which the payment method is enabled. 
             </dd>
         </dl>
   </section>
@@ -1022,28 +1018,27 @@
     <h3>Selectable App Information Display</h3>
     <p class="issue" title="Need to define display algorithm">
         After matching the user agent will have a list of payment apps that the user can select to handle the
-        payment request. How will these be ordered when they are displayed to the user, where do recommended apps
+        payment request. How will these are displayed and ordered, where do recommended apps
         fit in to the order and how do we treat apps that are both registered and recommended?
     </p>
     <p class="issue" title="Should payment instrument details be included?" data-number="12">
-        What information is needed by the user agent to display selectable apps? This needs to be captured
-        during registration.
+        What information is needed by the user agent to display selectable apps? This needs to be captured during registration.
     </p>
     <p>
-      The output of the payment method matching algorithm will be a list of matching payment apps from registered
-      payment apps and a list of recommended payment apps. The user agent will present this list of payment apps to the user
-      so they can select how they want to handle the payment request.
+      The output of the payment method matching algorithm will be a list of matching payment apps and options from registered
+      payment apps, and a list of recommended payment apps. The user agent will present this list of payment apps to the user for selection.
     </p>
-    <p>For the display of matching payment apps:</p>
+    <p>For matching payment apps:</p>
 
     <ul>
-      <li>The user agent <span class='rfc2119'>MUST</span> display any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues. Note also that the language here is about enabling selection rather than display &mdash; when the user agent displays only a subset of matching payment apps (e.g., the most recently used), the user must still be able to access other matching payment apps. </li>
+      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching <a href="#payment-app-options">payment app options</a>.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> favor user-side order preferences (based on user configuration or behavior) over payee-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
     </ul>
 
-    <p>For the display of recommended payment apps:</p>
+    <p>For recommended payment apps:</p>
     <ul>
       <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps and allow configuration to not display recommended payment apps.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> distinguish recommended payment apps from registered payment apps.</li>
@@ -1064,7 +1059,7 @@
 
     <section class="informative">
       <h4>Examples of Ordering of Selectable Payment Apps</h4>
-      <p>The following are examples of user agent display behavior.</p>
+      <p>The following are examples of user agent ordering of selectable payment apps.</p>
       <ul>
 	<li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
 	<li>Enable the user to set a preferred order for a given site or for all sites.</li>
@@ -1147,8 +1142,8 @@
       </dd>
       <dt><code>optionId</code> attribute</dt>
       <dd>
-        This attribute indicates which <a>PaymentAppOption</a> the user
-        selected. It corresponds to the <code>id</code> field provided during
+        This attribute indicates the <a>PaymentAppOption</a> selected by
+        the user. It corresponds to the <code>id</code> field provided during
         payment app registration.
       </dd>
     </dl>
