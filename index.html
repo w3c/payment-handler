@@ -1345,8 +1345,7 @@
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequestData data;
-        void respondWith((<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;
-        or <a>PaymentResponse</a>) r);
+        void respondWith(<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;response);
       };
       </pre>
       <dl>
@@ -1474,11 +1473,28 @@
       function of the corresponding <a>PaymentRequestEvent</a> dictionary.
       The application is expected to resolve the Promise with a
       <code>PaymentResponse</code> dictionary instance containing the payment
-      response information.
+      response information. In case of user cancellation or error, the
+      application may signal failure by rejecting the Promise.
     </p>
     <p>
-      When this Promise is resolved, the user agent MUST run the <a>user
-      accepts the payment request algorithm</a> as defined in
+      If the Promise is rejected, the user agent MUST run the <dfn>payment app
+      failure algorithm</dfn>. The exact details of this algorithm is left for
+      user agent implementers to decide on. Acceptable behaviors include,
+      but are not limited to:
+    </p>
+    <ul>
+      <li>
+        Letting the user try again, with the same payment app or with a
+        different one.
+      </li>
+      <li>
+        Rejecting the Promise that was created by
+        <code>PaymentRequest.show()</code>.
+      </li>
+    </ul>
+    <p>
+      If this Promise is successfully resolved, the user agent MUST run the
+      <a>user accepts the payment request algorithm</a> as defined in
       [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with these steps or
       their equivalent:
     </p>
@@ -1490,9 +1506,8 @@
       <li>
         If <var>appResponse</var>.<code>methodName</code> is not present or
         not set to one of the values from
-        <a>PaymentRequestEvent</a>.<code>data</code>, reject the Promise
-        created by <code>PaymentRequest.show()</code> with <a>DOMException</a>
-        whose value "<a>InvalidStateError</a>" and terminate these steps.
+        <a>PaymentRequestEvent</a>.<code>data</code>, run the <a>payment app
+        failure algorithm</a> and terminate these steps.
       </li>
       <li>
         Create a <a>structured clone</a> of
@@ -1501,10 +1516,8 @@
         <var>response</var>.<code>methodName</code>.
       </li>
       <li>
-        If <var>appResponse</var>.<code>details</code> is not present,
-        reject the Promise created by
-        <code>PaymentRequest.show()</code> with a <a>DOMException</a> whose
-        value is "<a>InvalidStateError</a>" and terminate these steps.
+        If <var>appResponse</var>.<code>details</code> is not present, run the
+        <a>payment app failure algorithm</a> and terminate these steps.
       </li>
       <li>
         Create a <a>structured clone</a> of
@@ -1513,12 +1526,6 @@
         <var>response</var>.<code>details</code>.
       </li>
     </ol>
-    <p>
-      The user agent receives a failure response from the payment app through
-      rejection of the Promise.  The user agent MUST use the rejection reason
-      to reject the Promise that was created by
-      <code>PaymentRequest.show()</code>.
-    </p>
 
     <p class="issue" title="Handling cancelation and failure">
       See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/37">issue 37</a> for discussion of payment app cancellation and also resulting user agent behavior. At the 23 November 2016 payment apps task force meeting, there was consensus that in case of payment app failure or cancelation, the user agent should not be prohibited from offering the user alternative matching payment apps.</p>
