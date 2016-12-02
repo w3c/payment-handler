@@ -324,9 +324,9 @@
     <h3>Decoupling and Trust</h3>
     <ul>
 <li>    A goal of this system is to decouple the payment methods used to pay from the software (payment apps) that implement those payment methods. By decoupling, merchants (and their payment service providers) can lower the cost of creating a checkout experience, users can have more choice in the software they use to pay, and payment app providers can innovate without imposing an integration burden on merchants.</li>
-<li>    Users may choose to use "open" or "proprietary" payment methods, so the payment app ecosystem must support both. Users must be able to register payment apps of their choosing. We expect the user to have greater choice of third party payment apps for open payment methods than for proprietary payment methods. Examples of open payment methods include card payment and SEPA credit transfer.</li>
-<li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. For open payment methods, the merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information. See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a> for discussion about how merchant may track progress of a push payment.</li>
-<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for proprietary payment methods, but for open payment methods such as cards, merchants (or their PSPs) will be entrusting some portion of data collection to third party payment apps.</li>
+<li>User choice of payment apps that support a given payment method will depend in part on the willingness of the payment method owner to license implementations (e.g., via a manifest other mechanism). For example, there may only be one app authorized to support a payment method owned by a company, while there may be many apps that support basic credit card payments or credit transfers.</li>
+<li>    For privacy, the design should limit information about the user's environment available to merchant without user consent. That includes which payment apps the user has registered. The merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information; of course when there is only one payment app for a given payment method that information is already publicly known. See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a> for discussion about how merchant may track progress of a push payment.</li>
+<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for some payment methods, but for traditional card payments, merchants (or their PSPs) will be entrusting some portion of data collection to the browser or third party payment apps.</li>
 <li>The design therefore includes support for merchants to recommend payment apps and suggest the ordering of payment methods. The design should endeavor not to constrain how user agents make use of this information, only provide guidance to user agent makers about taking into account both merchant and user preferences.</li>
 <li>Here are preferences the system might support:
   <ul>
@@ -397,7 +397,7 @@
 <li>    A PAI should include origin information. This origin information may be used in a variety of ways:
   <ul>
 <li>        The origin information could enable user agents to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
-<li>        For a "proprietary" payment method with an associated origin, the user agent can do some (security) checks by comparing the origin of the payment method and the payment app.</li>
+<li>        For a payment method with an associated origin, the user agent can do some (security) checks by comparing the origin of the payment method and any authorized payment app.</li>
   </ul>
 <li>    A PAI should allow for granularity (e.g., payment app versioning) in the form of constrained URLs. <strong>Note:</strong> The Working Group is discussing a constrained syntax for payment method identifiers (e.g., origin, case-sensitive path, no trailing slash) and we should consider aligning with that preference.</li>
 </ul>
@@ -414,7 +414,7 @@
       <li>Using information provided during registration (e.g., an app name or icon),the user agent displays matching
           payment apps for selection by the user. The user agent may also display merchant-recommended and user-agent-recommended payment apps, which are
           displayed distinctly for the user. This mechanism is intended to support use cases such as a merchant
-          recommending their own payment app to the user, or a payment app that they trust for a proprietary payment method.
+          recommending their own payment app or one they trust to the user.
 	<p class="note" title="User Agent selection features not in scope">The user agent may offer features to facilitate selection (e.g., launch a chosen payment app every time the user wants to pay at a given Web site); those features lie outside the scope of this specification.</p></li>
       <li>The user selects a payment app to make a payment. The user may also select a recommended payment app.</li>
     </ul>
@@ -425,7 +425,7 @@
       <li>The system should minimize user interaction for payment app registration, payment app selection, and payment credentials selection. Ideas include:
 	<ul>
 	  <li>When only one payment app matches, the user agent does not require user selection to launch it.</li>
-	  <li>The user agent displays payment options for direct selection by the user. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual registered cards. If the user can select an option directly, that could contribute to reducing the total number of required user actions. Within the payment apps task force, it has been suggested that this specification support payment apps providing payment option information to user agents, but that user agents would have discretion whether to display it.</li>
+	  <li>The user agent displays payment options for direct selection by the user. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual registered cards. If the user can select an option directly, that could contribute to reducing the total number of required user actions. </li>
 	</ul>
       </li>
       <li>It is likely that this specification will include <em>guidance</em> rather than requirements about specific user experience optimizations.</li>
@@ -753,8 +753,8 @@
           </li>
           <li>
             Register the <a>payment app</a> with the user agent for future use,
-            associating <var>manifest</var>'s <code>label</code> and
-            <code>icon</code> set with the payment app for user reference.
+            associating <var>manifest</var>'s <code>name</code> and
+            <code>icons</code> set with the payment app for user reference.
           </li>
           <li>
             For each <a>PaymentAppOption</a> present in the
@@ -763,13 +763,13 @@
               <li>
                 Add a new payment option to the <a>payment app</a>'s
                 registration, associating it with the <a>PaymentAppOption</a>
-                <code>label</code> and <code>icon</code> fields.
+                <code>name</code> and <code>icons</code> fields.
               </li>
               <li>
                 For each <a>payment method</a> indicated in the
                 <a>PaymentAppOption</a>'s <code>enabledMethods</code>
                 field, associate the payment option and the <a>payment app</a>
-                with the payment method for future use.
+                with the payment method.
               </li>
             </ol>
           </li>
@@ -826,30 +826,24 @@
   <h2>
     <a>PaymentAppManifest</a> interface
   </h2>
+  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/69">Issue 69</a>: The Payment Apps Task Force has a goal of alignment with the draft <a href="https://github.com/w3c/manifest">Web App Manifest</a> specification for data used to display payment app and options for selection by the user. More work is necessary to determine whether the Payment App API should reference (part of) the Web App Manifest specification, import definitions while that specification remains a draft, or define new terms.</p>
       <pre id="payment-app-manifest-idl" class="idl">
       dictionary PaymentAppManifest {
-        DOMString label;
-        DOMString? icon;
-        sequence&lt;PaymentAppOption&gt; options;
+        required DOMString name;
+        sequence&lt;ImageObject&gt; icons;
+        required sequence&lt;PaymentAppOption&gt; options;
       };
       </pre>
         <dl>
-            <dt><code>label</code> member</dt>
+            <dt><code>name</code> member</dt>
             <dd>
-                The <code>label</code> member is a string that represents the
+                The <code>name</code> member is a string that represents the
                 label for this <a>payment app</a> as it is usually displayed
                 to the user.
             </dd>
-            <dt><code>icon</code> member</dt>
+            <dt><code>icons</code> member</dt>
             <dd>
-                The <code>icon</code>member defines an icon for this
-                <a>payment app</a> as it is usually displayed to the user.
-            </dd>
-            <dd class="issue">
-                Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options? <a
-                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
-                App Manifest</a> may be used for inspiration.
+                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
             </dd>
             <dt><code>options</code> member</dt>
             <dd>
@@ -867,10 +861,6 @@
                   is to prepend the payment app name, e.g., "<em>ExampleApp Visa
                   ending in ***4756</em>". However, when only one app is
                   installed, the text "<em>ExampleApp</em>" is redundant.</p>
-                <p>It may be simpler for implementers to remove payment options
-                  from this spec. A medium level of complexity is to specify
-                  payment options, but give user agents choice of whether payment
-                  options are supported.</p>
             </dd>
         </dl>
   </section>
@@ -880,39 +870,37 @@
   </h2>
       <pre id="payment-app-options-idl" class="idl">
       dictionary PaymentAppOption {
-        DOMString label;
-        DOMString? icon;
-        DOMString id;
+        required DOMString name;
+        sequence&lt;ImageObjects&gt; icons;
+        required DOMString id;
         sequence&lt;DOMString&gt; enabledMethods;
       };
       </pre>
-        <dl>
-            <dt><code>label</code> member</dt>
+      <dl>
+	<dt><code>name</code> member</dt>
+        <dd>
+          The <code>name</code> member is a string that represents the
+                label for this <a>payment app</a> as it is usually displayed
+                to the user.
+            </dd>
+            <dt><code>icons</code> member</dt>
             <dd>
-                The <code>label</code> member is a string that represents the
-                label for this option as it is usually displayed to the user
-                when selecting a payment app.
+                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
             </dd>
-            <dt><code>icon</code> member</dt>
-            <dd class="issue">
-                Need to define how an icon would be represented in this data.
-                Url? Data URL? Size options? <a
-                href="https://developer.mozilla.org/en-US/docs/Web/Manifest">Web
-                App Manifest</a> may be used for inspiration.
-            </dd>
+
             <dt><code>id</code> member</dt>
             <dd>
                 The <code>id</code> member is an identifier, unique
                 within the <a>PaymentAppManifest</a>, that will be passed to the
-                payment app to indicate which <a>PaymentAppOption</a> the user
-                selected.
+                payment app to indicate the <a>PaymentAppOption</a> selected
+                by the user.
             </dd>
             <dt><code>enabledMethods</code> member</dt>
             <dd>
                 The <dfn
                 id="payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
                 member lists the <a>payment method identifiers</a> of the
-                payment methods enabled by this option.
+                payment methods enabled by this option. <span class="issue">When the merchant has provided a filter, it may be necessary to provide <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/63#issuecomment-264283996">additional information</a> about conditions under which the payment method is enabled. 
             </dd>
         </dl>
   </section>
@@ -938,24 +926,29 @@
          navigator.serviceWorker.register('/exampleapp.js')
          .then(function(registration) {
            return registration.paymentAppManager.setManifest({
-             label: "ExampleApp",
-             icon: "...",
+             name: "ExampleApp",
+             icons: [
+                {
+                  "src": "icon/lowres.webp",
+                  "sizes": "48x48",
+                  "type": "image/webp"
+                },{
+                  "src": "icon/lowres",
+                  "sizes": "48x48"
+                } ]
              options: [
                {
-                 label: "Visa ending ****4756",
-                 icon: "...",
+                 name: "Visa ending ****4756",
                  id: "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
                  enabledMethods: ["basic-card#visa"]
                },
                {
-                 label: "My Bob Pay Account: john@example.com",
-                 icon: "...",
+                 name: "My Bob Pay Account: john@example.com",
                  id: "c8126178-3bba-4d09-8f00-0771bcfd3b11",
                  enabledMethods: ["https://bobpay.com/"]
                },
                {
-                 label: "Add new credit/debit card to ExampleApp",
-                 icon: "...",
+                 name: "Add new credit/debit card to ExampleApp",
                  id: "new-card",
                  enabledMethods: [
                    "basic-card#visa",
@@ -1025,30 +1018,29 @@
     <h3>Selectable App Information Display</h3>
     <p class="issue" title="Need to define display algorithm">
         After matching the user agent will have a list of payment apps that the user can select to handle the
-        payment request. How will these be ordered when they are displayed to the user, where do recommended apps
+        payment request. How will these are displayed and ordered, where do recommended apps
         fit in to the order and how do we treat apps that are both registered and recommended?
     </p>
     <p class="issue" title="Should payment instrument details be included?" data-number="12">
-        What information is needed by the user agent to display selectable apps? This needs to be captured
-        during registration.
+        What information is needed by the user agent to display selectable apps? This needs to be captured during registration.
     </p>
     <p>
-      The output of the payment method matching algorithm will be a list of matching payment apps from registered
-      payment apps and a list of recommended payment apps. The user agent will present this list of payment apps to the user
-      so they can select how they want to handle the payment request.
+      The output of the payment method matching algorithm will be a list of matching payment apps and options from registered
+      payment apps, and a list of recommended payment apps. The user agent will present this list of payment apps to the user for selection.
     </p>
-    <p>For the display of matching payment apps:</p>
+    <p>For matching payment apps:</p>
 
     <ul>
-      <li>The user agent <span class='rfc2119'>MUST</span> display any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues. Note also that the language here is about enabling selection rather than display &mdash; when the user agent displays only a subset of matching payment apps (e.g., the most recently used), the user must still be able to access other matching payment apps. </li>
+      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching <a href="#payment-app-options">payment app options</a>.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> favor user-side order preferences (based on user configuration or behavior) over payee-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
     </ul>
 
-    <p>For the display of recommended payment apps:</p>
+    <p>For recommended payment apps:</p>
     <ul>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps.</li>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps and allow configuration to not display recommended payment apps.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> distinguish recommended payment apps from registered payment apps.</li>
       <li>The user agent <span class='rfc2119'>SHOULD</span> display any merchant-recommended apps in the order specified by the payee.</li>
     </ul>
@@ -1067,7 +1059,7 @@
 
     <section class="informative">
       <h4>Examples of Ordering of Selectable Payment Apps</h4>
-      <p>The following are examples of user agent display behavior.</p>
+      <p>The following are examples of user agent ordering of selectable payment apps.</p>
       <ul>
 	<li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
 	<li>Enable the user to set a preferred order for a given site or for all sites.</li>
@@ -1135,6 +1127,10 @@
         <code>total</code> field of the <code>PaymentDetails</code> provided
         when the corresponding <a>PaymentRequest</a> object was instantiated.
       </dd>
+      <dd class="issue">Is the specification missing the top level "displayItems"?
+      </dd>
+      <dd class="issue">Keep an eye on <a href="https://github.com/w3c/browser-payment-api/issues/287">issue 287</a>. If the user agent generates a transaction ID, that ID must be passed to the payment app. If the merchant provides the transaction ID, that ID is already available through methodData.
+      </dd>
       <dt><code>modifiers</code> attribute</dt>
       <dd>
         This sequence of <code>PaymentDetailsModifier</code> dictionaries
@@ -1146,8 +1142,8 @@
       </dd>
       <dt><code>optionId</code> attribute</dt>
       <dd>
-        This attribute indicates which <a>PaymentAppOption</a> the user
-        selected. It corresponds to the <code>id</code> field provided during
+        This attribute indicates the <a>PaymentAppOption</a> selected by
+        the user. It corresponds to the <code>id</code> field provided during
         payment app registration.
       </dd>
     </dl>
@@ -1523,6 +1519,9 @@
       </li>
     </ol>
 
+    <p class="issue" title="Handling cancelation and failure">
+      See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/37">issue 37</a> for discussion of payment app cancellation and also resulting user agent behavior. At the 23 November 2016 payment apps task force meeting, there was consensus that in case of payment app failure or cancelation, the user agent should not be prohibited from offering the user alternative matching payment apps.</p>
+
     <p>The following example shows how to respond to a payment request:</p>
     <pre class="example highlight" title="Sending a Payment Response">
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
@@ -1541,8 +1540,7 @@
      <p class="issue" title="Generic callback back-channel for the payment
      response transmission">
        Some payment methods might require a back channel to guarantee payment
-       response delivery (especially push payment methods).  Should it be part
-       of the generic portion of paymentRequest and paymentResponse? [Ed Note:
+       response delivery (especially push payment methods). See <a href="https://github.com/w3c/browser-payment-api/issues/224">issue 224</a>. [Ed Note:
        the "complete()" attribute of the "PaymentResponse" interface would serve
        this purpose quite cleanly.]
      </p>
