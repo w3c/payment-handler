@@ -1415,9 +1415,8 @@
       user interaction for the purposes of determining whether the <a>service
       worker</a> is allowed to open a window.
     </p>
-    <p class="note">
-      The actual rendering of a <a>payment app window</a> is a user agent
-      implementation detail. While opening an entirely new window is possible,
+  <p class="issue">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/73">issue 73</a>. What is required for interoperability here in how the service worker can open a window? How much of the actual rendering of a <a>payment app window</a> is a user agent
+      implementation detail? While opening an entirely new window is possible,
       it is more likely that the contents will be rendered in a way that makes
       it more obvious that the interactions pertain to the payment
       transaction. This is an area for potential user agent experimentation
@@ -1425,7 +1424,7 @@
       other types of windows can be distinguished based on the event type the
       user agent is using to grant permission to open a window.
     </p>
-    <p><em>The remainder of this section is a non-normative explanation of how
+    <p><em>The remainder of this section is currently a non-normative explanation of how
     the service worker <code>WindowClient</code> class can be used to interact
     with users.</em></p>
     <p>
