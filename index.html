@@ -1406,24 +1406,25 @@
   <h3>
     Payment App Display
   </h3>
-    <p>
-      Payment Apps that require user input can open a payment window using the
-      <code>clients.openWindow()</code> method defined in [[!SERVICE-WORKERS]].
-      Absent user preferences that override such behavior, user interaction is
-      required during payment requests, in the form of payment app selection. As
-      a consequence, the user agent MUST treat a <a>paymentrequest</a> event as
-      user interaction for the purposes of determining whether the <a>service
-      worker</a> is allowed to open a window.
-    </p>
-  <p class="issue">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/73">issue 73</a>. What is required for interoperability here in how the service worker can open a window? How much of the actual rendering of a <a>payment app window</a> is a user agent
-      implementation detail? While opening an entirely new window is possible,
+  <p>An invoked payment app may or may not choose to display information or request user input. For example:</p>
+  <ul>
+    <li>A payment app might always open a window so that the user can provide an authorization code.</li>
+    <li>A payment app may open a window when first selected to pay during a session, but for subsequent payments in the same session, it might (through configuration) perform its duties without opening a window or requiring user interaction.</li>
+    <li>The browser might support user configuration to streamline payments, such as "always use this payment app on this Web site" or "when there is just one matching payment app launch it automatically." Automatically invoked payment apps may wish to open windows without a recent explicit user action.</li>
+    <li>A payment app that merely returns data might never need to open a window.</li>
+  </ul>
+  <p>To support scenarios that involve visual display and user interaction, user agents MUST allow payment apps to call the <code>clients.openWindow()</code> method defined in [[!SERVICE-WORKERS]].</p>
+  <p>[[!SERVICE-WORKERS]] expects a user interaction to have occurred in order to open a Window. This user interaction is obvious when the user explicitly selects a payment app to make a payment. However, when user agent or payment app configuration allows payment app invocation without explicit user selection, the user agent MUST consider the <a>paymentrequest</a> event as the relevant user interaction for a <code>clients.openWindow()</code> request. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/73">issue 73</a> for more discussion.</p>
+
+  <p class="note">Implementations may vary on how windows open.
+      For example, while opening an entirely new window is possible,
       it is more likely that the contents will be rendered in a way that makes
       it more obvious that the interactions pertain to the payment
-      transaction. This is an area for potential user agent experimentation
-      and differentiation. The opening of a <a>payment app window</a> versus
+      transaction. The opening of a <a>payment app window</a> versus
       other types of windows can be distinguished based on the event type the
       user agent is using to grant permission to open a window.
-    </p>
+  </p>
+  <div class="note">
     <p><em>The remainder of this section is currently a non-normative explanation of how
     the service worker <code>WindowClient</code> class can be used to interact
     with users.</em></p>
@@ -1455,6 +1456,7 @@
       window</a>s? This requires input from someone with detailed knowledge of
       service worker design.
     </p>
+    </div>
   </section>
   <section id="sec-payment-app-response">
     <h3>Payment App Response</h3>
