@@ -834,7 +834,12 @@
   </h2>
   <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/69">Issue 69</a>: The Payment Apps Task Force has a goal of alignment with the draft <a href="https://github.com/w3c/manifest">Web App Manifest</a> specification for data used to display payment app and options for selection by the user. More work is necessary to determine whether the Payment App API should reference (part of) the Web App Manifest specification, import definitions while that specification remains a draft, or define new terms.</p>
       <pre id="payment-app-manifest-idl" class="idl">
-      callback CanHandleCallback = object
+      dictionary AvailableOption {
+        required DOMString id;
+        short modifier;
+      };
+
+      callback CanHandleCallback = Sequence&lt;AvailableOption&gt;
       (sequence&lt;PaymentMethodData&gt; methodData, PaymentDetails details);
 
       dictionary PaymentAppManifest {
@@ -883,13 +888,16 @@
                 handling all requests for the indicated <a>payment method
                 identifiers</a>. <a>canHandle</a> runs with a globally unique
                 origin, and is not allowed network access. The return value from
-                <a>canHandle</a> is an object whose keys represent the
-                <code>PaymentAppOption.id</code> values for each
-                <code>PaymentAppOption</code> that can handle the request. The
-                values for these keys are an index into the
-                <code>PaymentRequest.modifiers</code> sequence, indicating which
-                modifier applies to the corresponding
-                <code>PaymentAppOption</code>; or, if no modifier applies, "-1".
+                <a>canHandle</a> is a sequence of zero or more
+                <code>HandledOptions</code> dictionaries. Each dictionary
+                represents a <code>PaymentAppOption</code> that can handle
+                the request. The mandatory <code>AvailableOption.id</code>
+                member corresponds to the <code>PaymentAppOption.id</code> for
+                the <code>PaymentOption</code> corresponding to the dictionary.
+                If present, the <code>AvailableOption.modifier</code> member is
+                an index into the <code>PaymentRequest.modifiers</code>
+                sequence, indicating which modifer applies to the corresponding
+                <code>PaymentAppOption</code>.
             </dd>
         </dl>
   </section>
@@ -1045,8 +1053,8 @@
     When the <a>mediator</a> calculates <i>acceptedMethods</i> during the
     process of running the steps for the <code>PaymentRequest.show()</code>
     method, the means of determining whether a registered <a>payment app</a>
-    should be displayed to the user is computed by performing the following
-    steps:
+    should be made available for user selection is computed by
+    performing the following steps:
       <ol>
         <li>
           Set <var>registeredMethods</var> to an empty set.
@@ -1114,28 +1122,32 @@
         </li>
         <li>
           If the execution of <var>canHandle</var> results in an exception or
-          <var>returnValue</var> is not an object, then this <a>payment app</a>
-          is not considered to be a candidate to handle the
+          <var>returnValue</var> is not a <code>Sequence</code> of
+          <code>AvailableOption</code>s, then this
+          <a>payment app</a> is not considered to be a candidate to handle the
           <code>PaymentRequest</code>. Terminate these steps.
         </li>
         <li>
-          For each key of <var>returnValue</var>, verify that the value
-          associated with the key is a single integer, no smaller than -1, and
-          no larger than the largest index of
-          <code>PaymentRequest.modifiers</code> sequence. Any key that fails
-          this validation is removed from the object.
+          For each <code>AvailableOption</code> of <var>returnValue</var>,
+          verify that the value of its <code>modifier</code> entry, if
+          present, is an integer, no smaller than 0, and no larger than the
+          largest index of <code>PaymentRequest.modifiers</code> sequence. Any
+          <code>AvailableOption</code> that fails this validation is removed
+          from the sequence.
         </li>
         <li>
-          If <var>returnValue</var> has no remaining keys, then this
+          If <var>returnValue</var> has no remaining
+          <code>AvailableOption</code>s, then this
           <a>payment app</a> is not considered to be a candidate to handle the
           <code>PaymentRequest</code>. Terminate these steps.
         </li>
         <li>
           If processing has reached this point, then the <a>payment app</a> is
-          a candidate for processing the <code>PaymentRequest</code>. Each key
+          a candidate for processing the <code>PaymentRequest</code>. Each
+          <code>AvailableOption</code>
           in <var>returnValue</var> corresponds to a matching
-          <code>PaymentAppOption</code> that can service the request. If not
-          set to -1, the value associated with the key indicates which
+          <code>PaymentAppOption</code> that can service the request. If present
+          the <code>PaymentAppOption.modifier</code> indicates which
           <code>PaymentDetailsModifier</code> will be applied by the
           corresponding <code>PaymentAppOption</code>.
         </li>
