@@ -1425,6 +1425,28 @@
       </ol>
     </section>
   </section>
+  <section id="sec-app-response">
+    <h3>Payment App Response</h3>
+    The <a>payment app response</a> is conveyed using the following
+    dictionary:
+    <pre class="idl">
+      dictionary PaymentAppResponse {
+        DOMString methodName;
+        object details;
+      };
+    </pre>
+    <dt><code>methodName</code> attribute</dt>
+    <dd>
+      The <a>payment method identifier</a> for the <a>payment method</a>
+      that the user selected to fulfil the transaction.
+    </dd>
+    <dt><code>details</code> attribute</dt>
+    <dd>
+      A <a>JSON-serializable object</a> that provides a <a> payment
+      method</a> specific message used by the merchant to process the
+      transaction and determine successful fund transfer.
+    </dd>
+  </section>
   <section>
     <h3>Payment App Invocation</h3>
     <p>
@@ -1478,7 +1500,7 @@
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequest appRequest;
-        void respondWith(<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;appResponse);
+        void respondWith(<a>Promise</a>&lt;<a>PaymentAppResponse</a>&gt;appResponse);
       };
       </pre>
       <dl>
@@ -1490,7 +1512,7 @@
         <dt><code>respondWith</code> method</dt>
         <dd>
           This method is used by the payment app to provide a
-          <a>PaymentResponse</a> when the payment successfully completes.
+          <a>PaymentAppResponse</a> when the payment successfully completes.
         </dd>
       </dl>
         <p>
@@ -1606,8 +1628,8 @@
       through resolution of the Promise provided to the <code>respondWith</code>
       function of the corresponding <a>PaymentRequestEvent</a> dictionary.
       The application is expected to resolve the Promise with a
-      <code>PaymentResponse</code> dictionary instance containing the payment
-      response information. In case of user cancellation or error, the
+      <code>PaymentAppResponse</code> instance containing the
+      payment response. In case of user cancellation or error, the
       application may signal failure by rejecting the Promise.
     </p>
     <p>
@@ -1634,8 +1656,9 @@
     </p>
     <ol>
       <li>
-        Set <var>appResponse</var> to the <code>PaymentResponse</code> used to
-        resolve the <a>PaymentRequestEvent</a><code>.respondWith</code> Promise.
+        Set <var>appResponse</var> to the <code>PaymentAppResponse</code>
+        instance used to resolve the
+        <a>PaymentRequestEvent</a><code>.respondWith</code> Promise.
       </li>
       <li>
         If <var>appResponse</var>.<code>methodName</code> is not present or
