@@ -401,8 +401,8 @@
   <section>
     <h3>Payment App Invocation and Response</h3>
     <ul>
-      <li>Once the user has selected a payment app, the user agent activates the associated service worker code and provides the payment app with
-        input data drawn from the Payment Request API. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a> for information about launching the payment app in a secure context.</li>
+      <li>Based on information provided at registration, the user agent "launches" the payment app and provides it with
+        input data drawn from the Payment Request API. </li>
       <li>The user may interact with the payment app in a variety of ways to authorize payment, cancel the transaction,
           or carry out other activities supported by the payment app.</li>
       <li>This specification defines a means for the user agent to receive a response asynchronously once the user has
@@ -565,7 +565,7 @@
   The use of service workers restricts <a>user agent-based payment apps</a> so
   that they must run only in secure contexts. The introduction of this
   restriction is deliberate, due to the sensitivity of the role that payment
-  apps play.
+  apps play. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a> for information about launching the payment app in a secure context.
 </p>
 
 <p>Here is the flow envisioned by this document:</p>
