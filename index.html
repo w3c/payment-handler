@@ -526,16 +526,15 @@
   <section>
   <h3>Payment App Invocation and Response Data</h3>
   <dl>
-    <dt><dfn id="dfn-app-request-data">payment app request data</dfn></dt>
-    <dd>data provided to the invoked payment app by the user agent to initiate a payment request. This data is a subset
-        of data input to the Payment Request API.
+    <dt><dfn id="dfn-app-request">payment app request</dfn></dt>
+    <dd>a request provided to the invoked payment app by the user agent to initiate a payment request. This request is a subset of the Payment Request.
     <p class="note" title="JSON serialization">
         The data passed between the user agent and the payment app will be serialized as JSON data.
     </p>
     </dd>
-    <dt><dfn id="dfn-app-response-data">payment app response data</dfn></dt>
-    <dd>data returned by an invoked payment app to the user agent, typically after payment authorization or other action
-        taken through the payment app. This data, which will vary according to payment method, is then returned to the payee via
+    <dt><dfn id="dfn-app-response">payment app response</dfn></dt>
+    <dd>a response returned by an invoked payment app to the user agent, typically after payment authorization or other action
+        taken through the payment app. This response, which will vary according to payment method, is then returned to the payee via
         the Payment Request API as part of the payment response.</dd>
   </dl>
 </section>
@@ -1115,16 +1114,16 @@
   <h2>Payment App Invocation, Display and Response</h2>
   <p>
       Once the user has selected a payment app, the user agent is
-      responsible for preparing <a>payment app request data</a>, invoking the
+      responsible for preparing a <a>payment app request</a>, invoking the
       payment app, providing the request data to the payment app, and
       returning the payment app response through the Payment Request API.
   </p>
-  <section id="sec-app-request-data">
-    <h3>Payment App Request Data</h3>
-    The <a>payment app request data</a> is conveyed using the following
+  <section id="sec-app-request">
+    <h3>Payment App Request</h3>
+    The <a>payment app request</a> is conveyed using the following
     dictionary:
     <pre class="idl">
-      dictionary PaymentAppRequestData {
+      dictionary PaymentAppRequest {
         DOMString origin;
         sequence&lt;PaymentMethodData&gt; methodData;
         PaymentItem total;
@@ -1315,6 +1314,28 @@
       </ol>
     </section>
   </section>
+  <section id="sec-app-response">
+    <h3>Payment App Response</h3>
+    The <a>payment app response</a> is conveyed using the following
+    dictionary:
+    <pre class="idl">
+      dictionary PaymentAppResponse {
+        DOMString methodName;
+        object details;
+      };
+    </pre>
+    <dt><code>methodName</code> attribute</dt>
+    <dd>
+      The <a>payment method identifier</a> for the <a>payment method</a>
+      that the user selected to fulfil the transaction.
+    </dd>
+    <dt><code>details</code> attribute</dt>
+    <dd>
+      A <a>JSON-serializable object</a> that provides a <a> payment
+      method</a> specific message used by the merchant to process the
+      transaction and determine successful fund transfer.
+    </dd>
+  </section>
   <section>
     <h3>Payment App Invocation</h3>
     <p>
@@ -1324,7 +1345,7 @@
       user preferences). If the user selects a <a>user agent-based payment
       app</a> to service the request, the <a>service worker</a> corresponding
       to that application receives an event with the
-      <a>PaymentAppRequestData</a> containing information about the payment
+      <a>PaymentAppRequest</a> containing information about the payment
       being requested. The event also contains a function that allows the
       payment app to provide a <a>payment response</a> back to the
       <a>payee</a>. This process is formally described in the following
@@ -1367,20 +1388,20 @@
       <pre class="idl">
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
-        readonly attribute PaymentAppRequestData data;
-        void respondWith(<a>Promise</a>&lt;<a>PaymentResponse</a>&gt;response);
+        readonly attribute PaymentAppRequest appRequest;
+        void respondWith(<a>Promise</a>&lt;<a>PaymentAppResponse</a>&gt;appResponse);
       };
       </pre>
       <dl>
-        <dt><code>data</code> attribute</dt>
+        <dt><code>appRequest</code> attribute</dt>
         <dd>
-          This attribute contains the <a>payment app request data</a> associated
+          This attribute contains the <a>payment app request</a> associated
           with this <a>payment request</a>.
         </dd>
         <dt><code>respondWith</code> method</dt>
         <dd>
           This method is used by the payment app to provide a
-          <a>PaymentResponse</a> when the payment successfully completes.
+          <a>PaymentAppResponse</a> when the payment successfully completes.
         </dd>
       </dl>
         <p>
@@ -1415,10 +1436,10 @@
                   <code><a>PaymentRequestEvent</a></code> interface, with the
                   event type <code>paymentrequest</code>, which does not bubble,
                   cannot be canceled, and has no default action.  </li>
-              <li>Set the <code>data</code> attribute of
-                  <var>e</var> to a new <a>PaymentAppRequestData</a> instance,
+              <li>Set the <code>appRequest</code> attribute of
+                  <var>e</var> to a new <a>PaymentAppRequest</a> instance,
                   populated as described in
-                  <a href="#sec-app-request-data"></a>.
+                  <a href="#sec-app-request"></a>.
               </li>
               <li>Dispatch <var>e</var> to <var>global</var>.</li>
               <li>Wait for all of the promises in the <a>extend lifetime
@@ -1496,8 +1517,8 @@
       through resolution of the Promise provided to the <code>respondWith</code>
       function of the corresponding <a>PaymentRequestEvent</a> dictionary.
       The application is expected to resolve the Promise with a
-      <code>PaymentResponse</code> dictionary instance containing the payment
-      response information. In case of user cancellation or error, the
+      <code>PaymentAppResponse</code> instance containing the
+      payment response. In case of user cancellation or error, the
       application may signal failure by rejecting the Promise.
     </p>
     <p>
@@ -1524,13 +1545,14 @@
     </p>
     <ol>
       <li>
-        Set <var>appResponse</var> to the <code>PaymentResponse</code> used to
-        resolve the <a>PaymentRequestEvent</a><code>.respondWith</code> Promise.
+        Set <var>appResponse</var> to the <code>PaymentAppResponse</code>
+        instance used to resolve the
+        <a>PaymentRequestEvent</a><code>.respondWith</code> Promise.
       </li>
       <li>
         If <var>appResponse</var>.<code>methodName</code> is not present or
         not set to one of the values from
-        <a>PaymentRequestEvent</a>.<code>data</code>, run the <a>payment app
+        <a>PaymentRequestEvent</a>.<code>appRequest</code>, run the <a>payment app
         failure algorithm</a> and terminate these steps.
       </li>
       <li>
