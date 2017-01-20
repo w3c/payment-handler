@@ -350,15 +350,13 @@
     <h3>Registration and Unregistration</h3>
     <ul>
       <li>Registration provides a way for user agents to remain aware of the user's payment apps across transactions.</li>
-      <li>In this specification, registration means registration of a service worker with the user agent.  Registration does <strong>not</strong> refer to how the user establishes a relationship with the payment service provider, for example by setting up an account with that
-	provider.</li>
-      <li>When a payment app is registered, the service worker adds an event listenter for "install" that is subsequently called. This install code uses <code>setManifest</code>
-	to provide payment app manifest information&mdash; names, icons, etc.&mdash; to the user agent. This specification does not require that the payment manifest be independently addressable (e.g., in a file on the Web).</li>
       <li>A payment app that follows this specification must be registered
 	before it can be used to make a payment. 
 	<strong>Note:</strong> Registration is not
 	necessarily a prerequisite to be able to use other types
 	of payment apps (e.g., native payment apps).</li>
+      <li>In this specification, payment app registration starts with service worker registration. Once the user consents to the registration, the payment app provides information to the browser about enabled payment methods (and potentially other information collectively called the "payment app manifest"); this is used for matching with payee-accepted payment methods. At this point, the payment app is registered with the user agent. <strong>Note:</strong>  Registration does <strong>not</strong> refer to how the user establishes a relationship with the payment app provider, for example by setting up an account with that provider.</li>
+      <li>This specification does not require that the payment app manifest be independently addressable (e.g., in a file on the Web). <span class="issue">See a <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/48">issue 48</a>.</li>
       <li>We expect registrations to happen at various times (e.g., outside and inside of checkout), and with differing levels of
           user consent to modify their configuration within the user agent. In general, explicit consent should not be required
           while the user is within the context of the payment request UI. Here are some examples:
@@ -368,7 +366,7 @@
           <li>When the user installs native payment app, registration could happen either through platform-specific mechanisms or through this standard API, without additional user action beyond installation.</li>
         </ul>
       </li>
-      <li>The payment app manifest includes information about enabled payment methods, which is used later for matching payee-accepted payment methods. Service workers can provide updated payment manifest information, for example when the user stores or updates credentials, or the payment app is upgraded. Note: This specification does require payment apps to be able to respond to user agent queries for updated
+      <li>This specification does require payment apps to be able to respond to user agent queries for updated
           registration information. (See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/36">issue 36</a>.)</li>
       <li>It is important for merchants and users to be able to trust the
 	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is unavailable or insufficient, other mechanisms should be considered to help establish authenticity (e.g., origin-bound confirmation of a digital signature of a payment app).</li>
@@ -464,7 +462,7 @@
       <dd>a payment app that is "known" to the user agent for the purposes of the interactions described in this document.
 
       <div class="note" title="Platform-specific registration">
-          This specification defines a registration mechanism. Other registration mechanisms might co-exist with this one
+          This specification defines a payment app registration mechanism. Other registration mechanisms might co-exist with this one
           (e.g., on some platforms there may be a way to register a payment app directly with the operating system).</div>
       </dd>
       <dt><dfn id="dfn-unregistered-payment-app">unregistered payment app</dfn></dt>
@@ -569,9 +567,8 @@
 
 <p>Here is the flow envisioned by this document:</p>
   <ol>
-    <li>Through registration, a <a>service worker</a> is created and
-        associated with <a>payment methods</a>
-        (and associated metadata).</li>
+    <li>A <a>service worker</a> is registered and associates
+        <a>payment methods</a> (and associated metadata) with the payment app.</li>
     <li>When the <code>payment request API</code> is called, the user agent
         displays a list of registered service workers associated
         with matching payment methods (along with any other payment apps
