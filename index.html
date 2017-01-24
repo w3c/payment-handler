@@ -1474,6 +1474,8 @@
   
   <p>[[!SERVICE-WORKERS]] expects a user interaction to have occurred in order to open a Window. This user interaction is obvious when the user explicitly selects a payment app to make a payment. However, when user agent or payment app configuration allows payment app invocation without explicit user selection, the user agent MUST consider the <a>paymentrequest</a> event as the relevant user interaction for a <code>clients.openWindow()</code> request.</p>
 
+  <p>User agents SHOULD display the origin of a running payment app to the user.</p>
+
   <div class="issue">
   <p><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/73">Issue 73</a> asks whether it is possible to close a window open via clients.openWindow() programmatically.</p>
 
