@@ -1599,57 +1599,33 @@
 	failures.</p>
   </section>
   <section id="post-example">
-  <h3>Example using HTTP POST</h3>
+      <h3>Example of handling the <code>paymentrequest</code> event</h3>
     <p>
-      This example codes shows how to use this API via a scheme in
-      which a <code>POST</code> is sent to a URL with the payment request as a
-      body. The response is allowed to be either <code>application/json</code>
-      (which is inferred to contain a payment response), or
-      <code>text/html</code> (which contains content to be rendered to the
-      user).
+      This example shows how to write a service worker that listens to the
+      paymentrequest event. When a payment request event is received, the
+      service worker opens a window in order to interact with the user.
     </p>
-    <pre class="example highlight" title="Simple POST-based Payment App"
-    id="example-post-payment-app">
-      var contentType;
-      var paymentPromise;
-      /* Handle payment request from a payee */
+    <pre class="example highlight" title="Handling the paymentrequest event"
+    id="example-paymentrequest-event">
       self.addEventListener('paymentrequest', function(e) {
-        paymentPromise = new Promise(function(accept, reject) {
-          fetch("https://www.example.com/bobpay/process",
-            { method: "POST",  body: JSON.stringify(e.data) })
-          .then(function(response) {
-            contentType = response.headers.get("content-type");
-            if (!contentType) {
-              throw new Error("No content type header");
-            }
-            return response.text();
-          }).then(function(body) {
-            if(contentType.indexOf("application/json") !== -1) {
-              /* Respond to the payment request with the received body */
-              accept(JSON.parse(body));
-            } else if (contentType.indexOf("text/html") !== -1) { {
-              /* Open a new payment window and populate it with the
-                 document returned from the response */
-              var url = "data:text/html;base64," + btoa(body);
-              clients.openWindow(url).then(function(windowClient) {
-                windowClient.postMessage(e.data);
-              });
+        e.respondWith(new Promise(function(resolve, reject) {
+          self.addEventListener('message', listener = function(e) {
+            self.removeEventListener('message', listener);
+            if (e.data.hasOwnProperty('name')) {
+              reject(e.data);
             } else {
-              throw new Error("Unexpected value in content type header");
+              resolve(e.data);
             }
-          }).catch(function(err) {
+          });
+
+          clients.openWindow("https://www.example.com/bobpay/pay")
+          .then(function(windowClient) {
+            windowClient.postMessage(e.data);
+          })
+          .catch(function(err) {
             reject(err);
           });
-        e.respondWith(paymentPromise);
-      });
-
-      /* Handle payment response from a payment app window */
-      self.addEventListener('message', function(e) {
-        if (e.data.hasOwnProperty('name')) {
-          paymentPromise.reject(e.data);
-        } else {
-          paymentPromise.resolve(e.data);
-        }
+        }));
       });
     </pre>
     <p>Using the simple scheme described above, a trivial HTML page that is
@@ -1658,10 +1634,11 @@
     <pre class="example highlight" title="Simple Payment App Window">
 &lt;html&gt; &lt;body&gt; &lt;form id="form"&gt;
 &lt;table&gt;
-  &lt;tr&gt;&lt;th&gt;Card Number:&lt;/th&gt;&lt;td&gt;&lt;input name="card_number"&gt;&lt;/td&gt;&lt;/tr&gt;
-  &lt;tr&gt;&lt;th&gt;Expiration Month:&lt;/th&gt;&lt;td&gt;&lt;input name="expiry_month"&gt;&lt;/td&gt;&lt;/tr&gt;
-  &lt;tr&gt;&lt;th&gt;Expiration Year:&lt;/th&gt;&lt;td&gt;&lt;input name="expiry_year"&gt;&lt;/td&gt;&lt;/tr&gt;
-  &lt;tr&gt;&lt;th&gt;CVV:&lt;/th&gt;&lt;td&gt;&lt;input name="cvv"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Cardholder Name:&lt;/th&gt;&lt;td&gt;&lt;input name="cardholderName"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Card Number:&lt;/th&gt;&lt;td&gt;&lt;input name="cardNumber"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Expiration Month:&lt;/th&gt;&lt;td&gt;&lt;input name="expiryMonth"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Expiration Year:&lt;/th&gt;&lt;td&gt;&lt;input name="expiryYear"&gt;&lt;/td&gt;&lt;/tr&gt;
+  &lt;tr&gt;&lt;th&gt;Security Code:&lt;/th&gt;&lt;td&gt;&lt;input name="cardSecurityCode"&gt;&lt;/td&gt;&lt;/tr&gt;
   &lt;tr&gt;&lt;th&gt;&lt;/th&gt;&lt;td&gt;&lt;input type="submit" value="Pay"&gt;&lt;/td&gt;&lt;/tr&gt;
 &lt;/table&gt;
 &lt;/form&gt;
@@ -1671,14 +1648,20 @@ window.addEventListener("message", function(e) {
   var form = document.getElementById("form");
   /* Note: message sent from payment app is available in e.data */
   form.onsubmit = function() {
-    var details = {};
-    ["card_number","expiry_month","expiry_year","cvv"].forEach(function(field) {
-      details[field] = form.elements[field].value;
+    /* See https://w3c.github.io/webpayments-methods-card/#basiccardresponse */
+    var basicCardResponse = {};
+    [ "cardholderName", "cardNumber","expiryMonth","expiryYear","cardSecurityCode"]
+    .forEach(function(field) {
+      basicCardResponse[field] = form.elements[field].value;
     });
-    e.source.postMessage({
-      methodName: "basic-card#visa",
+
+    /* See https://w3c.github.io/webpayments-payment-apps-api/#sec-app-response */
+    var paymentAppResponse = {
+      methodName: "basic-card",
       details: details
-    });
+    };
+
+    e.source.postMessage(paymentAppResponse);
     window.close();
   }
 });
