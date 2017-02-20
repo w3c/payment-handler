@@ -355,8 +355,15 @@
 	<strong>Note:</strong> Registration is not
 	necessarily a prerequisite to be able to use other types
 	of payment apps (e.g., native payment apps).</li>
-      <li>In this specification, payment app registration starts with service worker registration. Once the user consents to the registration, the payment app provides information to the browser about enabled payment methods (and potentially other information collectively called the "payment app manifest"); this is used for matching with payee-accepted payment methods. At this point, the payment app is registered with the user agent. <strong>Note:</strong>  Registration does <strong>not</strong> refer to how the user establishes a relationship with the payment app provider, for example by setting up an account with that provider.</li>
-      <li>This specification does not require that the payment app manifest be independently addressable (e.g., in a file on the Web). <span class="issue">See a <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/48">issue 48</a>.</li>
+      <li>In this specification, payment app registration starts with service
+      worker registration. Once the user consents to the registration, the
+      payment app provides information to the browser about enabled payment
+      methods and associated information; this is used for matching with
+      payee-accepted payment methods. At this point, the payment app is
+      registered with the user agent. <strong>Note:</strong>  Registration
+      does <strong>not</strong> refer to how the user establishes a
+      relationship with the payment app provider, for example by setting up an
+      account with that provider.</li>
       <li>We expect registrations to happen at various times (e.g., outside and inside of checkout), and with differing levels of
           user consent to modify their configuration within the user agent. In general, explicit consent should not be required
           while the user is within the context of the payment request UI. Here are some examples:
@@ -380,7 +387,7 @@
       <li>When the user agent presents a recommended (unregistered) payment app for selection by the user, it uses merchant-provided information.</li>
       <li>In the case where the user has already registered a recommended payment app, the user agent may use merchant-provided
 	information to complement information available from the
-	payment app manifest or to present that payment app for
+	payment app or to present that payment app for
 	selection in some special manner.
 	<strong>Note:</strong> The Working Group
 	is still discussing the display of information in the case
@@ -611,10 +618,153 @@
   </h2>
       <pre id="payment-app-manager-idl" class="idl">
       interface PaymentAppManager {
-        Promise&lt;void&gt; setManifest(PaymentAppManifest manifest);
-        Promise&lt;PaymentAppManifest&gt; getManifest ();
+        attribute PaymentOptions options;
+        attribute PaymentWallets wallets;
       };
       </pre>
+    <dl>
+      <dt><code>options</code> attribute</dt>
+      <dd>
+        This attribute allows manipulation of payment options associated with a
+        payment app. To be presented to the user as part of the payment request
+        flow, payment apps must have at least one registered payment option, and
+        that option needs to match the payment methods and required capabilities
+        specified by the payment request.
+      </dd>
+      <dt><code>wallets</code> attribute</dt>
+      <dd>
+        This attribute allows payment apps to group payment options together and
+        provide a name and icon for such a group (e.g., to group together
+        "business account" payment instruments separately from "personal
+        account" payment instruments). The use of this grouping mechanism
+        by payment apps is completley optional. If payment apps use this
+        grouping mechanism, then matching payment options that do not appear
+        in any groups should still be presented to users by the browser for
+        selection.
+      </dd>
+    </dl>
+  </section>
+  <section id="payment-options">
+  <h2>
+    <a>PaymentOptions</a> interface
+  </h2>
+      <pre id="payment-app-manager-idl" class="idl">
+      interface PaymentOptions {
+          Promise&lt;boolean&gt;              delete(DOMString optionKey);
+          Promise&lt;PaymentAppOption&gt; get(DOMString optionKey);
+          Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
+          Promise&lt;boolean&gt;              has(DOMString optionKey);
+          Promise&lt;void&gt;                 set(DOMString optionKey,
+                                              PaymentAppOption details);
+      };
+      </pre>
+      <p>
+        Where it appears, The <code>optionKey</code> parameter is a unique
+        identifier for the option; it will be passed to the payment app to
+        indicate the <a>PaymentAppOption</a> selected by the user.
+      </p>
+      <p class="issue">TODO: flesh out details after the WG reaches general
+      consensus on the shape of this API.</p>
+  </section>
+  <section id="payment-app-option">
+  <h2>
+    <a>PaymentAppOption</a> dictionary
+  </h2>
+      <pre id="payment-app-options-idl" class="idl">
+      dictionary PaymentAppOption {
+        required DOMString name;
+        sequence&lt;ImageObjects&gt; icons;
+        sequence&lt;DOMString&gt; enabledMethods;
+        object capabilities;
+      };
+      </pre>
+      <dl>
+        <dt><code>name</code> member</dt>
+        <dd>
+          The <code>name</code> member is a string that represents the
+                label for this payment option as it is usually displayed
+                to the user.
+            </dd>
+            <dt><code>icons</code> member</dt>
+            <dd>
+                The <code>icons</code> member is an array of image objects that
+                can serve as iconic representations of the payment
+                option when presented to the user for selection.
+            </dd>
+
+            <dt><code>enabledMethods</code> member</dt>
+            <dd>
+                The <dfn
+                id="payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
+                member lists the <a>payment method identifiers</a> of the
+                payment methods enabled by this option.
+            </dd>
+            <dt><code>capabilities</code> member</dt>
+            <dd>
+                The <dfn
+                id="payment-app-option-capabilities"><code>capabilities</code></dfn>
+                member contains a list of payment-method-specific capabilities
+                that this payment app is capable of supporting for this option.
+                For example, for the <code>basic-card</code> payment method,
+                this object will consist of an object with two fields: one for
+                <code>supportedNetworks</code>, and another for
+                <code>supportedTypes</code>.
+            </dd>
+        </dl>
+  </section>
+  <section id="payment-wallets">
+  <h2>
+    <a>PaymentWallets</a> interface
+  </h2>
+      <pre id="payment-app-manager-idl" class="idl">
+      interface PaymentWallets {
+          Promise&lt;boolean&gt;              delete(DOMString walletKey);
+          Promise&lt;WalletDetails&gt; get(DOMString walletKey);
+          Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
+          Promise&lt;boolean&gt;              has(DOMString walletKey);
+          Promise&lt;void&gt;                 set(DOMString walletKey,
+                                              WalletDetails details);
+      };
+      </pre>
+      </pre>
+      <p>
+        Where it appears, The <code>walletKey</code> parameter is a unique
+        identifier for the wallet.
+      </p>
+      <p class="issue">TODO: flesh out details after the WG reaches general
+      consensus on the shape of this API.</p>
+  </section>
+  <section id="wallet-details">
+  <h2>
+    <a>WalletDetails</a> interface
+  </h2>
+      <pre id="wallet-details-idl" class="idl">
+      dictionary WalletDetails {
+          required DOMString name;
+          sequence&lt;ImageObject&gt; icons;
+          required sequence&lt;DOMString&gt; optionKeys;
+      };
+      </pre>
+      <dl>
+        <dt><code>name</code> member</dt>
+        <dd>
+          The <code>name</code> member is a string that represents the
+                label for this wallet as it is usually displayed
+                to the user.
+            </dd>
+            <dt><code>icons</code> member</dt>
+            <dd>
+                The <code>icons</code> member is an array of image objects
+                that can serve as iconic representations of the wallet when
+                presented to the user for selection.
+            </dd>
+
+            <dt><code>optionKeys</code> member</dt>
+            <dd>
+              TODO
+            </dd>
+        </dl>
+<!--
       <section id="set-manifest">
       <h3>
         PaymentAppManager.setManifest()
@@ -849,46 +999,7 @@
                 <code>PaymentAppOption</code>.
             </dd>
         </dl>
-  </section>
-  <section id="payment-app-options">
-  <h2>
-    <a>PaymentAppOption</a> dictionary
-  </h2>
-      <pre id="payment-app-options-idl" class="idl">
-      dictionary PaymentAppOption {
-        required DOMString name;
-        sequence&lt;ImageObjects&gt; icons;
-        required DOMString id;
-        sequence&lt;DOMString&gt; enabledMethods;
-      };
-      </pre>
-      <dl>
-	<dt><code>name</code> member</dt>
-        <dd>
-          The <code>name</code> member is a string that represents the
-                label for this <a>payment app</a> as it is usually displayed
-                to the user.
-            </dd>
-            <dt><code>icons</code> member</dt>
-            <dd>
-                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
-            </dd>
-
-            <dt><code>id</code> member</dt>
-            <dd>
-                The <code>id</code> member is an identifier, unique
-                within the <a>PaymentAppManifest</a>, that will be passed to the
-                payment app to indicate the <a>PaymentAppOption</a> selected
-                by the user.
-            </dd>
-            <dt><code>enabledMethods</code> member</dt>
-            <dd>
-                The <dfn
-                id="payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
-                member lists the <a>payment method identifiers</a> of the
-                payment methods enabled by this option. See also the <a>canHandle</a> function, which enables payment app developers to specify in finer granularity the conditions under which the payment app supports a payment method.
-            </dd>
-        </dl>
+-->
   </section>
   <section id="register-example">
   <h3>
@@ -899,43 +1010,55 @@
        <pre class="example highlight" title="Payment App Registration">
          navigator.serviceWorker.register('/exampleapp.js')
          .then(function(registration) {
-           return registration.paymentAppManager.setManifest({
-             name: "ExampleApp",
-             icons: [
-                {
-                  src: "icon/lowres.webp",
-                  sizes: "48x48",
-                  type: "image/webp"
-                },{
-                  src: "icon/lowres",
-                  sizes: "48x48"
-                } ]
-             options: [
-               {
-                 name: "Visa ending ****4756",
-                 id: "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
-                 enabledMethods: ["basic-card"]
-               },
-               {
-                 name: "My Bob Pay Account: john@example.com",
-                 id: "c8126178-3bba-4d09-8f00-0771bcfd3b11",
-                 enabledMethods: ["https://bobpay.com/"]
-               },
-               {
-                 name: "Add new credit/debit card to ExampleApp",
-                 id: "new-card",
-                 enabledMethods: ["basic-card"]
+           registration.paymentAppManager.options.set(
+             "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
+             {
+               name: "Visa ending ****4756",
+               enabledMethods: ["basic-card"],
+               capabilities: {
+                 supportedNetworks: ['visa'],
+                 supportedTypes: ['credit']
                }
-             ],
-             canHandle: function (methodData, details) {
-               // TODO: Code here to return mapping from payment option IDs
-               // to methodData option indices.
-             }
-           });
-         }).then(function() {
-           console.log("Installed payment app from /paymentapp.js"); // Success!
-         }).catch(function(error) {
-           console.log(error);
+             });
+
+           registration.paymentAppManager.options.set(
+             "c8126178-3bba-4d09-8f00-0771bcfd3b11",
+             {
+               name: "My Bob Pay Account: john@example.com",
+               enabledMethods: ["https://bobpay.com/"]
+             });
+
+           registration.paymentAppManager.options.set(
+             "new-card",
+             {
+               name: "Add new credit/debit card to ExampleApp",
+               enabledMethods: ["basic-card"],
+               capabilities: {
+                 supportedNetworks:
+                   ['visa','mastercard','americanexpress','discover'],
+                 supportedTypes: ['credit','debit','prepaid']
+               }
+             });
+
+           registration.paymentAppManager.wallets.set(
+             "12a1b7e5-16c0-4c09-a312-9b191d08517b",
+             {
+               name: "Acme Bank Personal Accounts",
+               icons: [
+                        { src: "icon/lowres.webp",
+                          sizes: "48x48",
+                          type: "image/webp"
+                        },
+                        { src: "icon/lowres",
+                          sizes: "48x48"
+                        }
+                      ],
+               optionKeys: [
+                   "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
+                   "c8126178-3bba-4d09-8f00-0771bcfd3b11",
+                   "new-card"
+                 ]
+             });
          });
      </pre>
      <p class="issue" title="Payment method identifiers">
@@ -948,8 +1071,15 @@
 </section>
 <section id="matching">
   <h2>Payment App Matching</h2>
+     <p class="issue" title="App Matching Moving into Base Spec">
+       This section is obsolete. The current proposal involves folding
+       the payment app matching (based on the entries in
+       <code>PaymentAppOption.capabilities</code>) into the base Payment Request
+       specification.
+     </p>
   <p>
-    When the <a>mediator</a> calculates <i>acceptedMethods</i> during the
+    <s>
+    When the user agent calculates <i>acceptedMethods</i> during the
     process of running the steps for the <code>PaymentRequest.show()</code>
     method, the means of determining whether a registered <a>payment app</a>
     should be made available for user selection is computed by
@@ -960,7 +1090,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppManifest</a>, add all entries in
+          <a>payment app</a>'s <a>PaymentAppAManager.options</a>, add all entries in
           <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -1051,6 +1181,7 @@
           corresponding <code>PaymentAppOption</code>.
         </li>
       </ol>
+    </s>
   </p>
 </section>
 <section id="selection">
@@ -1190,7 +1321,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppManifest</a>, add all entries in
+          <a>payment app</a>'s <a>PaymentAppManager.options</a>, add all entries in
           <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -1255,8 +1386,8 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppManifest</a>, add all entries in
-          <var>option</var>.<code>enabledMethods</code> to
+          <a>payment app</a>'s <a>PaymentAppManager.options</a>, add all
+          entries in <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
         <li>
