@@ -618,7 +618,7 @@
   </h2>
       <pre id="payment-app-manager-idl" class="idl">
       interface PaymentAppManager {
-        attribute PaymentOptions options;
+        attribute PaymentAppOptions options;
         attribute PaymentWallets wallets;
       };
       </pre>
@@ -630,6 +630,10 @@
         flow, payment apps must have at least one registered payment option, and
         that option needs to match the payment methods and required capabilities
         specified by the payment request.
+        <p class="issue">Is "options" the right term here? We don't want this to
+        get conflated with "PaymentOptions" in the payment request
+        specification. Other alternatives might be "instruments" or "accounts."
+        </p>
       </dd>
       <dt><code>wallets</code> attribute</dt>
       <dd>
@@ -646,10 +650,10 @@
   </section>
   <section id="payment-options">
   <h2>
-    <a>PaymentOptions</a> interface
+    <a>PaymentAppOptions</a> interface
   </h2>
       <pre id="payment-app-manager-idl" class="idl">
-      interface PaymentOptions {
+      interface PaymentAppOptions {
           Promise&lt;boolean&gt;              delete(DOMString optionKey);
           Promise&lt;PaymentAppOption&gt; get(DOMString optionKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
@@ -1090,7 +1094,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppAManager.options</a>, add all entries in
+          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all entries in
           <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -1321,7 +1325,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppManager.options</a>, add all entries in
+          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all entries in
           <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -1386,7 +1390,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <a>PaymentAppManager.options</a>, add all
+          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all
           entries in <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
