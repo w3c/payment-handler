@@ -6,7 +6,7 @@ The prupose of this file is to quickly write up some examples of code that would
 
 For each use case we should see code that demonstrates the following, with descriptions of user interactions, and browser behaviour etc for clarity.
 
-  1. The origin getting permission to "handle payments"
+  1. [The origin getting permission to "handle payments"](#example2)
   1. Adding, Removing, Updating payment methods
   1. Handling `.canMakePayment()` - Let's leave this fucntionality out for now. 1.
   1. [A web app in the origin installing at least 1 service worker that has an event listener for the `onpaymentrequest` event](#example1)
@@ -28,6 +28,21 @@ For each use case we should see code that demonstrates the following, with descr
   
 ## Code Samples
 
+<h3 id="example2">Getting permission to "handle payments"</h3>
+```javascript
+navigator.serviceWorker
+  .register('/app.js', 'https://apps.domain.net/')
+  .then(function(registration) {
+    registration.paymentAppManager.options.set(
+      "app-key",
+      {
+        name: "app XXXX",
+        enabledMethods: ["https://apps.domain.net/app"],
+      }
+    );
+});
+```
+
 <h3 id="example1">A service worker that has an event listener for the `onpaymentrequest` event</h3>
 ```javascript
 self.addEventListener('paymentrequest', function (paymentrequestEvent) {
@@ -36,3 +51,5 @@ self.addEventListener('paymentrequest', function (paymentrequestEvent) {
   }));
 });
 ```
+
+
