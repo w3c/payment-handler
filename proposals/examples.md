@@ -7,8 +7,8 @@ The prupose of this file is to quickly write up some examples of code that would
 For each use case we should see code that demonstrates the following, with descriptions of user interactions, and browser behaviour etc for clarity.
 
   1. [The origin getting permission to "handle payments"](#example2)
-  1. Adding, Removing, Updating payment methods
-  1. Handling `.canMakePayment()` - Let's leave this fucntionality out for now. 1.
+  1. [Adding](#example31), [Updating](#example33), [Removing](#example32) payment methods
+  1. Handling `.canMakePayment()` - Let's leave this fucntionality out for now.
   1. [A web app in the origin installing at least 1 service worker that has an event listener for the `onpaymentrequest` event](#example1)
   1. The web app making the browser aware of the payment methods it supports (with any specific capabilities, eg: basic-card > visa)
   1. The web app handling the `onpaymentrequest` event and returning a response.
@@ -34,12 +34,51 @@ navigator.serviceWorker
   .register('/app.js', 'https://apps.domain.net/')
   .then(function(registration) {
     registration.paymentAppManager.options.set(
-      "app-key",
+      "app-option-key",
       {
         name: "app XXXX",
         enabledMethods: ["https://apps.domain.net/app"],
       }
     );
+});
+```
+
+<h3 id="example31">Adding payment methods</h3>
+```javascript
+navigator.serviceWorker
+  .getRegistration('https://apps.domain.net/')
+  .then(function(registration) {
+    registration.paymentAppManager.options.set(
+      "app-option2-key",
+      {
+        name: "Visa xxxx8200",
+        enabledMethods: ["basic-card"],
+      }
+    );
+});
+```
+
+<h3 id="example33">Updating payment methods</h3>
+```javascript
+navigator.serviceWorker
+  .getRegistration('https://apps.domain.net/')
+  .then(function(registration) {
+    var walletKey = registration.paymentAppManager.options.get("app-option2-key");
+    registration.paymentAppManager.options.set( walletKey,
+      {
+        name: "Visa xxxx8299",
+        enabledMethods: ["basic-card"],
+      }
+    );
+});
+```
+
+<h3 id="example32">Removing payment methods</h3>
+```javascript
+navigator.serviceWorker
+  .getRegistration('https://apps.domain.net/')
+  .then(function(registration) {
+    registration.paymentAppManager.options.delete("app-option2-key");
 });
 ```
 
