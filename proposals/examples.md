@@ -27,15 +27,12 @@ For each use case we should see code that demonstrates the following, with descr
   1. App that is installed as a result of the browser processing an app manifest
   
 ## Code Samples
-<h3 id="example1">Installing a service worker that has an event listener for the `onpaymentrequest` event</h3>
+
+<h3 id="example1">A service worker that has an event listener for the `onpaymentrequest` event</h3>
 ```javascript
-
-
-
-
+self.addEventListener('paymentrequest', function (paymentrequestEvent) {
+  paymentrequestEvent.respondWith(new Promise(function (resolve, reject) {
+    resolve(response);
+  }));
+});
 ```
-
-
-
-
-
