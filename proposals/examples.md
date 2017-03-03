@@ -6,12 +6,12 @@ The prupose of this file is to quickly write up some examples of code that would
 
 For each use case we should see code that demonstrates the following, with descriptions of user interactions, and browser behaviour etc for clarity.
 
-  1. [The origin getting permission to "handle payments"](#example2)
+  1. The origin [getting permission](#example2) to "handle payments"
   1. [Adding](#example31), [Updating](#example33), [Removing](#example32) payment methods
   1. Handling `.canMakePayment()` - Let's leave this fucntionality out for now.
-  1. [A web app in the origin installing at least 1 service worker that has an event listener for the `onpaymentrequest` event](#example1)
-  1. The web app making the browser aware of the payment methods it supports (with any specific capabilities, eg: basic-card > visa)
-  1. The web app handling the `onpaymentrequest` event and returning a response.
+  1. A web app in the origin installing at least 1 service worker that has [an event listener](#example1) for the `onpaymentrequest` event
+  1. The web app [making the browser aware](#example31) of the payment methods it supports (with any specific capabilities, eg: basic-card > visa)
+  1. The web app handling the `onpaymentrequest` event and [returning a response](#example4).
   1. Handling POSTing for payment (without a secure window)
   1. Getting the browser to open a secure window
   1. Handling PaymentRequest .abort(), .updateWith(), and whatever else PaymentRequest can throw at us.
@@ -85,8 +85,17 @@ navigator.serviceWorker
 <h3 id="example1">A service worker that has an event listener for the `onpaymentrequest` event</h3>
 ```javascript
 self.addEventListener('paymentrequest', function (paymentrequestEvent) {
+  console.log("got it! " + JSON.stringify(paymentrequestEvent.data));
+});
+```
+
+<h3 id="example4">Returning a response to the `onpaymentrequest` event</h3>
+```javascript
+self.addEventListener('paymentrequest', function (paymentrequestEvent) {
+  var accepted = true;
+  var responseDetails = { reason: "a good reason" }; 
   paymentrequestEvent.respondWith(new Promise(function (resolve, reject) {
-    resolve(response);
+    if (accepted == true) resolve(responseDetails); else reject(responseDetails);
   }));
 });
 ```
