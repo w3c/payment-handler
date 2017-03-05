@@ -132,6 +132,7 @@ navigator.serviceWorker
 ```
 
 #### execution (app-bc.js)
+Actual running full project [here](https://github.com/pjbazin/wapp-examples)
 ```javascript
 self.addEventListener('install', function(event) {
   // 'install' event is fired when the SW registration is successfully completed.
