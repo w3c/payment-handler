@@ -101,8 +101,8 @@ self.addEventListener('paymentrequest', function (paymentrequestEvent) {
 ```
 
 ## App Samples
-
 <h3 id="app1">`basic-card` payment</h3>
+Actual running full project [here](https://github.com/pjbazin/wapp-examples)
 #### registration
 ```javascript
 navigator.serviceWorker
@@ -132,7 +132,6 @@ navigator.serviceWorker
 ```
 
 #### execution (app-bc.js)
-Actual running full project [here](https://github.com/pjbazin/wapp-examples)
 ```javascript
 self.addEventListener('install', function(event) {
   // 'install' event is fired when the SW registration is successfully completed.
