@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Payment App API</title>
+  <title>Payment Handler API</title>
     <meta charset='utf-8'>
     <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class='remove'></script>
     <script src='utils.js' class='remove'></script>
@@ -57,7 +57,7 @@
                         "Zach Koch",
                         "Roy McElmurray"
                     ],
-                    status:   "FPWD"
+                    status:   "WD"
                 },
                 "METHOD-IDENTIFIERS": {
                     title:    "Payment Method Identifiers",
@@ -67,7 +67,7 @@
                         "Zach Koch",
                         "Roy McElmurry"
                     ],
-                    status:   "FPWD"
+                    status:   "WD"
                 }
             }
         };
@@ -83,18 +83,16 @@
 </head>
 <body>
 <section id='abstract'>
-  <p>Payment Request API [[!PAYMENT-REQUEST-API]] provides
-    a standard way to initiate payment requests from Web pages and
-    applications. User agents implementing that API prompt the user
-    to select a way to handle the payment request, after which
-    the user agent returns a payment response to the originating site.
-    This specification adds <strong>payment apps</strong>
-    to that user experience. It defines how users
-    register payment apps with user agents, how user agents present
-    information about payment apps the user can select to handle the
-    payment request, how the user selects a payment app, and how communication takes
-    place between user agents and payment apps to fulfill the requirements of the
-    underlying Payment Request API.</p>
+  <p>Payment Request API [[!PAYMENT-REQUEST-API]] provides a standard
+    way to initiate payment requests from Web pages and
+    applications. User agents implementing that API prompt the user to
+    select a way to handle the payment request, after which the user
+    agent returns a payment response to the originating site.  This
+    specification defines capabilities that enable Web applications
+    to handle payment requests.</p>
+  <p class="note">
+    We have changed the title of this specification but left the identifier as-is. We are likely to want to assign it a new URL prior to FPWD.
+  </p>
 </section>
 <section id='sotd'>
     <p>The Web Payments Working Group maintains <a href="https://github.com/w3c/webpayments-payment-apps-api/issues">
@@ -109,26 +107,32 @@
   <h2>Introduction</h2>
 
   <p>The Web Payments Working Group seeks to streamline payments on the Web to
-  help reduce payment "abandonment" and make it easier to use
+  help reduce "shopping cart abandonment" and make it easier to deploy
   new payment methods on the Web. It has published the Payment Request
   API [[!PAYMENT-REQUEST-API]] as a standard way to initiate payment
-  requests from Web pages and applications. This specification adds
-    payment apps to that user experience. A payment app is software that
-    enables the user to fulfill a payment request using the user's
-    preferred payment method.</p>
+    requests from E-Commerce Web sites and applications.</p>
 
-    <p>This specification defines:</p>
-    <ul>
-      <li>How users register and unregister payment apps with the user agent (or other "mediator" that implements Payment Request API [[!PAYMENT-REQUEST-API]]).</li>
-      <li>How the user agent matches payment methods supported by the payee with those enabled in registered payment apps.</li>
-      <li>How merchants and other payees may recommend payment apps to the user.</li>
-      <li>How the user agent presents information about payment apps to the user for selection.</li>
-      <li>How the user agent invokes a payment app, communicates input/response data with it, and returns the response data to the underlying Payment Request API.</li>
-    </ul>
+  <p>A <dfn id="payment-app">payment app</dfn> is a Web application that manages
+  payment requests on behalf of the user by supporting one or more
+    payment methods. To enable a Web application to handle payment requests,
+    this specification defines:</p>
 
-  <p> Payment apps may be implemented in a variety of ways: as Web applications, native operating system applications,
-    user agent extensions, built-in user agent components, interface-less Web services, or a combination. The scope of this specification is Web-based payment apps, which are implemented as service workers.</p>
+  <ul>
+    <li>How origins (that is: Web sites) request permission to handle payment requests
+      on the user's behalf.</li>
+    <li>How origins register their support for different payment methods
+      with the user agent.</li>
+    <li>How origins provide information to faciliate the display of
+      payment app options and selection by the user.</li>
+    <li>How user agents invoke payment apps selected by the user to make a payment, what data is passed
+      to the payment apps, and what data is returned after completion of payment.</li>
+  </ul>
+
+  <p>This specification does not address how software built with
+      operating-system specific mechanisms (e.g., "native mobile
+      apps") handle payment requests.</p>
 </section>
+
 <section id='conformance'>
     <p>
         This specification defines one class of products:
@@ -148,7 +152,7 @@
                 specification's algorithms.
             </p>
             <p>
-                A conforming Payment App API user agent MUST also be a
+                A conforming Payment Handler API user agent MUST also be a
                 <em>conforming implementation</em> of the IDL fragments
                 of this specification, as described in the
                 “Web IDL” specification. [[!WEBIDL]]
@@ -165,12 +169,6 @@
   <h3>Dependencies</h3>
   <p>This specification relies on several other underlying specifications.</p>
     <dl>
-        <!--
-          <dt>Payment Request Architecture</dt>
-          <dd>The term <dfn data-lt="payment method|payment methods">Payment Method</dfn>
-	    is defined by the Payment Request Architecture document
-        [[PAYMENT-ARCH]].</dd>
-        -->
         <dt>Payment Request API</dt>
         <dd>The terms
             <dfn>PaymentRequest</dfn>, <dfn>PaymentResponse</dfn>,
@@ -178,13 +176,6 @@
             <dfn>user accepts the payment request algorithm</dfn>
             are defined by the
             Payment Request API specification [[!PAYMENT-REQUEST-API]].</dd>
-        <!--
-        <dt>Payment Method Identifiers</dt>
-        <dd>The terms <dfn data-lt="payment method|payment methods">payment method</dfn> and
-            <dfn data-lt="payment method identifier|payment method identifiers">payment
-            method identifier</dfn> are defined by the Payment Method
-            Identifiers specification [[!METHOD-IDENTIFIERS]].</dd>
-        -->
         <dt>HTML5</dt>
         <dd>The terms <dfn>global object</dfn>,<dfn>origin</dfn>, <dfn>queue a task</dfn>,
             <dfn>browsing context</dfn>, <dfn>top-level browsing
@@ -195,38 +186,10 @@
                 [[!HTML5]].</dd>
             <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language
                 Specification</dt>
-            <dd>The term <dfn>Promise</dfn>
-
-        <!--
-            , <dfn>internal slot</dfn>,
-                <dfn><code>TypeError</code></dfn>, <dfn>JSON.stringify</dfn>,
-                <dfn>JSON.parse</dfn>, <dfn><code>Array</code></dfn>,
-                <dfn><code>type</code></dfn> and the <dfn>[[\GetOwnProperty]]</dfn>
-                operation are
-        -->
-                is defined by [[!ECMA-262-2015]].
-        <!--
-                <p>This document uses the format <em>object</em>@[[\slotname]] to
-                    mean the internal slot [[\slotname]] of the object
-                    <em>object</em>.</p>
-                <p>The term <dfn>JSON-serializable object</dfn> used in this
-                    specification means an object that can be serialized to a string
-                    using <a>JSON.stringify</a> and later deserialized back to an
-                    object using <a>JSON.parse</a> with no loss of data.</p>
-                <p>When instructed to <dfn>Trim</dfn>(<var>x</var>), a user agent
-                    MUST behave as if [[!ECMA-262-2015]]'s
-                    <code>String.prototype.trim()</code> function had been called on
-                    the string <var>x</var>.</p>
-        -->
+            <dd>The term <dfn>Promise</dfn> is defined by [[!ECMA-262-2015]].
             </dd>
             <dt>DOM4</dt>
             <dd>
-            <!--
-                The <code><dfn>Event</dfn></code> type and the terms <dfn>fire
-                an event</dfn>, <dfn>dispatch flag</dfn>, <dfn>stop propagation
-                flag</dfn>, and <dfn>stop immediate propagation flag</dfn> are
-                defined by [[!DOM4]].
-            -->
                 <p><dfn>DOMException</dfn> and the following DOMException types
                     from [[!DOM4]] are used:</p>
                 <table>
@@ -242,12 +205,6 @@
                         <td><code><dfn>InvalidStateError</dfn></code></td>
                         <td>The object is in an invalid state</td>
                     </tr>
-                    <!--
-                    <tr>
-                        <td><code><dfn>NotSupportedError</dfn></code></td>
-                        <td>The payment method was not supported</td>
-                    </tr>
-                    -->
                     <tr>
                         <td><code><dfn>SecurityError</dfn></code></td>
                         <td>The operation is only supported in a secure context</td>
@@ -260,14 +217,6 @@
             </dd>
             <dt>WebIDL</dt>
             <dd>
-            <!--
-                When this specification says to <dfn>throw</dfn> an error, the
-                <a>user agent</a> must throw an error as described in [[!WEBIDL]].
-                When this occurs in a sub-algorithm, this results in termination of
-                execution of the sub-algorithm and all ancestor algorithms until
-                one is reached that explicitly describes procedures for catching
-                exceptions.
-            -->
                 <p>The following DOMException types from [[!WEBIDL]] are used:</p>
                 <table>
                     <tr>
@@ -307,296 +256,76 @@
     </dl>
 </section>
 <section id="model">
-  <h2>Payment App Model and Design Considerations</h2>
-  <p>This section describes the capabilities and limitations of this specification in functional terms.</p>
-  <section>
-    <h3>General Considerations</h3>
-    <ul>
-      <li>This specification builds on PaymentRequest API.</li>
-      <li>It defines mechanisms that may be used to support Web-based payment apps. We anticipate that various platforms will offer proprietary alternatives to this specification (e.g., for payment app registration or invocation). Proprietary payment apps lie outside the scope of this specification.</li>
-    </ul>
-  </section>
-  <section>
-    <h3>Decoupling and Trust</h3>
-    <ul>
-<li>    A goal of this system is to decouple the payment methods used to pay from the software (payment apps) that implement those payment methods. By decoupling, merchants (and their payment service providers) can lower the cost of creating a checkout experience, users can have more choice in the software they use to pay, and payment app providers can innovate without imposing an integration burden on merchants.</li>
-<li>User choice of payment apps that support a given payment method will depend in part on the willingness of the payment method owner to authorize other parties to implement their payment methods. For example, there may only be one payment app authorized to support a payment method owned by a company, while there may be many apps that support basic credit card payments or credit transfers.</li>
-<li>    For privacy, we seek to limit information about the user's environment available to merchants without user consent. That includes which payment apps the user has registered. The merchant should not receive information about which payment app the user selected to pay unless the user consents to share that information. (When there is only one payment app for a given payment method that information is already publicly known.)</li>
-<li>    Although decoupling relieves merchants of implementing some aspects of the checkout experience, one consequence is that they give up some degree of control. This was already the case for some payment methods, but for traditional card payments, merchants (or their PSPs) will be entrusting some portion of data collection to the user agent or third party payment apps.</li>
-<li>The design therefore includes support for merchants to <a href="#summary-recommended-apps">recommend payment apps</a> and suggest the display order of payment methods. This specification does not constrain how user agents make use of this information, but provides guidance to user agent developers about taking into account both merchant and user preferences. </li>
-<li> The user agent may use this combined preference information to:
-  <ul>
-    <li>   Filter payment apps (to matching payment methods)</li>
-<li>        Order payment apps (according to merchant-specified order)</li>
-<li>        Display recommended payment apps (according to merchant-specified order)</li>
-    </ul>
-</li>
-</ul>
-  </section>
-  <section>
-    <h3>Identification</h3>
-    <ul>
-      <li>A Payment App is identified by a Payment App Identifier (PAI).</li>
-      <li>This specification defines service-worker based payment apps. The PAI is the service worker's “script URL” that, when dereferenced, returns the code of the service worker. <p class="issue">See a <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/48#issuecomment-261775283">counter-proposal</a> as part of <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/48">issue 48</a></p></li>
-      <li>The user agent may make use of the origin information of the PAI in a variety of ways, including:
-	<ul>
-	  <li>        The origin information could enable user agents to provide the user with useful services when the user is browsing a site with the same origin (e.g., putting that payment app at the top of a list or otherwise highlighted).</li>
-	  <li>        For a payment method with an associated origin, the user agent can do some (security) checks by comparing the origin of the payment method and any authorized payment app.</li>
-	</ul>
-      </li>	
-    </ul>
-  </section>
-  <section>
-    <h3>Registration and Unregistration</h3>
-    <ul>
-      <li>Registration provides a way for user agents to remain aware of the user's payment apps across transactions.</li>
-      <li>A payment app that follows this specification must be registered
-	before it can be used to make a payment. 
-	<strong>Note:</strong> Registration is not
-	necessarily a prerequisite to be able to use other types
-	of payment apps (e.g., native payment apps).</li>
-      <li>In this specification, payment app registration starts with service
-      worker registration. Once the user consents to the registration, the
-      payment app provides information to the browser about enabled payment
-      methods and associated information; this is used for matching with
-      payee-accepted payment methods. At this point, the payment app is
-      registered with the user agent. <strong>Note:</strong>  Registration
-      does <strong>not</strong> refer to how the user establishes a
-      relationship with the payment app provider, for example by setting up an
-      account with that provider.</li>
-      <li>We expect registrations to happen at various times (e.g., outside and inside of checkout), and with differing levels of
-          user consent to modify their configuration within the user agent. In general, explicit consent should not be required
-          while the user is within the context of the payment request UI. Here are some examples:
-        <ul>
-          <li>Users visiting a Web site (e.g., merchant or bank) may wish to explicitly register payment apps, which would require explicit consent from the user.</li>
-          <li>When the user selects a recommended payment app the user agent registers the payment app and may do so without additional user action or consent.</li>
-          <li>When the user installs native payment app, registration could happen either through platform-specific mechanisms or through this standard API, without additional user action beyond installation.</li>
-        </ul>
-      </li>
-      <li>This specification does require payment apps to be able to respond to user agent queries for updated
-          registration information. (See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/36">issue 36</a>.)</li>
-      <li>It is important for merchants and users to be able to trust the
-	authenticity of payment apps. A starting point is to rely on origin information (e.g., if a payment app is registered on a Web site). In contexts where origin binding is unavailable or insufficient, other mechanisms should be considered to help establish authenticity (e.g., origin-bound confirmation of a digital signature of a payment app).</li>
-    </ul>
-  </section>
-  <section>
-    <h3 id="summary-recommended-apps">Recommended Payment Apps</h3>
-    <ul>
-      <li>Payees may recommend payment apps that may be used for a given transaction. In some cases the user may have already registered these payment apps.</li>
-      <li>To recommend a payment app, a merchant provides a payment app identifier (PAI), name, and icon information. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/79">issue 79</a> for discussion about how this may be done.</li>
-      <li>When the user agent presents a recommended (unregistered) payment app for selection by the user, it uses merchant-provided information.</li>
-      <li>In the case where the user has already registered a recommended payment app, the user agent may use merchant-provided
-	information to complement information available from the
-	payment app or to present that payment app for
-	selection in some special manner.
-	<strong>Note:</strong> The Working Group
-	is still discussing the display of information in the case
-	of recommended payment apps already registered by the user.</li>
-    </ul>
-  </section>
-  <section>
-    <h3>Payment App Matching and Selection</h3>
-    <ul>
-      <li>When the user invokes the Payment Request API (e.g., by "pushing the Buy button"), the user agent presents a list of "matching" payment apps to the user for selection. Matching payment apps are those recommended by the merchant, and those registered by the user that support the merchant's accepted payment methods (including finer-grain acceptance filters from the merchant).</li>
-      <li>In the case of a recommended payment app already registered by the user (determined by comparison of payment app identifiers), the user agent may present the app in some special way to highlight the merchant's recommendation.</li>
-      <li>When the user selects a recommended unregistered payment app, the user agent registers it, using the provided payment app identifier to access the service worker code.</li>
-      <li>The user agent may offer features to facilitate selection. For example, instead of merely displaying information about a payment app that supports cards, the user agent could display some representation of individual cards stored in the payment app. If the user can select an option directly, that could contribute to reducing the total number of required user actions. User agents might also enable the user to optimize payments using certain payment apps on certain Web sites. User experience optimizations such as these lie outside the scope of this specification.</li>
-    </ul>
-  </section>
-  <section>
-    <h3>Payment App Invocation and Response</h3>
-    <ul>
-      <li>Once the user has selected a payment app, the user agent activates the associated service worker code and provides the payment app with
-        input data drawn from the Payment Request API. </li>
-      <li>The user may interact with the payment app in a variety of ways to authorize payment, cancel the transaction,
-          or carry out other activities supported by the payment app.</li>
-      <li>This specification defines a means for the user agent to receive a response asynchronously once the user has
-          authorized payment. The response becomes the response of the Payment Request API.</li>
-      <li>This specification only describes communication between the
-        user agent and the payment app. This includes an
-        asynchronous mechanism for a payment app to return a payment
-        response to the user agent. This specification does not address communication between the payee server and the payee Web app, or between
-        the payment app and other parties (e.g., the payment app distributor, or directly to the merchant).</li>
-    </ul>
-  </section>
-</section>
+  <h2>Overview of Handling Payment Requests</h2>
 
-<section id="definitions">
-  <h2>Definitions</h2>
-  <div data-include="https://w3c.github.io/webpayments-ig/latest/common/terms.html"
-       data-oninclude="restrictReferences">
-  </div>
+  <p>In this document we envision the following flow:</p>
 
-  <section>
-  <h3>Payment App Implementation Technology</h3>
-  <dl>
-    <dt><dfn id="dfn-user-agent-based-payment-app"
-         data-lt="user-agent-based payment app|user-agent-based payment apps">
-    user agent-based payment app</dfn></dt>
-    <dd>a <a>payment app</a> that runs in a <a>user agent</a>. User agent-based
-      payment apps may elect to display a user interface.
-    This decision is made at runtime, and may vary based
-    on criteria of the app's choosing (such as how long it has been since the
-    user last authenticated themselves).</dd>
-
-    <dt><dfn id="dfn-native-payment-app" data-lt="native payment app|native payment apps">native payment app</dfn></dt>
-    <dd>a payment app built with the operating system default technology stack that uses non-Web technologies.</dd>
-    <dt><dfn id="dfn-ignored-payment-app">ignored payment app</dfn></dt>
-    <dd class="issue">An app that the user has configured to not be displayed, or that the user agent ignores for security reasons.</dd>
-    <dt><dfn id="dfn-payment-app-identifier"
-         data-lt="payment app identifier|payment app identifiers">
-    payment app identifier</dfn></dt>
-    <dd>
-       A unique identifier for a <a>payment app</a> (e.g., from a <a>payment
-       method</a> manifest file). This specification defines these identifiers
-       as to be <a>service worker</a> <a>scope URLs</a>. As such, they are not
-       expected to be dereferenced.
-    </dd>
-    <dt><dfn>payment app window</dfn></dt>
-    <dd>
-      A <a>service worker</a> <code>WindowClient</code> used by <a>user agent-based
-      payment apps</a> to interact with the user when doing so is necessary to
-      complete the payment transaction.
-    </dd>
-  </dl>
-  <p class="note" title="Payment Apps in scope">
-    The Web Payments Working Group intends for this specification to apply to any payment app that may be invoked by the user agent, whatever technologies have been used to implement the payment app.</p>
-  </section>
-  <section>
-  <h3>Payment App Registration States</h3>
-  <dl>
-      <dt><dfn id="dfn-registered-payment-app">registered payment app</dfn></dt>
-      <dd>a payment app that is "known" to the user agent for the purposes of the interactions described in this document.
-
-      <div class="note" title="Platform-specific registration">
-          This specification defines a payment app registration mechanism. Other registration mechanisms might co-exist with this one
-          (e.g., on some platforms there may be a way to register a payment app directly with the operating system).</div>
-      </dd>
-      <dt><dfn id="dfn-unregistered-payment-app">unregistered payment app</dfn></dt>
-      <dd>a payment app that is not known to the user agent, either because it has never been registered, or because it has been unregistered.</dd>
-
-	  <dt><dfn id="dfn-enabled-payment-app">enabled payment app</dfn></dt>
-	  <dd>A <a>registered payment app</a> with at least one <a>enabled
-	      payment method</a>.</dd>
-  </dl>
-  </section>
-  <section>
-  <h3>Payment App Selection States</h3>
-  <dl>
-    <dt><dfn id="dfn-matching-payment-app">matching payment app</dfn></dt>
-    <dd>An <a>enabled payment app</a> that:
-      <ul>
-	<li>has at least one <a>enabled payment method</a> that the
-	  <a>payee</a> accepts.</li>
-
-	<li>is not an <a>ignored payment app</a>.</li>
-      </ul>
-    </dd>
-      <dt><dfn id="dfn-recommended-payment-app">recommended payment app</dfn></dt>
-      <dd>a payment app suggested by the payee or user agent that may be used to handle a specific payment request.</dd>
-      <dt><dfn id="dfn-displayed-payment-app">displayed payment app</dfn></dt>
-	  <dd>A <a>matching payment app</a> or <a>recommended payment app</a> with at least one matching payment method (i.e., presented by the user agent for user selection).</dd>
-      <dt><dfn id="dfn-selected-payment-app">selected payment app</dfn></dt>
-      <dd>the payment app selected by the user to make a payment, but not yet invoked.</dd>
-
-      <dt><dfn id="dfn-invoked-payment-app">invoked payment app</dfn></dt>
-      <dd>the <a>selected payment app</a> that the user agent has invoked (executed) and passed payment app input data.</dd>
-  </dl>
-
-  </section>
-  <section>
-  <h3>Payment Method Support</h3>
-  <dl>
-      <dt><dfn id="dfn-supported-payment-method">supported payment method</dfn></dt>
-      <dd>a payment method that a payment app has been designed to support. This payment method may or may
-          not currently be enabled. A payment app MAY support more than one payment method.</dd>
-
-      <dt><dfn id="dfn-unsupported-method">unsupported payment method</dfn></dt>
-      <dd>a payment method that cannot be enabled by a payment app. Updates to a payment app may cause an
-          unsupported payment method to become supported, or vice-versa.</dd>
-
-      <dt><dfn id="dfn-enabled-method">enabled payment method</dfn></dt>
-      <dd>a supported payment method that a registered payment app is able to handle. The payment app must have at least
-          one enabled payment method.
-      <p class="note" title="Supported vs enabled Payment Methods">
-          The difference between <strong>supported</strong> and <strong>enabled</strong> payment methods is one of design-time vs runtime consideration.
-          A payment app supports all the payment methods it was designed to support; however at runtime only a subset
-          may be enabled due to configuration or other runtime requirements that may not have been met for all
-          supported payment methods.
-      </p>
-</dd>
-
-  </dl>
-  </section>
-  <section>
-  <h3>Payment App Invocation and Response Data</h3>
-  <dl>
-    <dt><dfn id="dfn-app-request">payment app request</dfn></dt>
-    <dd>a request provided to the invoked payment app by the user agent to initiate a payment request. This request is a subset of the Payment Request.
-    <p class="note" title="JSON serialization">
-        The data passed between the user agent and the payment app will be serialized as JSON data.
-    </p>
-    </dd>
-    <dt><dfn id="dfn-app-response">payment app response</dfn></dt>
-    <dd>a response returned by an invoked payment app to the user agent, typically after payment authorization or other action
-        taken through the payment app. This response, which will vary according to payment method, is then returned to the payee via
-        the Payment Request API as part of the payment response.</dd>
-  </dl>
-</section>
-</section>
-<section id="overview">
-  <h2>Overview of Service-Worker-Based Approach</h2>
-
-<p>In this specification we use <a>service workers</a>
-    to connect user agents with user agent-based payment apps. We do so for
-    several reasons:</p>
-
-    <ul>
-      <li>
-        Service workers provide a cleanly isolated execution context that allows
-        the <a>payment app</a> to run with clean separation from the
-        <a>payee</a> website.
-      </li>
-      <li>We can leverage the ways in which service workers already
-          handle lifecycle management (registration, update, and removal of
-          <a>payment apps</a>), enable offline use, etc.</li>
-      <li>We can leverage service worker origins for security, especially
-          when used in conjunction with origins associated with <a>payment
-          method identifiers</a>.</li>
-    </ul>
-
-<p class="note">
-  The use of service workers restricts <a>user agent-based payment apps</a> so
-  that they must run only in secure contexts. The introduction of this
-  restriction is deliberate, due to the sensitivity of the role that payment
-  apps play. See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/24">issue 24</a> for information about launching the payment app in a secure context.
-</p>
-
-<p>Here is the flow envisioned by this document:</p>
   <ol>
-    <li>A <a>service worker</a> is registered and associates
-        <a>payment methods</a> (and associated metadata) with the payment app.</li>
-    <li>When the <code>payment request API</code> is called, the user agent
-        displays a list of registered service workers associated
-        with matching payment methods (along with any other payment apps
-        that may be available to the user agent).</li>
-    <lI>When the user selects a <a>user agent-based payment
-        app</a>, the corresponding <a>service worker</a> is activated, and
-        it receives a <a>PaymentRequestEvent</a>.</li>
-    <li>Once active, the <a>payment app</a> performs whatever steps are
+
+    <li>An origin requests permission from the user to handle payment
+      requests for a set of supported payment methods. For example,
+      a user visiting a retail or bank site may be prompted to install
+      a payment app from that origin. The user agent is not required to
+      prompt the user to grant permission
+    to the origin for each new supported payment method. A origin's
+    capabilities may thus evolve without requiring additional user
+      consent.</li>
+    
+    <li>To handle payments, an
+      origin has at least one and possibly many service worker
+      registrations. A service worker registration has zero or one
+      payment handler.
+    </li>
+
+    <li>Registration associates with each payment handler:
+      <ul>
+	<li>A list of supported payment methods</li>
+	<li>[Optionally] the conditions under which the handler supports a given payment method, called "capabilities." These are compared to the merchant's capabilities as part of determining whether an origin matches.</li>
+	<li>Information for organizing the display and grouping of Options
+	  supported by the payment handler.</li>
+      </ul>
+    </li>
+
+    <li>When the merchant calls <code>payment request API</code>
+      (e.g., when the user pushes a button on a checkout page), the
+      user agent computes a list of matching pyament apps, comparing
+      those payment methods accepted by the user and those supported
+      by registered payment handlers.</li>
+
+    <li>When the user selects an Option, the user agent fires the
+    paymentrequest event in the service worker whose registration
+    included the payment handler that provided that Option.  The
+    paymentrequest event includes some information from the payment
+    request object as well as additional information (e.g., origin and
+    selected Option).
+    <li>Once activated, the payment handler performs whatever steps are
         necessary to authenticate the user, process the payment, and return
         payment information to the <a>payee</a>. If interaction with the user
-        is necessary, the <a>payment app</a> can open a <a>payment app
-        window</a> for that purpose.</li>
-    <li>Finally, once the <a>payment app</a> is finished with its processing, it
-        resolves a <a>Promise</a> passed to it in the event. This causes the
-        <code>Promise&lt;PaymentResponse&gt;</code> returned from
-        <code>PaymentRequest.show()</code> to resolve.</li>
+        is necessary, the <a>payment handler</a> can open a window
+        for that purpose.</li>
+
+    <li>The user agent receives a response asynchronously once the
+          user has authorized payment. The response becomes the
+          response of the Payment Request API.</li>
   </ol>
+
+  <p>This specification does not address activities outside this flow, including:</p>
+  <ul>
+    <li>how the user establishes an account with a payment app provider.</li>
+    <li>how an origin authenticates a user.</li>
+    <li>how communication takes place between the payee server and the payee Web application, or between
+      the payment app and other parties (e.g., the payment app distributor, or directly to the merchant).</li>
+  </ul>
+
+  <p>Thus, a payment app will rely on many other Web technologies defined
+    elsewhere for lifecycle management, security, user authentication,
+    user interaction, and so on.</p>
+  
 </section>
+  
 <section id="registration">
     <h2>
-      Payment App Registration
+      Payment Handler Registration
     </h2>
     <section>
     <h3>
@@ -626,8 +355,8 @@
       <dt><code>options</code> attribute</dt>
       <dd>
         This attribute allows manipulation of payment options associated with a
-        payment app. To be presented to the user as part of the payment request
-        flow, payment apps must have at least one registered payment option, and
+        payment handler. To be presented to the user as part of the payment request
+        flow, payment handlers must have at least one registered payment option, and
         that option needs to match the payment methods and required capabilities
         specified by the payment request.
         <p class="issue">Is "options" the right term here? We don't want this to
@@ -637,11 +366,11 @@
       </dd>
       <dt><code>wallets</code> attribute</dt>
       <dd>
-        This attribute allows payment apps to group payment options together and
+        This attribute allows payment handlers to group payment options together and
         provide a name and icon for such a group (e.g., to group together
         "business account" payment instruments separately from "personal
         account" payment instruments). The use of this grouping mechanism
-        by payment apps is completley optional. If payment apps use this
+        by payment handlers is completley optional. If payment handlers use this
         grouping mechanism, then matching payment options that do not appear
         in any groups should still be presented to users by the browser for
         selection.
@@ -664,7 +393,7 @@
       </pre>
       <p>
         Where it appears, The <code>optionKey</code> parameter is a unique
-        identifier for the option; it will be passed to the payment app to
+        identifier for the option; it will be passed to the payment handler to
         indicate the <a>PaymentAppOption</a> selected by the user.
       </p>
       <p class="issue">TODO: flesh out details after the WG reaches general
@@ -708,7 +437,7 @@
                 The <dfn
                 id="payment-app-option-capabilities"><code>capabilities</code></dfn>
                 member contains a list of payment-method-specific capabilities
-                that this payment app is capable of supporting for this option.
+                that this payment handler is capable of supporting for this option.
                 For example, for the <code>basic-card</code> payment method,
                 this object will consist of an object with two fields: one for
                 <code>supportedNetworks</code>, and another for
@@ -768,250 +497,13 @@
               TODO
             </dd>
         </dl>
-<!--
-      <section id="set-manifest">
-      <h3>
-        PaymentAppManager.setManifest()
-      </h3>
-        <p>
-            The <code><dfn>setManifest</dfn></code> method is used to enable a
-            service worker to process <a>payment requests</a>, and to set the
-            properties associated with the <a>payment app</a>.
-        </p>
-        <p>The following algorithm provides an <dfn>extension point</dfn>: other
-        specifications that add new members to the manifest are encouraged to
-        hook themselves into this specification at this point in the
-        algorithm.</p>
-        <p>The <code>setManifest</code> method, when invoked,
-        MUST run the following steps or their equivalent:
-        <ol>
-          <li>
-            Let <em>promise</em> be a new <a>Promise</a>.
-          </li>
-          <li>
-            Return <em>promise</em> and asynchronously perform the remaining
-            steps.
-          </li>
-          <li>
-            If the <a>current settings object</a> is not a <a>secure
-            context</a>, reject <var>promise</var> with a
-            <code><a>DOMException</a></code> whose name is
-            "<code><a>SecurityError</a></code>" and terminate these steps.
-          </li>
-          <li>
-            <a>Extension point</a>: if the user agent has custom steps to invoke
-            when registering payment apps, execute these steps (possibly
-            rejecting <var>promise</var> with a <code><a>DOMException</a></code>
-            whose name is "<code><a>OperationError</a></code>") and terminate
-            these steps.
-            <div class="note">
-              Through this <a>extension point</a> we seek to avoid
-              <a href="https://annevankesteren.nl/2014/02/monkey-patch">issues
-                related to monkey patching</a>.
-            </div>
-          </li>
-          <li>
-            Let <var>manifest</var> be the value of the <code>manifest</code>
-            argument.
-          </li>
-          <li>
-            If <var>manifest</var>.<code>canHandle</code> is present but is
-            not set to an executable function, reject <var>promise</var> with
-            a <code><a>DOMException</a></code> whose name is
-             "<code><a>OperationError</a></code>" and terminate these steps.
-          </li>
-          <li>
-            Let <var>registration</var> be the
-            <code><a>PaymentAppManager</a></code>'s associated <a>service
-            worker registration</a>.
-          </li>
-          <li>If <var>registration</var> has no <a>active worker</a>, run the following substeps:
-            <ol>
-              <li>If <var>registration</var> has no <a>installing worker</a> and no <a>waiting
-              worker</a>, reject <var>promise</var> with a <code><a>DOMException</a></code> whose
-              name is "<code><a>InvalidStateError</a></code>" and terminate these steps.
-              </li>
-              <li>Wait for the <a>installing worker</a> or <a>waiting worker</a> of
-              <var>registration</var> to become its <a>active worker</a>.
-              </li>
-              <li>If <var>registration</var> fails to activate either worker, reject
-              <var>promise</var> with a <code><a>DOMException</a></code> whose name is
-              "<code><a>InvalidStateError</a></code>" and terminate these steps.
-              </li>
-              <li>Once <var>registration</var> has an <a>active worker</a>, proceed with the steps
-              below.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Let <var>paymentMethods</var> be a list of identifiers from <var>manifest</var> section
-            on supported payment methods. Ensure that the payment app is licensed to claim support for the payment methods (e.g., they are explicitly authorized, or the payment method imposes no constraints). Otherwise, reject with a <code><a>DOMException</a></code> whose
-            name is "<code><a>NotAllowedError</a></code>" and terminate these steps.
-          </li>
-          <li>
-            Ask the user whether they allow the <a>payment app</a> to be
-            registered to handle the indicated <a>payment methods</a>
-            (unless a prearranged trust relationship applies or the user has
-            already granted or denied permission explicitly for this <a>payment
-            app</a>).
-          </li>
-          <li>
-            If permission is not granted, reject <var>promise</var> with a
-            <code><a>DOMException</a></code> whose name is
-            "<code><a>NotAllowedError</a></code>" and terminate these steps.
-          </li>
-          <li>
-            Register the <a>payment app</a> with the user agent for future use,
-            associating <var>manifest</var>'s <code>name</code> and
-            <code>icons</code> set with the payment app for user reference.
-          </li>
-          <li>
-            For each <a>PaymentAppOption</a> present in the
-            <code>options</code> field of the <var>manifest</var>:
-            <ol>
-              <li>
-                Add a new payment option to the <a>payment app</a>'s
-                registration, associating it with the <a>PaymentAppOption</a>
-                <code>name</code> and <code>icons</code> fields.
-              </li>
-              <li>
-                For each <a>payment method</a> indicated in the
-                <a>PaymentAppOption</a>'s <code>enabledMethods</code>
-                field, associate the payment option and the <a>payment app</a>
-                with the payment method.
-              </li>
-            </ol>
-          </li>
-          <li>
-            Resolve <em>promise</em> with <code>undefined</code>.
-          </li>
-        </ol>
-      </section>
-      <section id="get-manifest">
-      <h3>
-        PaymentAppManager.getManifest()
-      </h3>
-        <p>
-            The <code><dfn>getManifest</dfn></code> method is used to
-            retrieve the properties associated with a registered
-            <a>payment app</a>.
-        </p>
-        <p>The <code>getManifest</code> method, when invoked, MUST run the
-        following steps or their equivalent:
-        <ol>
-          <li>
-            Let <em>promise</em> be a new <a>Promise</a>.
-          </li>
-          <li>
-            Return <em>promise</em> and asynchronously perform the remaining
-            steps.
-          </li>
-          <li>
-            If the <a>current settings object</a> is not a <a>secure
-            context</a>, reject <var>promise</var> with a
-            <code><a>DOMException</a></code> whose name is
-            "<code><a>SecurityError</a></code>" and terminate these steps.
-          </li>
-          <li>
-            If there is no <a>PaymentAppManifest</a> associated with the
-            <a>Service Worker</a>, reject <var>promise</var> with a
-            <a>DOMException</a> whose name is "<code><a>AbortError</a></code>"
-            and terminate these steps.
-          </li>
-          <li>
-            Retrieve the <a>PaymentAppManifest</a> associated with the
-            <a>Service Worker</a>.
-          </li>
-          <li>
-            Let <var>manifest</var> be the retrieved <a>PaymentAppManifest</a>.
-          </li>
-          <li>
-            Resolve <em>promise</em> with <var>manifest</var>.
-          </li>
-        </ol>
-      </section>
-  </section>
-  <section id="payment-app-manifest">
-  <h2>
-    <a>PaymentAppManifest</a> interface
-  </h2>
-  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/69">Issue 69</a>: The Payment Apps Task Force has a goal of alignment with the draft <a href="https://github.com/w3c/manifest">Web App Manifest</a> specification for data used to display payment app and options for selection by the user. More work is necessary to determine whether the Payment App API should reference (part of) the Web App Manifest specification, import definitions while that specification remains a draft, or define new terms.</p>
-      <pre id="payment-app-manifest-idl" class="idl">
-      dictionary AvailableOption {
-        required DOMString id;
-        short modifier;
-      };
-
-      callback CanHandleCallback = Sequence&lt;AvailableOption&gt;
-      (sequence&lt;PaymentMethodData&gt; methodData, PaymentDetails details);
-
-      dictionary PaymentAppManifest {
-        required DOMString name;
-        sequence&lt;ImageObject&gt; icons;
-        required sequence&lt;PaymentAppOption&gt; options;
-        CanHandleCallback canHandle;
-      };
-      </pre>
-        <dl>
-            <dt><code>name</code> member</dt>
-            <dd>
-                The <code>name</code> member is a string that represents the
-                label for this <a>payment app</a> as it is usually displayed
-                to the user.
-            </dd>
-            <dt><code>icons</code> member</dt>
-            <dd>
-                The <code>icons</code> member is an array of image objects that can serve as iconic representations of the <a>payment app</a> when presented to the user for selection.
-            </dd>
-            <dt><code>options</code> member</dt>
-            <dd>
-                The <dfn
-                id="payment-app-manifest-options"><code>options</code></dfn>
-                member lists the <a>payment method identifiers</a> of the
-                payment methods enabled by this option.
-            </dd>
-            <dd class="issue">
-                <p>Options are an extra layer of abstraction, because they allow
-                  flattening of payment apps. The flattening may result in unique
-                  UX challenges. For example, if two payment apps both have
-                  "<em>Visa ending in ***4756</em>" payment option, then users may
-                  be confused when they see two such labels in UI. One solution
-                  is to prepend the payment app name, e.g., "<em>ExampleApp Visa
-                  ending in ***4756</em>". However, when only one app is
-                  installed, the text "<em>ExampleApp</em>" is redundant.</p>
-            </dd>
-            <dt><code>canHandle</code> member</dt>
-            <dd>
-                The <dfn
-                id="payment-app-manifest-canhandle"><code>canHandle</code></dfn>
-                member indicates a function that is responsible for determining
-                whether the <a>payment app</a> being registered is capable of
-                handling a given request. If this member is not included in the
-                manifest, the payment app is expected to be capable of
-                handling all requests for the indicated <a>payment method
-                identifiers</a>. <a>canHandle</a> runs with a globally unique
-                origin, and is not allowed network access. The return value from
-                <a>canHandle</a> is a sequence of zero or more
-                <code>HandledOptions</code> dictionaries. Each dictionary
-                represents a <code>PaymentAppOption</code> that can handle
-                the request. The mandatory <code>AvailableOption.id</code>
-                member corresponds to the <code>PaymentAppOption.id</code> for
-                the <code>PaymentOption</code> corresponding to the dictionary.
-                If present, the <code>AvailableOption.modifier</code> member is
-                an index into the <code>PaymentRequest.modifiers</code>
-                sequence, indicating which modifer applies to the corresponding
-                <code>PaymentAppOption</code>.
-            </dd>
-        </dl>
--->
   </section>
   <section id="register-example">
   <h3>
     Registration Example
   </h3>
-    <p>The following example shows how to register a <a>user agent-based payment
-    app</a>:</p>
-       <pre class="example highlight" title="Payment App Registration">
+    <p>The following example shows how to register a payment handler:</p>
+       <pre class="example highlight" title="Payment Handler Registration">
          navigator.serviceWorker.register('/exampleapp.js')
          .then(function(registration) {
            registration.paymentAppManager.options.set(
@@ -1039,7 +531,7 @@
                enabledMethods: ["basic-card"],
                capabilities: {
                  supportedNetworks:
-                   ['visa','mastercard','americanexpress','discover'],
+                   ['visa','mastercard','amex','discover'],
                  supportedTypes: ['credit','debit','prepaid']
                }
              });
@@ -1073,174 +565,74 @@
   </section>
 
 </section>
-<section id="matching">
-  <h2>Payment App Matching</h2>
-     <p class="issue" title="App Matching Moving into Base Spec">
-       This section is obsolete. The current proposal involves folding
-       the payment app matching (based on the entries in
-       <code>PaymentAppOption.capabilities</code>) into the base Payment Request
-       specification.
-     </p>
-  <p>
-    <s>
-    When the user agent calculates <i>acceptedMethods</i> during the
-    process of running the steps for the <code>PaymentRequest.show()</code>
-    method, the means of determining whether a registered <a>payment app</a>
-    should be made available for user selection is computed by
-    performing the following steps:
-      <ol>
-        <li>
-          Set <var>registeredMethods</var> to an empty set.
-        </li>
-        <li>
-          For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all entries in
-          <var>option</var>.<code>enabledMethods</code> to
-          <var>registeredMethods</var>.
-        </li>
-        <li>
-          Set <var>requestMethods</var> to a set containing the values
-          in the <code>supportedMethods</code> value of the
-          <code>PaymentMethodData</code> from the <code>PaymentRequest</code>
-          on which <code>show()</code> has been called.
-        </li>
-        <li>
-          For each <var>paymentDetailsModifier</var> in
-          <code>details.modifiers</code> in the
-          <code>PaymentDetails</code> from the <code>PaymentRequest</code>
-          on which <code>show()</code> has been called, add all entries in
-          <var>paymentDteailsModifier</var>.<code>supportedMethods</code> to
-          <var>requestMethods</var>.
-        </li>
-        <li>
-          Set <var>commonMethods</var> to the set union of
-          <var>paymentMethods</var> and <var>requestMethods</var>.
-        </li>
-        <li>
-          If <var>commonMethods</var> is a null set, this <a>payment app</a> is
-          not considered to be a candidate to handle the
-          <code>PaymentRequest</code> and terminate these steps.
-        </li>
-        <li>
-          If the <code>PaymentAppManifest</code> does not contain a
-          <code>canHandle</code> attribute, then this <a>payment app</a> is a
-          candidate for handling the <code>PaymentRequest</code>. Only those
-          <a>PaymentAppOption</a>s that have <code>enabledMethods</code>
-          containing at least one member of <var>commonMethods</var> are to be
-          displayed to the user. Terminate these steps.
-        </li>
-        <li>
-          Set <var>methodDataCopy</var> to a deep copy of the
-          <code>methodData</code> parameter of the <code>PaymentRequest</code>.
-        </li>
-        <li>
-          Set <var>detailsCopy</var> to a deep copy of the
-          <code>details</code> parameter of the <code>PaymentRequest</code>.
-        </li>
-        <li>
-          Create an isolated interpreted context, a JavaScript realm that
-          operates with a globally unique origin. Access to the network must be
-          disallowed from within this context.
-        </li>
-        <li>
-          Populate the realm with a single global function,
-          <var>canHandle</var>, set to the value of
-          <code>PaymentAppManifest.canHandle</code>.
-        </li>
-        <li>
-          Execute <var>canHandle</var> in the realm, passing
-          <var>methodDataCopy</var> and <var>detailsCopy</var> as the parameters
-          to the function. Set <var>returnValue</var> to the return value of
-          the function.
-        </li>
-        <li>
-          If the execution of <var>canHandle</var> results in an exception or
-          <var>returnValue</var> is not a <code>Sequence</code> of
-          <code>AvailableOption</code>s, then this
-          <a>payment app</a> is not considered to be a candidate to handle the
-          <code>PaymentRequest</code>. Terminate these steps.
-        </li>
-        <li>
-          For each <code>AvailableOption</code> of <var>returnValue</var>,
-          verify that the value of its <code>modifier</code> entry, if
-          present, is an integer, no smaller than 0, and no larger than the
-          largest index of <code>PaymentRequest.modifiers</code> sequence. Any
-          <code>AvailableOption</code> that fails this validation is removed
-          from the sequence.
-        </li>
-        <li>
-          If <var>returnValue</var> has no remaining
-          <code>AvailableOption</code>s, then this
-          <a>payment app</a> is not considered to be a candidate to handle the
-          <code>PaymentRequest</code>. Terminate these steps.
-        </li>
-        <li>
-          If processing has reached this point, then the <a>payment app</a> is
-          a candidate for processing the <code>PaymentRequest</code>. Each
-          <code>AvailableOption</code>
-          in <var>returnValue</var> corresponds to a matching
-          <code>PaymentAppOption</code> that can service the request. If present
-          the <code>PaymentAppOption.modifier</code> indicates which
-          <code>PaymentDetailsModifier</code> will be applied by the
-          corresponding <code>PaymentAppOption</code>.
-        </li>
-      </ol>
-    </s>
-  </p>
-</section>
-<section id="selection">
-  <h2>Payment App Selection</h2>
+<section id="option-display-ordering">
+  <h2>Payment App and Option Display for Selection</h2>
+  <p>After applying the matching algorithm defined in Payment Request API,
+    the user agent offers list of matching payment app to the user to make a selection. Display, ordering, and user experience optimizations by user
+    agents and payment apps lie outside the scope of this specification.</p>
+
   <section>
-    <h3>Selectable App Information Display</h3>
-    <p>
-      The output of the payment method matching algorithm will be a list of matching payment apps and options from registered
-      payment apps, and a list of recommended payment apps. The user agent presents this list of <a>displayed payment apps</a> to the user for selection. The user agent  <span class='rfc2119'>MUST</span> enable the user to select any displayed payment app.
-    </p>
-  </section>
-  <section>
-    <h3>Matching Payment Apps</h3>
+    <h3>Ordering of Payment Apps</h3>
     <ul>
-      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching payment app. <strong>Note:</strong> See the definition of matching payment app, which excludes payment apps ignored due to user configuration or security issues. Note also that the language here is about enabling selection rather than display &mdash; when the user agent displays only a subset of matching payment apps (e.g., the most recently used), the user must still be able to access other matching payment apps. </li>
-      <li>The user agent <span class='rfc2119'>MUST</span> enable the user to select any matching <a href="#payment-app-options">payment app options</a>.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> favor user-side order preferences (based on user configuration or behavior) over payee-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
       <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
     </ul>
-  </section>
-  <section>
-    <h3>Recommended Payment Apps</h3>
-    <div class="issue">What is the means by which the payee provides information about recommended payment apps in the call to payment request API? See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/79">issue 79</a>.</div>
-    <ul>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display recommended payment apps and allow configuration to not display recommended payment apps.</li>
-      <li>The user agent <span class='rfc2119'>MUST</span> distinguish unregistered recommended payment apps from registered payment apps.</li>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> display any recommended apps in the order specified by the payee.</li>
-    </ul>
-  </section>
-  <section>
-    <h3>User Experience Considerations</h3>
-    <div class="issue" title="Payment app selection user experience consistency">
-      <p>We have identified a number of <a href="https://github.com/w3c/webpayments/wiki/PaymentApp_Notes#user-experience-descriptions">user experiences</a> that we would like to harmonize. Just a few examples here:</p>
-      <ol>
-        <li>User has no registered payment apps.</li>
-        <li>User has apps with supported but no enabled payment methods.</li>
-        <li>User has apps with supported and enabled payment methods.</li>
-        <li>Merchant wishes to recommend a payment app to the user.</li>
-        <li>User agent wishes to recommend a payment app that supports a payment method for which the user does not
-          currently have a supporting payment app.</li>
-      </ol>
-    </div>
-    
-    <p>The following are examples of user agent ordering of selectable payment apps.</p>
+
+    <p>The following are examples of user agent ordering of payment apps:</p>
     <ul>
       <li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
       <li>Enable the user to set a preferred order for a given site or for all sites.</li>
-      <li>Display a payment app that is both registered by the user
-	and recommended at the top of a list.</li>
-      <li>Display a payment app that is both registered by the user
-	and corresponds to the origin of the site being visited at the top of a list.</li>
+      <li>If the origin of the site being visited by the user matches the origin of a registered payment app, show the payment app at the top of the list.</li>
     </ul>
   </section>
+
+  <section>
+    <h3>Display of Options</h3>
+    <p>The user agent  <span class='rfc2119'>MUST</span> enable the user to select any displayed Option.</p>
+
+    <ul>
+      <li>At a minimum, we expect user agents to display an icon and label for each matching origin to help the user make a selection.</li>
+      <li>In some contexts (e.g., a desktop browser) it may be possible to improve the user experience by offering additional detail to the user. For example, if the user's "bank.com" origin knows about two credit cards (thus, two potential responses to the same payment method "basic-card"), the user agent could display each credit card's brand and the last four digits of the card to remind the user which cards the origin knows about.</li>
+    </ul>
+
+    <p  class="issue" title="Isue 98 - display"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>. There has been pushback to always requiring display of options (e.g., on a mobile devices). User agents can incrementally show options. Or user agents can return an empty option ID and it becomes the payment app's job to display options to the user.</p>
+  </section>
+
+  <section>
+    <h3>Grouping of Options</h3>
+
+    <p>At times, the same origin may wish to group options with
+      greater flexibility and granularity than merely "by origin." These
+      use cases include:</p>
+    <ul>
+      <li>White label wallets - one origin provides wallet services for multiple vendors</li>
+      <li>Multiple user profiles with a single provider (e.g., business wallet vs personal wallet)</li>
+      <li>Multiple instruments held with a single provider</li>
+    </ul>
+
+    <p>A <dfn id="wallet">Wallet</dfn> is a grouping of Options for
+      display purposes.</p>
+
+    <p>To enable developers to build payment apps in a variety of
+    ways, we decouple the registration (and subsequent display) of
+    Options from how payment handlers respond to paymentrequest
+    events. However, the user agent is responsible for communicating
+    the user's selection in the event.</p>
+  </section>
+
+
+  <section>
+    <h3>Selection of Options</h3>
+
+    <p>Users agents may wish to enable the user to select individual displayed Options, in essence launching the payment handler that registered that option. The payment handler would receive information about the selected option and could, in essence, begin to take action (thus eliminating the extra click to open the payment app and then select the option). </p>
+
+    <p class="issue" title="Isue 98 - selection"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>. Should we require that, if displayed, individual Options must be selectable? Or should we allow flexibility that Options may be displayed, but selecting any one invokes all registered payment handlers? One idea that has been suggested: the user agent (e.g., on a mobile device) could first display the app-level icon/logo. Upon selection, the user agent could display the Options in a submenu.</p>
+  </section>
+  
 </section>
+
+
 <section id="invocation">
   <h2>Payment App Invocation, Display and Response</h2>
   <p>
@@ -1448,28 +840,6 @@
       </ol>
     </section>
   </section>
-  <section id="sec-app-response">
-    <h3>Payment App Response</h3>
-    The <a>payment app response</a> is conveyed using the following
-    dictionary:
-    <pre class="idl">
-      dictionary PaymentAppResponse {
-        DOMString methodName;
-        object details;
-      };
-    </pre>
-    <dt><code>methodName</code> attribute</dt>
-    <dd>
-      The <a>payment method identifier</a> for the <a>payment method</a>
-      that the user selected to fulfil the transaction.
-    </dd>
-    <dt><code>details</code> attribute</dt>
-    <dd>
-      A <a>JSON-serializable object</a> that provides a <a> payment
-      method</a> specific message used by the merchant to process the
-      transaction and determine successful fund transfer.
-    </dd>
-  </section>
   <section>
     <h3>Payment App Invocation</h3>
     <p>
@@ -1549,11 +919,6 @@
           registration</a> corresponding to the <a>user agent-based payment app</a>
           selected by the user.
           </li>
-          <li>If <var>registration</var> is not found and the selected app
-            is a <a>recommended app</a>, register the service worker as described
-            in <a href="#h-registration"></a>, skipping user consent and user
-            agent registration for future use in <a href="#h-set-manifest"></a> (steps 9-11).
-          </li>
           <li>If <var>registration</var> is not found, reject the Promise that
             was created by <code>PaymentRequest.show()</code> with a
             <a>DOMException</a> whose value "<a>InvalidStateError</a>" and
@@ -1590,7 +955,7 @@
   </section>
   <section>
   <h3>
-    Payment App Display
+    Payment App Windows
   </h3>
 
   <p>An invoked payment app may or may not need to display information
@@ -1604,51 +969,34 @@
       opens a window. For subsequent payments in the same session, the payment app (through configuration) performs its duties without opening a window or requiring user interaction.</li>
   </ul>
 
-  <p>To support scenarios that involve visual display and user interaction, user agents MUST allow payment apps to call the <code>clients.openWindow()</code> method defined in [[!SERVICE-WORKERS]]. Because user agents can determine from event type that the window is part of a payment flow, the user agent SHOULD render the window in a way that is consistent with the flow and not confusing to the user. For example, we recommend that the payment app <em>not</em> be opened in a new browser tab, as this is too dissociated from the checkout context.</p>
+  <p class="issue">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/97">issue 97</a> for discussion about opening window in a way that is consistent with payment flow and not confusing to the user. For example, there is consensus that in a desktop environment, a payment handler should <em>not</em> open a window in a new browser tab, as this is too dissociated from the checkout context.</p>
   
-  <p>[[!SERVICE-WORKERS]] expects a user interaction to have occurred in order to open a Window. This user interaction is obvious when the user explicitly selects a payment app to make a payment. However, when user agent or payment app configuration allows payment app invocation without explicit user selection, the user agent MUST consider the <a>paymentrequest</a> event as the relevant user interaction for a <code>clients.openWindow()</code> request.</p>
-
   <p>User agents SHOULD display the origin of a running payment app to the user.</p>
 
-  <div class="issue">
-  <p><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/73">Issue 73</a> asks whether it is possible to close a window open via clients.openWindow() programmatically.</p>
-
-  <div class="note">
-    <p><em>The remainder of this section is currently a non-normative explanation of how
-    the service worker <code>WindowClient</code> class can be used to interact
-    with users.</em></p>
-    <p>
-      Upon calling clients.openWindow(), the payment app receives a
-      <a>Promise</a> which resolves to a <code>WindowClient</code>. For the
-      purposes of this discussion, we will refer to this
-      <code>WindowClient</code> as <var>client</var>.  The payment app can use
-      the <var>client</var>.<code>postMessage()</code> method to send messages
-      to the <a>payment app window</a>.
-    </p>
-    <p>
-      When a <a>payment app window</a> receives the <code>message</code> event
-      from the payment app, this event will contain a <code>source</code>
-      attribute which indicates the payment app's service worker. The payment
-      app window can then call <code>source.postMessage()</code> to send a
-      response to the payment app. Once the payment app window has complete its
-      interaction with the user, it closes the window and uses this
-      <code>postMessage()</code> call to return information to the payment app.
-    </p>
-    <p class="issue">
-      In order for this approach to work, we have to treat a
-      <a>paymentrequest</a> as permission to open a popup, which is a formal
-      property relied up on by [[!SERVICE-WORKERS]]. We need to be careful
-      that this does not become an end-run around exiting pop-up protections.
-    </p>
-    <p class="issue">
-      Do we want to define a new <code>FrameType</code> for <a>payment app
-      window</a>s? This requires input from someone with detailed knowledge of
-      service worker design.
-    </p>
-    </div>
   </section>
   <section id="sec-payment-app-response">
     <h3>Payment App Response</h3>
+
+    The <a>payment app response</a> is conveyed using the following
+    dictionary:
+    <pre class="idl">
+      dictionary PaymentAppResponse {
+        DOMString methodName;
+        object details;
+      };
+    </pre>
+    <dt><code>methodName</code> attribute</dt>
+    <dd>
+      The <a>payment method identifier</a> for the <a>payment method</a>
+      that the user selected to fulfil the transaction.
+    </dd>
+    <dt><code>details</code> attribute</dt>
+    <dd>
+      A <a>JSON-serializable object</a> that provides a <a> payment
+      method</a> specific message used by the merchant to process the
+      transaction and determine successful fund transfer.
+    </dd>
+    
     <p>
       The user agent receives a successful response from the payment app
       through resolution of the Promise provided to the <code>respondWith</code>
@@ -1733,12 +1081,16 @@
 	failures.</p>
   </section>
   <section id="post-example">
-      <h3>Example of handling the <code>paymentrequest</code> event</h3>
+      <h3>Example of handling the <code>paymentrequest</code> event</h>
     <p>
       This example shows how to write a service worker that listens to the
       paymentrequest event. When a payment request event is received, the
       service worker opens a window in order to interact with the user.
     </p>
+
+<p class="issue">Per <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/97">issue 97</a>, we expect <strong>not</strong> to use clients.OpenWindow and instead await a proposal for a new openClientWindow method. We will need to update these examples.</p>
+
+    
     <pre class="example highlight" title="Handling the paymentrequest event"
     id="example-paymentrequest-event">
       self.addEventListener('paymentrequest', function(e) {
@@ -1805,12 +1157,14 @@ window.addEventListener("message", function(e) {
   </section>
 
 </section>
+
 <section id="security">
   <h2>Security and Privacy Considerations</h2>
   <section>
     <h3>Information about the User Environment</h3>
     <ul>
-      <li>The API does not share information about the user's registered payment methods or payment apps with the payee. The only information that is shared is the result of user selection.</li>
+      <li>The API does not share information about the user's registered payment apps. Information from payment apps is only shared with the payee with the consent of the user.</li>
+      <li>Similarly, user agents should not share payment request information with any payment app until the user has selected that payment app.</li>
     </ul>
   </section>
   <section>
@@ -1829,7 +1183,7 @@ window.addEventListener("message", function(e) {
   <section>
     <h3>Payment App Authenticity</h3>
     <ul>
-      <li>To avoid problems such as phishing-type attacks on payee sites, we want to be able to ensure the authenticity of payment apps. In general we expect to rely on origin information for establishing payment app authenticity. In contexts where payment apps are referenced other than on their origin, we are considering additional measures to help establish authenticity. Examples: validate a digital signature prior to launching a recommended app or a registered payment app without associated origin information.</li>
+      <li>To avoid problems such as phishing-type attacks on payee sites, we want to be able to ensure the authenticity of payment apps. In general we expect to rely on origin information for establishing payment app authenticity. In contexts where payment apps are referenced other than on their origin, we are considering additional measures to help establish authenticity.</li>
       <li><span class="note">Note: More work is required on good practice so that it is easy for users to use trusted apps (e.g., white listing by the browser or merchant) and hard to use risky apps (e.g., warnings to the user and explicit user overrides as done today with untrusted certificates).</span></li>
     </ul>
   </section>
