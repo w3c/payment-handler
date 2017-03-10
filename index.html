@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+`<!DOCTYPE html>
 <html>
 <head>
   <title>Payment Handler API</title>
@@ -118,14 +118,13 @@
     this specification defines:</p>
 
   <ul>
-    <li>How origins (that is: Web sites) request permission to handle payment requests
+    <li>How origins (i.e., Web sites) request permission to handle payment requests
       on the user's behalf.</li>
     <li>How origins register their support for different payment methods
       with the user agent.</li>
     <li>How origins provide information to faciliate the display of
-      payment app options and selection by the user.</li>
-    <li>How user agents invoke payment apps selected by the user to make a payment, what data is passed
-      to the payment apps, and what data is returned after completion of payment.</li>
+      payment options for selection by the user.</li>
+    <li>How user agents invoke and exchange data with payment handlers from an origin.</li>
   </ul>
 
   <p>This specification does not address how software built with
@@ -279,24 +278,27 @@
 
     <li>Registration associates with each payment handler:
       <ul>
-	<li>A list of supported payment methods</li>
-	<li>[Optionally] the conditions under which the handler supports a given payment method, called "capabilities." These are compared to the merchant's capabilities as part of determining whether an origin matches.</li>
+	<li>A list of supported payment methods.</li>
+	<li>[Optionally] the conditions under which the handler supports a given payment method; these "capabilities" play a role in matching computations.</li>
 	<li>Information for organizing the display and grouping of Options
 	  supported by the payment handler.</li>
       </ul>
     </li>
 
-    <li>When the merchant calls <code>payment request API</code>
+    <li>When the merchant calls Payment Request API
       (e.g., when the user pushes a button on a checkout page), the
       user agent computes a list of matching pyament apps, comparing
-      those payment methods accepted by the user and those supported
-      by registered payment handlers.</li>
+      the payment methods accepted by the user with those supported
+      by registered payment handlers. For payment methods that support
+      additional filtering, merchant and payment app capabilities are
+    compared as part of determining whether there is a match.</li>
 
     <li>When the user selects an Option, the user agent fires the
     paymentrequest event in the service worker whose registration
     included the payment handler that provided that Option.  The
-    paymentrequest event includes some information from the payment
-    request object as well as additional information (e.g., origin and
+      paymentrequest event includes some information from the PaymentRequest
+      (defined in [[!PAYMENT-REQUEST-API]])
+      as well as additional information (e.g., origin and
     selected Option).
     <li>Once activated, the payment handler performs whatever steps are
         necessary to authenticate the user, process the payment, and return
@@ -305,8 +307,8 @@
         for that purpose.</li>
 
     <li>The user agent receives a response asynchronously once the
-          user has authorized payment. The response becomes the
-          response of the Payment Request API.</li>
+      user has authorized payment. The response becomes the
+      PaymentResponse (of [[!PAYMENT-REQUEST-API]]).</li>
   </ol>
 
   <p>This specification does not address activities outside this flow, including:</p>
@@ -370,7 +372,7 @@
         provide a name and icon for such a group (e.g., to group together
         "business account" payment instruments separately from "personal
         account" payment instruments). The use of this grouping mechanism
-        by payment handlers is completley optional. If payment handlers use this
+        by payment handlers is completely optional. If payment handlers use this
         grouping mechanism, then matching payment options that do not appear
         in any groups should still be presented to users by the browser for
         selection.
@@ -568,8 +570,9 @@
 <section id="option-display-ordering">
   <h2>Payment App and Option Display for Selection</h2>
   <p>After applying the matching algorithm defined in Payment Request API,
-    the user agent offers list of matching payment app to the user to make a selection. Display, ordering, and user experience optimizations by user
-    agents and payment apps lie outside the scope of this specification.</p>
+    the user agent displays a list of matching payment app for the user to make
+    a selection. This specification includes a limited number of display
+    requirements; most user experience details are left to user agents.</p>
 
   <section>
     <h3>Ordering of Payment Apps</h3>
@@ -579,7 +582,7 @@
       <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
     </ul>
 
-    <p>The following are examples of user agent ordering of payment apps:</p>
+    <p>The following are examples of payment app ordering:</p>
     <ul>
       <li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
       <li>Enable the user to set a preferred order for a given site or for all sites.</li>
@@ -636,10 +639,10 @@
 <section id="invocation">
   <h2>Payment App Invocation, Display and Response</h2>
   <p>
-      Once the user has selected a payment app, the user agent is
-      responsible for preparing a <a>payment app request</a>, invoking the
-      payment app, providing the request data to the payment app, and
-      returning the payment app response through the Payment Request API.
+    Once the user has selected a payment app, the user agent
+    fires a <a>paymentrequest event</a> with a Payment App Request,
+    and uses the subsequent Payment App Response to create a PaymentReponse
+    for [[!PAYMENT-REQUEST-API]].
   </p>
   <section id="sec-app-request">
     <h3>Payment App Request</h3>
@@ -703,6 +706,9 @@
         payment app registration.
       </dd>
     </dl>
+
+    <p class="issue" title="Issue 91 - line items">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/91">issue 91</a> for discussion about the inclusion of line items in the Payment App Request.</p>
+    
     <section>
       <h3>
         <dfn>Method Data Population Algorithm</dfn>
@@ -842,19 +848,6 @@
   </section>
   <section>
     <h3>Payment App Invocation</h3>
-    <p>
-      <a>Payment apps</a> are invoked when a <a>payee</a> requests a payment
-      by calling <code>PaymentRequest.show()</code> and the user selects a
-      payment app (or has one implicitly selected by previously established
-      user preferences). If the user selects a <a>user agent-based payment
-      app</a> to service the request, the <a>service worker</a> corresponding
-      to that application receives an event with the
-      <a>PaymentAppRequest</a> containing information about the payment
-      being requested. The event also contains a function that allows the
-      payment app to provide a <a>payment response</a> back to the
-      <a>payee</a>. This process is formally described in the following
-      sections.
-    </p>
     <section>
     <h3>
       Extension to <code>ServiceWorkerGlobalScope</code>
@@ -1182,10 +1175,8 @@ window.addEventListener("message", function(e) {
   </section>
   <section>
     <h3>Payment App Authenticity</h3>
-    <ul>
-      <li>To avoid problems such as phishing-type attacks on payee sites, we want to be able to ensure the authenticity of payment apps. In general we expect to rely on origin information for establishing payment app authenticity. In contexts where payment apps are referenced other than on their origin, we are considering additional measures to help establish authenticity.</li>
-      <li><span class="note">Note: More work is required on good practice so that it is easy for users to use trusted apps (e.g., white listing by the browser or merchant) and hard to use risky apps (e.g., warnings to the user and explicit user overrides as done today with untrusted certificates).</span></li>
-    </ul>
+    <p class="note">The Web Payments Working Group is also discussing
+      Payment App authenticity; see the (draft) <a href="https://w3c.github.io/webpayments/proposals/Payment-Manifest-Proposal.html">Payment Method Manifest</a>.</p>
   </section>
   <section>
     <h3>Data Validation</h3>
