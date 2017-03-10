@@ -313,10 +313,9 @@
 
   <p>This specification does not address activities outside this flow, including:</p>
   <ul>
-    <li>how the user establishes an account with a payment app provider.</li>
+    <li>how the user establishes an account with an origin that provides payment services.</li>
     <li>how an origin authenticates a user.</li>
-    <li>how communication takes place between the payee server and the payee Web application, or between
-      the payment app and other parties (e.g., the payment app distributor, or directly to the merchant).</li>
+    <li>how communication takes place between the payee server and the payee Web application, or between the payment app origin and other parties.</li>
   </ul>
 
   <p>Thus, a payment app will rely on many other Web technologies defined
@@ -570,7 +569,7 @@
 <section id="option-display-ordering">
   <h2>Payment App and Option Display for Selection</h2>
   <p>After applying the matching algorithm defined in Payment Request API,
-    the user agent displays a list of matching payment app for the user to make
+    the user agent displays a list of matching payment apps for the user to make
     a selection. This specification includes a limited number of display
     requirements; most user experience details are left to user agents.</p>
 
@@ -628,7 +627,7 @@
   <section>
     <h3>Selection of Options</h3>
 
-    <p>Users agents may wish to enable the user to select individual displayed Options, in essence launching the payment handler that registered that option. The payment handler would receive information about the selected option and could, in essence, begin to take action (thus eliminating the extra click to open the payment app and then select the option). </p>
+    <p>Users agents may wish to enable the user to select individual displayed Options. The payment handler would receive information about the selected option and could take action, potentially eliminating an extra click (first open the payment app then select the option). </p>
 
     <p class="issue" title="Isue 98 - selection"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>. Should we require that, if displayed, individual Options must be selectable? Or should we allow flexibility that Options may be displayed, but selecting any one invokes all registered payment handlers? One idea that has been suggested: the user agent (e.g., on a mobile device) could first display the app-level icon/logo. Upon selection, the user agent could display the Options in a submenu.</p>
   </section>
@@ -639,7 +638,7 @@
 <section id="invocation">
   <h2>Payment App Invocation, Display and Response</h2>
   <p>
-    Once the user has selected a payment app, the user agent
+    Once the user has selected an Option, the user agent
     fires a <a>paymentrequest event</a> with a Payment App Request,
     and uses the subsequent Payment App Response to create a PaymentReponse
     for [[!PAYMENT-REQUEST-API]].
@@ -703,7 +702,7 @@
       <dd>
         This attribute indicates the <a>PaymentAppOption</a> selected by
         the user. It corresponds to the <code>id</code> field provided during
-        payment app registration.
+	registration.
       </dd>
     </dl>
 
@@ -847,7 +846,7 @@
     </section>
   </section>
   <section>
-    <h3>Payment App Invocation</h3>
+    <h3>Invocation</h3>
     <section>
     <h3>
       Extension to <code>ServiceWorkerGlobalScope</code>
@@ -904,12 +903,11 @@
         <p>
           Upon receiving a <a>payment request</a> by way of
           <code>PaymentRequest.show()</code> and subsequent user selection of a
-          <a>user agent-based payment app</a>, the <a>user agent</a> MUST run
-          the following steps or their equivalent:
+          payment app, the <a>user agent</a> MUST run the following steps or their equivalent:
         </p>
         <ol>
           <li>Let <var>registration</var> be the <a>service worker
-          registration</a> corresponding to the <a>user agent-based payment app</a>
+          registration</a> corresponding to the payment app
           selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the Promise that
@@ -1170,7 +1168,7 @@ window.addEventListener("message", function(e) {
     <h3>Secure Communications</h3>
     <ul>
       <li>See <a href="https://www.w3.org/TR/service-workers/#security-considerations">Service Worker security considerations</a></li>
-      <li>Payment method security is outside the scope of this specification and is addressed by payment apps that support those payment methods.</li>
+      <li>Payment method security is outside the scope of this specification and is addressed by payment handlers that support those payment methods.</li>
     </ul>
   </section>
   <section>
@@ -1187,7 +1185,7 @@ window.addEventListener("message", function(e) {
   <section>
     <h3>Private Browsing Mode</h3>
     <ul>
-      <li>When the Payment Request API is invoked in a "private browsing mode," the user agent should launch user agent-based payment apps in a private context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
+      <li>When the Payment Request API is invoked in a "private browsing mode," the user agent should launch payment apps in a private context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
     </ul>
   </section>
 </section>
