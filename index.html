@@ -1058,70 +1058,79 @@
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequest appRequest;
+        <a>Promise</a>&lt;<a>WindowClient</a>&gt; openWindow(DOMString url);
         void respondWith(<a>Promise</a>&lt;<a>PaymentAppResponse</a>&gt;appResponse);
       };
       </pre>
-        <dl>
-          <dt><code>appRequest</code> attribute</dt>
-          <dd>
-            This attribute contains the <a>payment app request</a>
-            associated with this <a>payment request</a>.
-          </dd>
-          <dt><code>respondWith</code> method</dt>
-          <dd>
-            This method is used by the payment handler to provide a
-            <a>PaymentAppResponse</a> when user interaction successfully
-            completes.
-          </dd>
-        </dl>
-        <p>Upon receiving a <a>payment request</a> by way of
-        <code>PaymentRequest.show()</code> and subsequent user
-        selection of a payment handler, the <a>user agent</a> MUST
-        run the following steps or their equivalent:</p>
-        <ol>
-          <li>Let <var>registration</var> be the <a>service worker
-          registration</a> corresponding to the payment handler
-          selected by the user.
-          </li>
-          <li>If <var>registration</var> is not found, reject the
-          Promise that was created by
-          <code>PaymentRequest.show()</code> with a
-          <a>DOMException</a> whose value
-          "<a>InvalidStateError</a>" and terminate these steps.
-          </li>
-          <li>Invoke the <a>Handle Functional Event</a> algorithm
-          with a <a>service worker registration</a> of
-          <var>registration</var> and <var>callbackSteps</var> set
-          to the following steps:
-            <ol>
-              <li>Set <var>global</var> to the global object that
-              was provided as an argument.</li>
-              <li>Create a <a>trusted event</a>, <var>e</var>, that
-              uses the <code><a>PaymentRequestEvent</a></code>
-              interface, with the event type
-              <code>paymentrequest</code>, which does not bubble,
-              cannot be canceled, and has no default action.
-              </li>
-              <li>Set the <code>appRequest</code> attribute of
-              <var>e</var> to a new <a>PaymentAppRequest</a>
-              instance, populated as described in <a href=
-              "#sec-app-request"></a>.
-              </li>
-              <li>Dispatch <var>e</var> to <var>global</var>.</li>
-              <li>Wait for all of the promises in the <a>extend
-              lifetime promises</a> of <var>e</var> to resolve.
-              </li>
-              <li>If the <a>payment handler</a> has not provided a
-              <a>payment app response</a> as described in
+        <section>
+          <h3><dfn>appRequest</dfn> attribute</h3>
+          <p>This attribute contains the <a>PaymentAppRequest</a>
+          associated with this <a>payment request</a>.</p>
+        </section>
+        <section>
+          <h3><dfn>openWindow</dfn> method</h3>
+          <p>This method is used by the payment handler to show a
+          window to the user.</p>
+        </section>
+        <section>
+          <h3><dfn>respondWith</dfn> method</h3>
+          <p>This method is used by the payment handler to provide
+          a <a>PaymentAppResponse</a> when the payment successfully
+          completes.</p>
+        </section>
+        <section>
+          <h3>Handling a payment request event</h3>
+          <p>Upon receiving a <a>payment request</a> by way of
+          <code>PaymentRequest.show()</code> and subsequent user
+          selection of a payment handler, the <a>user agent</a>
+          MUST run the following steps or their equivalent:</p>
+          <ol>
+            <li>Let <var>registration</var> be the <a>service
+            worker registration</a> corresponding to the payment
+            handler selected by the user.
+            </li>
+            <li>If <var>registration</var> is not found, reject the
+            Promise that was created by
+            <code>PaymentRequest.show()</code> with a
+            <a>DOMException</a> whose value
+            "<a>InvalidStateError</a>" and terminate these steps.
+            </li>
+            <li>Invoke the <a>Handle Functional Event</a> algorithm
+            with a <a>service worker registration</a> of
+            <var>registration</var> and <var>callbackSteps</var>
+            set to the following steps:
+              <ol>
+                <li>Set <var>global</var> to the global object that
+                was provided as an argument.</li>
+                <li>Create a <a>trusted event</a>, <var>e</var>,
+                that uses the
+                <code><a>PaymentRequestEvent</a></code> interface,
+                with the event type <code>paymentrequest</code>,
+                which does not bubble, cannot be canceled, and has
+                no default action.
+                </li>
+                <li>Set the <code>appRequest</code> attribute of
+                <var>e</var> to a new <a>PaymentAppRequest</a>
+                instance, populated as described in <a href=
+                "#sec-app-request"></a>.
+                </li>
+                <li>Dispatch <var>e</var> to
+                <var>global</var>.</li>
+                <li>Wait for all of the promises in the <a>extend
+                lifetime promises</a> of <var>e</var> to resolve.
+                </li>
+                <li>If the <a>payment handler</a> has not provided
+                a <a>payment app response</a> as described in
                 <a href="#sec-payment-app-response"></a>, reject
                 the Promise that was created by
                 <code>PaymentRequest.show()</code> with a
                 <a>DOMException</a> whose value
                 "<a>OperationError</a>".
-              </li>
-            </ol>
-          </li>
-        </ol>
+                </li>
+              </ol>
+            </li>
+          </ol>
+        </section>
       </section>
     </section>
     <section>
@@ -1142,16 +1151,20 @@
         configuration) performs its duties without opening a window
         or requiring user interaction.</li>
       </ul>
-      <p class="issue">See <a href=
-      "https://github.com/w3c/webpayments-payment-apps-api/issues/97">
-      issue 97</a> for discussion about opening window in a way
-      that is consistent with payment flow and not confusing to the
-      user. For example, there is consensus that in a desktop
-      environment, a payment handler should <em>not</em> open a
-      window in a new browser tab, as this is too dissociated from
-      the checkout context.</p>
-      <p>User agents SHOULD display the origin of a running payment
-      handler to the user.</p>
+      <p>A payment handler that requires visual display and user
+      interaction, may call <code>openWindow()</code>. Since user
+      agents know that this method is connected to the payment
+      request event, they SHOULD render the window in a way that is
+      consistent with the flow and not confusing to the user.</p>
+      <p>The resulting window client is bound to the tab/window
+      that initiated the <a>payment request</a>. A single
+      <a>payment handler</a> SHOULD NOT be allowed to open more
+      than one client window using this method. The exact behavior
+      in the case where a payment handler calls
+      <code>openWindow()</code> multiple times, is left to the user
+      agent implementers to decide on. User agents MAY, in this
+      case, let subsequent calls to <code>openWindow()</code>
+      resolve to the same <code>WindowClient</code> instance.</p>
     </section>
     <section id="sec-payment-app-response">
       <h2><a>PaymentAppResponse</a> dictionary</h2>
@@ -1263,12 +1276,6 @@
       listens to the paymentrequest event. When a payment request
       event is received, the service worker opens a window in order
       to interact with the user.</p>
-      <p class="issue">Per <a href=
-      "https://github.com/w3c/webpayments-payment-apps-api/issues/97">
-      issue 97</a>, we expect <strong>not</strong> to use
-      <code>clients.OpenWindow()</code> and instead await a proposal for a new
-      openClientWindow method on the <a>PaymentRequestEvent</a>.
-      We will need to update these examples.</p>
       <pre class="example highlight" title=
       "Handling the paymentrequest event" id=
       "example-paymentrequest-event">
@@ -1283,8 +1290,7 @@
             }
           });
 
-          // Note -- this will probably chage to e.openClientWindow(...)
-          clients.openWindow("https://www.example.com/bobpay/pay")
+          e.openWindow("https://www.example.com/bobpay/pay")
           .then(function(windowClient) {
             windowClient.postMessage(e.data);
           })
