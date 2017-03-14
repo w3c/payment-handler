@@ -287,19 +287,23 @@
 
     <li>When the merchant calls Payment Request API
       (e.g., when the user pushes a button on a checkout page), the
-      user agent computes a list of matching pyament apps, comparing
+      user agent computes a list of matching payment apps, comparing
       the payment methods accepted by the user with those supported
       by registered payment handlers. For payment methods that support
       additional filtering, merchant and payment app capabilities are
-    compared as part of determining whether there is a match.</li>
+      compared as part of determining whether there is a match.</li>
+
+    <li>The user agent displays matching payment apps, displaying
+      and grouping Options according to information (labels and
+      icons) provided at registration or otherwise available from
+      the Web app.</li>
 
     <li>When the user selects an Option, the user agent fires the
     paymentrequest event in the service worker whose registration
     included the payment handler that provided that Option.  The
       paymentrequest event includes some information from the PaymentRequest
       (defined in [[!PAYMENT-REQUEST-API]])
-      as well as additional information (e.g., origin and
-    selected Option).
+      as well as additional information (e.g., origin and selected Option).
     <li>Once activated, the payment handler performs whatever steps are
         necessary to authenticate the user, process the payment, and return
         payment information to the <a>payee</a>. If interaction with the user
