@@ -263,8 +263,8 @@
 
     <li>An origin requests permission from the user to handle payment
       requests for a set of supported payment methods. For example,
-      a user visiting a retail or bank site may be prompted to install
-      a payment app from that origin. The user agent is not required to
+      a user visiting a retail or bank site may be prompted to register
+      a payment handler from that origin. The user agent is not required to
       prompt the user to grant permission
     to the origin for each new supported payment method. A origin's
     capabilities may thus evolve without requiring additional user
@@ -287,13 +287,13 @@
 
     <li>When the merchant calls Payment Request API
       (e.g., when the user pushes a button on a checkout page), the
-      user agent computes a list of matching payment apps, comparing
+      user agent computes a list of matching payment handlers, comparing
       the payment methods accepted by the user with those supported
       by registered payment handlers. For payment methods that support
-      additional filtering, merchant and payment app capabilities are
+      additional filtering, merchant and payment handler capabilities are
       compared as part of determining whether there is a match.</li>
 
-    <li>The user agent displays matching payment apps, displaying
+    <li>The user agent displays matching payment handlers, displaying
       and grouping Options according to information (labels and
       icons) provided at registration or otherwise available from
       the Web app.</li>
@@ -319,10 +319,10 @@
   <ul>
     <li>how the user establishes an account with an origin that provides payment services.</li>
     <li>how an origin authenticates a user.</li>
-    <li>how communication takes place between the payee server and the payee Web application, or between the payment app origin and other parties.</li>
+    <li>how communication takes place between the payee server and the payee Web application, or between a payment app origin and other parties.</li>
   </ul>
 
-  <p>Thus, a payment app will rely on many other Web technologies defined
+  <p>Thus, an origin will rely on many other Web technologies defined
     elsewhere for lifecycle management, security, user authentication,
     user interaction, and so on.</p>
   
@@ -571,25 +571,25 @@
 
 </section>
 <section id="option-display-ordering">
-  <h2>Payment App and Option Display for Selection</h2>
+  <h2>Origin and Option Display for Selection</h2>
   <p>After applying the matching algorithm defined in Payment Request API,
-    the user agent displays a list of matching payment apps for the user to make
+    the user agent displays a list of matching origins for the user to make
     a selection. This specification includes a limited number of display
     requirements; most user experience details are left to user agents.</p>
 
   <section>
-    <h3>Ordering of Payment Apps</h3>
+    <h3>Ordering of Payment Handlers</h3>
     <ul>
       <li>The user agent <span class='rfc2119'>MUST</span> favor user-side order preferences (based on user configuration or behavior) over payee-side order preferences.</li>
-      <li>The user agent <span class='rfc2119'>MUST</span> display matching payment apps in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
-      <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment apps to control the ordering and define preselected defaults.</li>
+      <li>The user agent <span class='rfc2119'>MUST</span> display matching payment handlers in an order that corresponds to the order of supported payment methods provided by the payee, except where overridden by user-side order preferences.</li>
+      <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user to configure the display of matching payment handlers to control the ordering and define preselected defaults.</li>
     </ul>
 
-    <p>The following are examples of payment app ordering:</p>
+    <p>The following are examples of payment handler ordering:</p>
     <ul>
-      <li>For a given Web site, display payment apps in an order that reflects usage patterns for the site (e.g., a frequently used payment app at the top, or the most recently used payment app at the top).</li>
+      <li>For a given Web site, display payment handlers in an order that reflects usage patterns for the site (e.g., a frequently used payment handler at the top, or the most recently used payment handler at the top).</li>
       <li>Enable the user to set a preferred order for a given site or for all sites.</li>
-      <li>If the origin of the site being visited by the user matches the origin of a registered payment app, show the payment app at the top of the list.</li>
+      <li>If the origin of the site being visited by the user matches the origin of a payment handler, show the payment handler at the top of the list.</li>
     </ul>
   </section>
 
@@ -602,7 +602,7 @@
       <li>In some contexts (e.g., a desktop browser) it may be possible to improve the user experience by offering additional detail to the user. For example, if the user's "bank.com" origin knows about two credit cards (thus, two potential responses to the same payment method "basic-card"), the user agent could display each credit card's brand and the last four digits of the card to remind the user which cards the origin knows about.</li>
     </ul>
 
-    <p  class="issue" title="Isue 98 - display"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>. There has been pushback to always requiring display of options (e.g., on a mobile devices). User agents can incrementally show options. Or user agents can return an empty option ID and it becomes the payment app's job to display options to the user.</p>
+    <p  class="issue" title="Isue 98 - display"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>. There has been pushback to always requiring display of options (e.g., on a mobile devices). User agents can incrementally show options. Or user agents can return an empty option ID and it becomes the payment app's responsibility to display options to the user.</p>
   </section>
 
   <section>
@@ -640,7 +640,7 @@
 
 
 <section id="invocation">
-  <h2>Payment App Invocation, Display and Response</h2>
+  <h2>Payment Handler Invocation, Display and Response</h2>
   <p>
     Once the user has selected an Option, the user agent
     fires a <a>paymentrequest event</a> with a Payment App Request,
@@ -726,7 +726,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all entries in
+          <a>payment handler</a>'s <code>PaymentAppManager.options</code>, add all entries in
           <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -791,7 +791,7 @@
         </li>
         <li>
           For each <a>PaymentAppOption</a> <var>option</var> in the
-          <a>payment app</a>'s <code>PaymentAppManager.options</code>, add all
+          <a>payment handler</a>'s <code>PaymentAppManager.options</code>, add all
           entries in <var>option</var>.<code>enabledMethods</code> to
           <var>registeredMethods</var>.
         </li>
@@ -900,18 +900,18 @@
         </dd>
         <dt><code>respondWith</code> method</dt>
         <dd>
-          This method is used by the payment app to provide a
+          This method is used by the payment handler to provide a
           <a>PaymentAppResponse</a> when the payment successfully completes.
         </dd>
       </dl>
         <p>
           Upon receiving a <a>payment request</a> by way of
           <code>PaymentRequest.show()</code> and subsequent user selection of a
-          payment app, the <a>user agent</a> MUST run the following steps or their equivalent:
+          payment handler, the <a>user agent</a> MUST run the following steps or their equivalent:
         </p>
         <ol>
           <li>Let <var>registration</var> be the <a>service worker
-          registration</a> corresponding to the payment app
+          registration</a> corresponding to the payment handler
           selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the Promise that
@@ -938,7 +938,7 @@
               <li>Dispatch <var>e</var> to <var>global</var>.</li>
               <li>Wait for all of the promises in the <a>extend lifetime
                   promises</a> of <var>e</var> to resolve.</li>
-              <li>If the <a>payment app</a> has not provided a <a>payment app
+              <li>If the <a>payment handler</a> has not provided a <a>payment app
                   response</a> as described in <a
                   href="#sec-payment-app-response"></a>, reject the Promise that
                   was created by <code>PaymentRequest.show()</code> with a
@@ -950,23 +950,23 @@
   </section>
   <section>
   <h3>
-    Payment App Windows
+    Payment Handler Windows
   </h3>
 
-  <p>An invoked payment app may or may not need to display information
+  <p>An invoked payment handler may or may not need to display information
     about itself or request user input. Some examples of potential
-    payment app displays include:</p>
+    payment handler displays include:</p>
 
   <ul>
-    <li>The payment app opens a window for the user to provide an authorization code.</li>
-    <li>The payment app opens a window that makes it easy for the user to confirm payment using default information for that site provided through previous user configuration.</li>
-    <li>When first selected to pay in a given session, the payment app
-      opens a window. For subsequent payments in the same session, the payment app (through configuration) performs its duties without opening a window or requiring user interaction.</li>
+    <li>The payment handler opens a window for the user to provide an authorization code.</li>
+    <li>The payment handler opens a window that makes it easy for the user to confirm payment using default information for that site provided through previous user configuration.</li>
+    <li>When first selected to pay in a given session, the payment handler
+      opens a window. For subsequent payments in the same session, the payment handler (through configuration) performs its duties without opening a window or requiring user interaction.</li>
   </ul>
 
   <p class="issue">See <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/97">issue 97</a> for discussion about opening window in a way that is consistent with payment flow and not confusing to the user. For example, there is consensus that in a desktop environment, a payment handler should <em>not</em> open a window in a new browser tab, as this is too dissociated from the checkout context.</p>
   
-  <p>User agents SHOULD display the origin of a running payment app to the user.</p>
+  <p>User agents SHOULD display the origin of a running payment handler to the user.</p>
 
   </section>
   <section id="sec-payment-app-response">
@@ -993,7 +993,7 @@
     </dd>
     
     <p>
-      The user agent receives a successful response from the payment app
+      The user agent receives a successful response from the payment handler
       through resolution of the Promise provided to the <code>respondWith</code>
       function of the corresponding <a>PaymentRequestEvent</a> dictionary.
       The application is expected to resolve the Promise with a
@@ -1009,7 +1009,7 @@
     </p>
     <ul>
       <li>
-        Letting the user try again, with the same payment app or with a
+        Letting the user try again, with the same payment handler or with a
         different one.
       </li>
       <li>
@@ -1110,9 +1110,9 @@
       });
     </pre>
     <p>Using the simple scheme described above, a trivial HTML page that is
-    loaded into the <a>payment app window</a> to implement the <em>basic
+    loaded into the <a>payment handler window</a> to implement the <em>basic
     card</em> scheme might look like the following:</p>
-    <pre class="example highlight" title="Simple Payment App Window">
+    <pre class="example highlight" title="Simple Payment Handler Window">
 &lt;html&gt; &lt;body&gt; &lt;form id="form"&gt;
 &lt;table&gt;
   &lt;tr&gt;&lt;th&gt;Cardholder Name:&lt;/th&gt;&lt;td&gt;&lt;input name="cardholderName"&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -1158,8 +1158,8 @@ window.addEventListener("message", function(e) {
   <section>
     <h3>Information about the User Environment</h3>
     <ul>
-      <li>The API does not share information about the user's registered payment apps. Information from payment apps is only shared with the payee with the consent of the user.</li>
-      <li>Similarly, user agents should not share payment request information with any payment app until the user has selected that payment app.</li>
+      <li>The API does not share information about the user's registered payment handlers. Information from origins is only shared with the payee with the consent of the user.</li>
+      <li>Similarly, user agents should not share payment request information with any payment handler until the user has selected that payment handler.</li>
     </ul>
   </section>
   <section>
@@ -1189,7 +1189,7 @@ window.addEventListener("message", function(e) {
   <section>
     <h3>Private Browsing Mode</h3>
     <ul>
-      <li>When the Payment Request API is invoked in a "private browsing mode," the user agent should launch payment apps in a private context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the payment app or re-enter payment instrument details.</li>
+      <li>When the Payment Request API is invoked in a "private browsing mode," the user agent should launch payment handlers in a private context. This will generally prevent sites from accessing any previously-stored information. In turn, this is likely to require either that the user log in to the origin or re-enter payment instrument details.</li>
     </ul>
   </section>
 </section>
