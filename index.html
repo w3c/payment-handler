@@ -873,7 +873,8 @@
       };
     </pre>
       <dl>
-        <dt><code>origin</code> attribute</dt>
+        <dt><dfn data-lt-nodefault="" data-lt=
+        "PaymentAppRequest.origin">origin</dfn> attribute</dt>
         <dd>
           This attribute a string that indicates the <a>origin</a>
           of the <a>payee</a> web page. It MUST be formatted
@@ -882,13 +883,13 @@
           Serialization of an Origin</a>" algorithm defined in
           section 6.1 of [[!RFC6454]].
         </dd>
-        <dt><code>id</code> attribute</dt>
+        <dt><dfn>id</dfn> attribute</dt>
         <dd>
-          When getting, the <code>id</code> attribute returns this the
+          When getting, the <code>id</code> attribute returns the
           <code>[[\details]].id</code> from the <a>PaymentRequest</a> that
           corresponds to this <code>PaymentAppRequest</code>.
         </dd>
-        <dt><code>methodData</code> attribute</dt>
+        <dt><dfn>methodData</dfn> attribute</dt>
         <dd>
           This attribute contains <code>PaymentMethodData</code>
           dictionaries containing the <a>payment method
@@ -898,7 +899,7 @@
           <a>PaymentRequest</a> using the <a>Method Data Population
           Algorithm</a> defined below.
         </dd>
-        <dt><code>total</code> attribute</dt>
+        <dt><dfn>total</dfn> attribute</dt>
         <dd>
           This attribute indicates the total amount being requested
           for payment. It is initialized with a <a>structured
@@ -907,7 +908,7 @@
           corresponding <a>PaymentRequest</a> object was
           instantiated.
         </dd>
-        <dt><code>modifiers</code> attribute</dt>
+        <dt><dfn>modifiers</dfn> attribute</dt>
         <dd>
           This sequence of <code>PaymentDetailsModifier</code>
           dictionaries contains modifiers for particular payment
@@ -917,7 +918,7 @@
           using the <a>Modifiers Population Algorithm</a> defined
           below.
         </dd>
-        <dt><code>instrumentId</code> attribute</dt>
+        <dt><dfn>instrumentId</dfn> attribute</dt>
         <dd>
           This attribute indicates the <a>PaymentInstrument</a>
           selected by the user. It corresponds to the
@@ -1068,15 +1069,36 @@
           associated with this <a>payment request</a>.</p>
         </section>
         <section>
-          <h3><dfn>openWindow</dfn> method</h3>
+          <h3><dfn data-lt="openWindow()">openWindow</dfn>
+          method</h3>
           <p>This method is used by the payment handler to show a
-          window to the user.</p>
+          window to the user. It invokes the <a>Open Window
+          Algorithm</a>.</p>
         </section>
         <section>
           <h3><dfn>respondWith</dfn> method</h3>
           <p>This method is used by the payment handler to provide
           a <a>PaymentAppResponse</a> when the payment successfully
           completes.</p>
+        </section>
+        <section>
+          <h3>Internal Slots</h3>
+          <p>Instances of <a>PaymentRequest</a> are created with
+          the internal slots in the following table:</p>
+          <table>
+            <tr>
+              <th>Internal Slot</th>
+              <th>Description (<em>non-normative</em>)</th>
+            </tr>
+            <tr>
+              <td><dfn>[[\windowClient]]</dfn></td>
+              <td>
+                The currently active <a>WindowClient</a>. This is
+                set if a payment handler is currently showing a
+                window to the user. Otherwise, it is null.
+              </td>
+            </tr>
+          </table>
         </section>
         <section>
           <h3>Handling a payment request event</h3>
@@ -1152,19 +1174,90 @@
         or requiring user interaction.</li>
       </ul>
       <p>A payment handler that requires visual display and user
-      interaction, may call <code>openWindow()</code>. Since user
-      agents know that this method is connected to the payment
-      request event, they SHOULD render the window in a way that is
+      interaction, may call <a>openWindow()</a>. Since user agents
+      know that this method is connected to the payment request
+      event, they SHOULD render the window in a way that is
       consistent with the flow and not confusing to the user.</p>
       <p>The resulting window client is bound to the tab/window
       that initiated the <a>payment request</a>. A single
       <a>payment handler</a> SHOULD NOT be allowed to open more
-      than one client window using this method. The exact behavior
-      in the case where a payment handler calls
-      <code>openWindow()</code> multiple times, is left to the user
-      agent implementers to decide on. User agents MAY, in this
-      case, let subsequent calls to <code>openWindow()</code>
-      resolve to the same <code>WindowClient</code> instance.</p>
+      than one client window using this method.</p>
+      <section>
+        <h3><dfn>Open Window Algorithm</dfn></h3>
+        <p class="note">This algorithm is <i>very</i> similar to
+        the <a href=
+        "https://www.w3.org/TR/service-workers/#clients-openwindow">
+        Open Window Algorithm</a> in the Service Workers
+        specification. Should we refer to the Service Workers
+        specification instead of copying their steps?</p>
+        <ol class="algorithm">
+          <li>Let <var>event</var> be this
+          <a>PaymentRequestEvent</a>.
+          </li>
+          <li>Let <var>request</var> be the <a>PaymentRequest</a>
+          that triggered this payment request event.
+          </li>
+          <li>If <var>request</var>.[[\state]] is not
+          "interactive", then return a Promise rejected with a <a>
+            DOMException</a> whose value is
+            "<a>InvalidStateError</a>".
+          </li>
+          <li>Let <var>url</var> be the result of parsing the
+          <var>url</var> argument.</li>
+          <li>If <var>url</var> is failure, return a Promise
+          rejected with a <a>TypeError</a>.
+          </li>
+          <li>If url is about:blank, return a Promise rejected with
+          a <a>TypeError</a>.
+          </li>
+          <li>Let <var>promise</var> be a new <a>Promise</a>.
+          </li>
+          <li>Run these steps in parallel:
+            <ol class="algorithm">
+              <li>Let <var>newContext</var> be a new <a>top level
+              browsing context</a>.
+              </li>
+              <li>Navigate <var>newContext</var> to <var>url</var>,
+              with exceptions enabled and replacement enabled.</li>
+              <li>If the navigation throws an exception, reject
+              <var>promise</var> with that exception and abort
+              these steps.</li>
+              <li>If the origin is not the same as the
+              <var>event</var>.<a>appRequest</a>.<a href=
+              "#dom-paymentapprequest-origin">origin</a>, then:
+                <ol class="algorithm">
+                  <li>Resolve promise with null.</li>
+                  <li>Abort these steps.</li>
+                </ol>
+              </li>
+              <li>Let <var>client</var> be the result of running
+              <a href=
+              "https://www.w3.org/TR/service-workers/#capture-windowclient-algorithm">
+                Capture Window Client</a> algorithm, or its
+                equivalent, with <var>newContext</var> as the
+                argument.
+              </li>
+              <li>If <var>event</var>.<a>[[\windowClient]]</a> is
+              not null, then:
+                <ol class="algorithm">
+                  <li>If
+                  <var>event</var>.<a>[[\windowClient]]</a>.visibilityState
+                  is not "unloaded", reject <var>promise</var> with
+                  a <a>DOMException</a> whose value is
+                  "<a>InvalidStateError</a>" and abort these steps.
+                  </li>
+                </ol>
+              </li>
+              <li>Set <var>event</var>.<a>[[\windowClient]]</a> to
+              <var>client</var>.
+              </li>
+              <li>Resolve <var>promise</var> with
+              <var>client</var>.</li>
+            </ol>
+          </li>
+          <li>Return <var>promise</var>.</li>
+        </ol>
+      </section>
     </section>
     <section id="sec-payment-app-response">
       <h2><a>PaymentAppResponse</a> dictionary</h2>
