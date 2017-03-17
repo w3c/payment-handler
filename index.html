@@ -675,15 +675,6 @@
           corresponding <a>PaymentRequest</a> object was
           instantiated.
         </dd>
-        <dt><code>displayItems</code></dt>
-        <dd>
-          The sequence of line items optionally provided by the
-          payee. It is initialized with a <a>structured clone</a>
-          of the <code>displayItems</code> field of the
-          <code>PaymentDetails</code> provided when the
-          corresponding <a>PaymentRequest</a> object was
-          instantiated.
-        </dd>
         <dt><code>modifiers</code> attribute</dt>
         <dd>
           This sequence of <code>PaymentDetailsModifier</code>
@@ -701,10 +692,7 @@
           <code>id</code> field provided during registration.
         </dd>
       </dl>
-      <p class="issue" title="Issue 91 - line items">See <a href=
-      "https://github.com/w3c/webpayments-payment-apps-api/issues/91">
-      issue 91</a> for discussion about the inclusion of line items
-      in the Payment App Request.</p>
+
       <section>
         <h3><dfn>Method Data Population Algorithm</dfn></h3>
         <p>To initialize the value of the <code>methodData</code>,
@@ -797,11 +785,6 @@
               <li>Set <var>outModifier</var>.<code>total</code> to
               a <a>structured clone</a> of
               <var>inModifier</var>.<code>total</code>.
-              </li>
-              <li>Set
-              <var>outModifier</var>.<code>additionalDisplayItems</code>
-              to a <a>structured clone</a> of
-              <var>inModifier</var>.<code>additionalDisplayItems</code>.
               </li>
               <li>Append <var>outModifier</var> to
               <var>modifierList</var>.</li>
