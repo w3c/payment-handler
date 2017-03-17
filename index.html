@@ -860,8 +860,6 @@
     PaymentReponse for [[!PAYMENT-REQUEST-API]].</p>
     <section id="sec-app-request">
       <h2><a>PaymentAppRequest</a> interface</h2>
-      The <a>payment app request</a> is
-      conveyed using the following interface:
       <pre class="idl">
       interface PaymentAppRequest {
         readonly attribute DOMString origin;
@@ -871,10 +869,9 @@
         readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
         readonly attribute DOMString instrumentId;
       };
-    </pre>
+      </pre>
       <dl>
-        <dt><dfn data-lt-nodefault="" data-lt=
-        "PaymentAppRequest.origin">origin</dfn> attribute</dt>
+        <dt><dfn>origin</dfn> attribute</dt>
         <dd>
           This attribute a string that indicates the <a>origin</a>
           of the <a>payee</a> web page. It MUST be formatted
