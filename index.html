@@ -125,7 +125,7 @@
       <li>How origins register their support for different payment
       methods with the user agent.</li>
       <li>How origins provide information to faciliate the display
-      of payment options for selection by the user.</li>
+      of payment instruments for selection by the user.</li>
       <li>How user agents invoke and exchange data with payment
       handlers from an origin.</li>
     </ul>
@@ -196,6 +196,10 @@
           <tr>
             <td><code><dfn>InvalidStateError</dfn></code></td>
             <td>The object is in an invalid state</td>
+          </tr>
+          <tr>
+            <td><code><dfn>NotFoundError</dfn></code></td>
+            <td>The object can not be found here.</td>
           </tr>
           <tr>
             <td><code><dfn>SecurityError</dfn></code></td>
@@ -270,7 +274,7 @@
           supports a given payment method; these "capabilities"
           play a role in matching computations.</li>
           <li>Information for organizing the display and grouping
-          of Options supported by the payment handler.</li>
+          of Instruments supported by the payment handler.</li>
         </ul>
       </li>
       <li>When the merchant calls Payment Request API (e.g., when
@@ -282,16 +286,16 @@
       capabilities are compared as part of determining whether
       there is a match.</li>
       <li>The user agent displays matching payment handlers,
-      displaying and grouping Options according to information
+      displaying and grouping Instruments according to information
       (labels and icons) provided at registration or otherwise
       available from the Web app.</li>
-      <li>When the user selects an Option, the user agent fires the
+      <li>When the user selects an Instrument, the user agent fires the
       paymentrequest event in the service worker whose registration
-      included the payment handler that provided that Option. The
+      included the payment handler that provided that Instrument. The
       paymentrequest event includes some information from the
       PaymentRequest (defined in [[!PAYMENT-REQUEST-API]]) as well
       as additional information (e.g., origin and selected
-      Option).</li>
+      Instrument).</li>
       <li>Once activated, the payment handler performs whatever
       steps are necessary to authenticate the user, process the
       payment, and return payment information to the <a>payee</a>.
@@ -326,68 +330,158 @@
       [[!SERVICE-WORKERS]], which this specification extends.</p>
       <pre id="service-worker-registration-idl" class="idl">
         partial interface ServiceWorkerRegistration {
-          readonly attribute PaymentAppManager paymentAppManager;
+          readonly attribute PaymentManager paymentManager;
         };
       </pre>
     </section>
-    <section id="payment-app-manager">
-      <h2><a>PaymentAppManager</a> interface</h2>
-      <pre id="payment-app-manager-idl" class="idl">
-      interface PaymentAppManager {
-        attribute PaymentAppOptions options;
+    <section id="payment-manager">
+      <h2><a>PaymentManager</a> interface</h2>
+      <pre id="payment-manager-idl" class="idl">
+      interface PaymentManager {
+        attribute PaymentInstruments instruments;
         attribute PaymentWallets wallets;
       };
       </pre>
       <dl>
-        <dt><code>options</code> attribute</dt>
+        <dt><code>instruments</code> attribute</dt>
         <dd>
-          This attribute allows manipulation of payment options
+          This attribute allows manipulation of payment instruments
           associated with a payment handler. To be presented to the
           user as part of the payment request flow, payment
           handlers must have at least one registered payment
-          option, and that option needs to match the payment
+          Instrument, and that Instrument needs to match the payment
           methods and required capabilities specified by the
           payment request.
-          <p class="issue">Is "options" the right term here? We
-          don't want this to get conflated with "PaymentOptions" in
-          the payment request specification. Other alternatives
-          might be "instruments" or "accounts."</p>
         </dd>
         <dt><code>wallets</code> attribute</dt>
         <dd>This attribute allows payment handlers to group payment
-        options together and provide a name and icon for such a
+        instruments together and provide a name and icon for such a
         group (e.g., to group together "business account" payment
         instruments separately from "personal account" payment
         instruments). The use of this grouping mechanism by payment
         handlers is completely optional. If payment handlers use
-        this grouping mechanism, then matching payment options that
+        this grouping mechanism, then matching payment instruments that
         do not appear in any groups should still be presented to
         users by the browser for selection.</dd>
       </dl>
     </section>
-    <section id="payment-options">
-      <h2><a>PaymentAppOptions</a> interface</h2>
-      <pre id="payment-app-options-idl" class="idl">
-      interface PaymentAppOptions {
-          Promise&lt;boolean&gt;              delete(DOMString optionKey);
-          Promise&lt;PaymentAppOption&gt; get(DOMString optionKey);
+    <section id="payment-instruments">
+      <h2><a>PaymentInstruments</a> interface</h2>
+      <pre id="payment-instruments-idl" class="idl">
+      interface PaymentInstruments {
+          Promise&lt;boolean&gt;              delete(DOMString instrumentKey);
+          Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;              has(DOMString optionKey);
-          Promise&lt;void&gt;                 set(DOMString optionKey,
-                                              PaymentAppOption details);
+          Promise&lt;boolean&gt;              has(DOMString instrumentKey);
+          Promise&lt;void&gt;                 set(DOMString instrumentKey,
+                                              PaymentInstrument details);
       };
       </pre>
-      <p>Where it appears, The <code>optionKey</code> parameter is
-      a unique identifier for the option; it will be passed to the
-      payment handler to indicate the <a>PaymentAppOption</a>
+      <p>The <a>PaymentInstruments</a> interface represents a collection of
+      payment instruments, each uniquely identified by an <a>instrumentKey</a>.
+      The <a>instrumentKey</a> identifier will be passed to the
+      payment handler to indicate the <a>PaymentInstrument</a>
       selected by the user.</p>
-      <p class="issue">TODO: flesh out details after the WG reaches
-      general consensus on the shape of this API.</p>
+      <dl>
+
+        <dt><code>delete</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>PaymentInstrument</a>
+              with a matching <code>instrumentKey</code>, remove it from
+              the collection and resolve <var>p</var> with <b>true</b>.</li>
+              <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>get</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>PaymentInstrument</a>
+              with a matching <code>instrumentKey</code>, resolve <var>p</var>
+              with that <a>PaymentInstrument</a>.
+              <li> Otherwise, reject <var>p</var> with a
+              <a>DOMException</a> whose value is
+              "<a>NotFoundError</a>".
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>keys</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li>Resolve <var>p</var> with a sequence that contains all
+              the <code>instrumentKey</code>s for the <a>PaymentInstrument</a>s
+              contained in the collection.
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>has</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>PaymentInstrument</a>
+              with a matching <code>instrumentKey</code>, resolve <var>p</var>
+              with <b>true</b>.</li>
+              <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>set</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>PaymentInstrument</a>
+              with a matching <code>instrumentKey</code>, replace it with
+              the <a>PaymentInstrument</a> in <code>details</code>.
+              <li> Otherwise, <a>PaymentInstrument</a>
+              insert the <a>PaymentInstrument</a> in <code>details</code>
+              as a new member of the collection and associate it with the
+              key <code>instrumentKey</code>.
+              <li> Resolve <var>p</var>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+      </dl>
+
+      <pre class="example highlight" title="Removing all instruments">
+        return paymentManager.instruments.keys().then((keys) =&gt; {
+          Promise.all(keys.map(paymentManager.instruments.delete(key)))
+        });
+      </pre>
+
+
     </section>
-    <section id="payment-app-option">
-      <h2><a>PaymentAppOption</a> dictionary</h2>
-      <pre id="payment-app-option-idl" class="idl">
-      dictionary PaymentAppOption {
+    <section id="payment-instrument">
+      <h2><a>PaymentInstrument</a> dictionary</h2>
+      <pre id="payment-instrumnt-idl" class="idl">
+      dictionary PaymentInstrument {
         required DOMString name;
         sequence&lt;ImageObjects&gt; icons;
         sequence&lt;DOMString&gt; enabledMethods;
@@ -397,26 +491,26 @@
       <dl>
         <dt><code>name</code> member</dt>
         <dd>The <code>name</code> member is a string that
-        represents the label for this payment option as it is
+        represents the label for this payment Instrument as it is
         usually displayed to the user.</dd>
         <dt><code>icons</code> member</dt>
         <dd>The <code>icons</code> member is an array of image
         objects that can serve as iconic representations of the
-        payment option when presented to the user for
+        payment Instrument when presented to the user for
         selection.</dd>
         <dt><code>enabledMethods</code> member</dt>
         <dd>
           The <dfn id=
-          "payment-app-option-enabled-methods"><code>enabledMethods</code></dfn>
+          "payment-instrument-enabled-methods"><code>enabledMethods</code></dfn>
           member lists the <a>payment method identifiers</a> of the
-          payment methods enabled by this option.
+          payment methods enabled by this Instrument.
         </dd>
         <dt><code>capabilities</code> member</dt>
         <dd>The <dfn id=
-        "payment-app-option-capabilities"><code>capabilities</code></dfn>
+        "payment-instrument-capabilities"><code>capabilities</code></dfn>
         member contains a list of payment-method-specific
         capabilities that this payment handler is capable of
-        supporting for this option. For example, for the
+        supporting for this Instrument. For example, for the
         <code>basic-card</code> payment method, this object will
         consist of an object with two fields: one for
         <code>supportedNetworks</code>, and another for
@@ -425,7 +519,7 @@
     </section>
     <section id="payment-wallets">
       <h2><a>PaymentWallets</a> interface</h2>
-      <pre id="payment-app-wallets-idl" class="idl">
+      <pre id="payment-wallets-idl" class="idl">
       interface PaymentWallets {
           Promise&lt;boolean&gt;              delete(DOMString walletKey);
           Promise&lt;WalletDetails&gt; get(DOMString walletKey);
@@ -437,16 +531,103 @@
       </pre>
       <p>Where it appears, The <code>walletKey</code> parameter is
       a unique identifier for the wallet.</p>
-      <p class="issue">TODO: flesh out details after the WG reaches
-      general consensus on the shape of this API.</p>
+      <dl>
+
+        <dt><code>delete</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>WalletDetails</a>
+              with a matching <code>walletKey</code>, remove it from
+              the collection and resolve <var>p</var> with <b>true</b>.</li>
+              <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>get</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>WalletDetails</a>
+              with a matching <code>walletKey</code>, resolve <var>p</var>
+              with that <a>WalletDetails</a>.
+              <li> Otherwise, reject <var>p</var> with a
+              <a>DOMException</a> whose value is
+              "<a>NotFoundError</a>".
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>keys</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li>Resolve <var>p</var> with a sequence that contains all
+              the <code>walletKey</code>s for the <a>WalletDetails</a>s
+              contained in the collection.
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>has</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>WalletDetails</a>
+              with a matching <code>walletKey</code>, resolve <var>p</var>
+              with <b>true</b>.</li>
+              <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+        <dt><code>set</code> method</dt>
+        <dd>
+          When called, this method executes the following steps:
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:</li>
+            <ol>
+              <li> If the collection contains a <a>WalletDetails</a>
+              with a matching <code>walletKey</code>, replace it with
+              the <a>WalletDetails</a> in <code>details</code>.
+              <li> Otherwise, <a>WalletDetails</a>
+              insert the <a>WalletDetails</a> in <code>details</code>
+              as a new member of the collection and associate it with the
+              key <code>walletKey</code>.
+              <li> Resolve <var>p</var>.</li>
+            </ol>
+            <li> Return <var>p</var></li>
+          </ol>
+        </dd>
+
+      </dl>
+
     </section>
     <section id="wallet-details">
-      <h2><a>WalletDetails</a> interface</h2>
+      <h2><a>WalletDetails</a> dictionary</h2>
       <pre id="wallet-details-idl" class="idl">
       dictionary WalletDetails {
           required DOMString name;
           sequence&lt;ImageObject&gt; icons;
-          required sequence&lt;DOMString&gt; optionKeys;
+          required sequence&lt;DOMString&gt; instrumentKeys;
       };
       </pre>
       <dl>
@@ -458,68 +639,111 @@
         <dd>The <code>icons</code> member is an array of image
         objects that can serve as iconic representations of the
         wallet when presented to the user for selection.</dd>
-        <dt><code>optionKeys</code> member</dt>
-        <dd>TODO</dd>
+        <dt><code>instrumentKeys</code> member</dt>
+        <dd>The <code>instrumentKeys</code> member is a
+        list of <code>instrumentKey</code>s from
+        <a>PaymentManager</a>.<code>instruments</code>,
+        indicating which <a>PaymentInstrument</a> objects are associated
+        with this <a>Wallet</a>, and should be displayed as being "contained in"
+        the wallet. While it is not generally good practice, there is no
+        restriction that prevents a <a>PaymentInstrument</a> from appearing in
+        more than one <a>Wallet</a>.
+        </dd>
       </dl>
     </section>
     <section id="register-example">
       <h3>Registration Example</h3>
       <p>The following example shows how to register a payment
       handler:</p>
+      <p class="issue" title="Issue 94 - Permission"><a href=
+      "https://github.com/w3c/webpayments-payment-apps-api/issues/94">
+      Issue 94</a>. The means for code requesting permission to handle
+      payments is not yet defined. The code below is based on one
+      potential model (a <code>requestPermission()</code> method on the
+      <a>PaymentManager</a>),
+      but this is likely to change.
+      </p>
       <pre class="example highlight" title=
       "Payment Handler Registration">
-         navigator.serviceWorker.register('/exampleapp.js')
-         .then(function(registration) {
-           registration.paymentAppManager.options.set(
-             "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
-             {
-               name: "Visa ending ****4756",
-               enabledMethods: ["basic-card"],
-               capabilities: {
-                 supportedNetworks: ['visa'],
-                 supportedTypes: ['credit']
-               }
-             });
+        window.addEventListerner("DOMContentLoaded", async() =&gt; {
+          const { registration } =
+            await navigator.serviceWorker.register('/sw.js');
+          if (!paymentManager) {
+            return; // not supported, so bail out.
+          }
+          const state =
+            await navigator.permissions.query({ name: "paymenthandler" });
 
-           registration.paymentAppManager.options.set(
-             "c8126178-3bba-4d09-8f00-0771bcfd3b11",
-             {
-               name: "My Bob Pay Account: john@example.com",
-               enabledMethods: ["https://bobpay.com/"]
-             });
+          switch (state) {
+            case "denied":
+              return;
+            case "prompt":
+              // Note -- it's not clear how this should work yet; see Issue 94.
+              const result = await registration.paymentManager.requestPermission();
+              if (result === "denied") {
+                return;
+              }
+              break;
+          }
+          // Excellent, we got it! Let's now set up the user's cards.
+          await addInstruments(registration);
+        }, { once: true });
 
-           registration.paymentAppManager.options.set(
-             "new-card",
-             {
-               name: "Add new credit/debit card to ExampleApp",
-               enabledMethods: ["basic-card"],
-               capabilities: {
-                 supportedNetworks:
-                   ['visa','mastercard','amex','discover'],
-                 supportedTypes: ['credit','debit','prepaid']
-               }
-             });
+        function addInstruments(registration) {
+          const instrumentPromises = [
+            registration.paymentManager.instruments.set(
+              "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
+              {
+                name: "Visa ending ****4756",
+                enabledMethods: ["basic-card"],
+                capabilities: {
+                  supportedNetworks: ['visa'],
+                  supportedTypes: ['credit']
+                }
+              }),
 
-           registration.paymentAppManager.wallets.set(
-             "12a1b7e5-16c0-4c09-a312-9b191d08517b",
-             {
-               name: "Acme Bank Personal Accounts",
-               icons: [
-                        { src: "icon/lowres.webp",
-                          sizes: "48x48",
-                          type: "image/webp"
-                        },
-                        { src: "icon/lowres",
-                          sizes: "48x48"
-                        }
-                      ],
-               optionKeys: [
-                   "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
-                   "c8126178-3bba-4d09-8f00-0771bcfd3b11",
-                   "new-card"
-                 ]
+            registration.paymentManager.instruments.set(
+              "c8126178-3bba-4d09-8f00-0771bcfd3b11",
+              {
+                name: "My Bob Pay Account: john@example.com",
+                enabledMethods: ["https://bobpay.com/"]
+              }),
+
+            registration.paymentManager.instruments.set(
+              "new-card",
+              {
+                name: "Add new credit/debit card to ExampleApp",
+                enabledMethods: ["basic-card"],
+                capabilities: {
+                  supportedNetworks:
+                    ['visa','mastercard','amex','discover'],
+                  supportedTypes: ['credit','debit','prepaid']
+                }
+              }),
+            ];
+
+            return Promise.all(instrumentPromises).then(() =&gt; {
+              registration.paymentManager.wallets.set(
+                "12a1b7e5-16c0-4c09-a312-9b191d08517b",
+                {
+                  name: "Acme Bank Personal Accounts",
+                  icons: [
+                           { src: "icon/lowres.webp",
+                             sizes: "48x48",
+                             type: "image/webp"
+                           },
+                           { src: "icon/lowres",
+                             sizes: "48x48"
+                           }
+                         ],
+                  instrumentKeys: [
+                      "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
+                      "c8126178-3bba-4d09-8f00-0771bcfd3b11",
+                      "new-card"
+                    ]
+                });
              });
-         });
+          };
      </pre>
       <p class="issue" title="Payment method identifiers">The
       Editors will update the payment method identifier syntax in
@@ -528,8 +752,8 @@
       upon.</p>
     </section>
   </section>
-  <section id="option-display-ordering">
-    <h2>Origin and Option Display for Selection</h2>
+  <section id="instrument-display-ordering">
+    <h2>Origin and Instrument Display for Selection</h2>
     <p>After applying the matching algorithm defined in Payment
     Request API, the user agent displays a list of matching origins
     for the user to make a selection. This specification includes a
@@ -566,9 +790,9 @@
       </ul>
     </section>
     <section>
-      <h3>Display of Options</h3>
+      <h3>Display of Instruments</h3>
       <p>The user agent <span class='rfc2119'>MUST</span> enable
-      the user to select any displayed Option.</p>
+      the user to select any displayed Instrument.</p>
       <ul>
         <li>At a minimum, we expect user agents to display an icon
         and label for each matching origin to help the user make a
@@ -582,17 +806,17 @@
         card's brand and the last four digits of the card to remind
         the user which cards the origin knows about.</li>
       </ul>
-      <p class="issue" title="Isue 98 - display"><a href=
+      <p class="issue" title="Issue 98 - display"><a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/98">
       Issue 98</a>. There has been pushback to always requiring
-      display of options (e.g., on a mobile devices). User agents
-      can incrementally show options. Or user agents can return an
-      empty option ID and it becomes the payment app's
-      responsibility to display options to the user.</p>
+      display of instruments (e.g., on a mobile devices). User agents
+      can incrementally show instruments. Or user agents can return an
+      empty Instrument ID and it becomes the payment app's
+      responsibility to display instruments to the user.</p>
     </section>
     <section>
-      <h3>Grouping of Options</h3>
-      <p>At times, the same origin may wish to group options with
+      <h3>Grouping of Instruments</h3>
+      <p>At times, the same origin may wish to group instruments with
       greater flexibility and granularity than merely "by origin."
       These use cases include:</p>
       <ul>
@@ -602,48 +826,50 @@
         business wallet vs personal wallet)</li>
         <li>Multiple instruments held with a single provider</li>
       </ul>
-      <p>A <dfn id="wallet">Wallet</dfn> is a grouping of Options
+      <p>A <dfn id="wallet">Wallet</dfn> is a grouping of Instruments
       for display purposes.</p>
       <p>To enable developers to build payment apps in a variety of
       ways, we decouple the registration (and subsequent display)
-      of Options from how payment handlers respond to
+      of Instruments from how payment handlers respond to
       paymentrequest events. However, the user agent is responsible
       for communicating the user's selection in the event.</p>
     </section>
     <section>
-      <h3>Selection of Options</h3>
+      <h3>Selection of Instruments</h3>
       <p>Users agents may wish to enable the user to select
-      individual displayed Options. The payment handler would
-      receive information about the selected option and could take
+      individual displayed Instruments. The payment handler would
+      receive information about the selected Instrument and could take
       action, potentially eliminating an extra click (first open
-      the payment app then select the option).</p>
-      <p class="issue" title="Isue 98 - selection"><a href=
+      the payment app then select the Instrument).</p>
+      <p class="issue" title="Issue 98 - selection"><a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/98">
       Issue 98</a>. Should we require that, if displayed,
-      individual Options must be selectable? Or should we allow
-      flexibility that Options may be displayed, but selecting any
+      individual Instruments must be selectable? Or should we allow
+      flexibility that Instruments may be displayed, but selecting any
       one invokes all registered payment handlers? One idea that
       has been suggested: the user agent (e.g., on a mobile device)
       could first display the app-level icon/logo. Upon selection,
-      the user agent could display the Options in a submenu.</p>
+      the user agent could display the Instruments in a submenu.</p>
     </section>
   </section>
   <section id="invocation">
     <h2>Payment Handler Invocation, Display and Response</h2>
-    <p>Once the user has selected an Option, the user agent fires a
+    <p>Once the user has selected an Instrument, the user agent fires a
     <a>paymentrequest event</a> with a Payment App Request, and
     uses the subsequent Payment App Response to create a
     PaymentReponse for [[!PAYMENT-REQUEST-API]].</p>
     <section id="sec-app-request">
-      <h3>Payment App Request</h3>The <a>payment app request</a> is
-      conveyed using the following dictionary:
+      <h2><a>PaymentAppRequest</a> interface</h2>
+      The <a>payment app request</a> is
+      conveyed using the following interface:
       <pre class="idl">
-      dictionary PaymentAppRequest {
-        DOMString origin;
-        sequence&lt;PaymentMethodData&gt; methodData;
-        PaymentItem total;
-        sequence&lt;PaymentDetailsModifier&gt; modifiers;
-        DOMString optionId;
+      interface PaymentAppRequest {
+        readonly attribute DOMString origin;
+        readonly attribute DOMString id;
+        readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+        readonly attribute PaymentItem total;
+        readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+        readonly attribute DOMString instrumentId;
       };
     </pre>
       <dl>
@@ -655,6 +881,12 @@
           "https://tools.ietf.org/html/rfc6454#section-6.1">Unicode
           Serialization of an Origin</a>" algorithm defined in
           section 6.1 of [[!RFC6454]].
+        </dd>
+        <dt><code>id</code> attribute</dt>
+        <dd>
+          When getting, the <code>id</code> attribute returns this the
+          <code>[[\details]].id</code> from the <a>PaymentRequest</a> that
+          corresponds to this <code>PaymentAppRequest</code>.
         </dd>
         <dt><code>methodData</code> attribute</dt>
         <dd>
@@ -685,9 +917,9 @@
           using the <a>Modifiers Population Algorithm</a> defined
           below.
         </dd>
-        <dt><code>optionId</code> attribute</dt>
+        <dt><code>instrumentId</code> attribute</dt>
         <dd>
-          This attribute indicates the <a>PaymentAppOption</a>
+          This attribute indicates the <a>PaymentInstrument</a>
           selected by the user. It corresponds to the
           <code>id</code> field provided during registration.
         </dd>
@@ -701,10 +933,10 @@
         <ol>
           <li>Set <var>registeredMethods</var> to an empty
           set.</li>
-          <li>For each <a>PaymentAppOption</a> <var>option</var> in
+          <li>For each <a>PaymentInstrument</a> <var>instrument</var> in
           the <a>payment handler</a>'s
-          <code>PaymentAppManager.options</code>, add all entries
-          in <var>option</var>.<code>enabledMethods</code> to <var>
+          <code>PaymentManager.instruments</code>, add all entries
+          in <var>instrument</var>.<code>enabledMethods</code> to <var>
             registeredMethods</var>.
           </li>
           <li>Create a new empty <code>Sequence</code>.</li>
@@ -751,10 +983,10 @@
         <ol>
           <li>Set <var>registeredMethods</var> to an empty
           set.</li>
-          <li>For each <a>PaymentAppOption</a> <var>option</var> in
+          <li>For each <a>PaymentInstrument</a> <var>instrument</var> in
           the <a>payment handler</a>'s
-          <code>PaymentAppManager.options</code>, add all entries
-          in <var>option</var>.<code>enabledMethods</code> to <var>
+          <code>PaymentManager.instruments</code>, add all entries
+          in <var>instrument</var>.<code>enabledMethods</code> to <var>
             registeredMethods</var>.
           </li>
           <li>Create a new empty <code>Sequence</code>.</li>
@@ -922,7 +1154,8 @@
       handler to the user.</p>
     </section>
     <section id="sec-payment-app-response">
-      <h3>Payment App Response</h3>The <a>payment app response</a>
+      <h2><a>PaymentAppResponse</a> dictionary</h2>
+      The <a>payment app response</a>
       is conveyed using the following dictionary:
       <pre class="idl">
       dictionary PaymentAppResponse {
@@ -1004,12 +1237,13 @@
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
         /* ... processing may occur here ... */
         accept({
-          methodName: "basic-card#visa",
+          methodName: "basic-card",
           details: {
-            card_number :  "1232343451234",
-            expiry_month : "12",
-            expiry_year :  "2020",
-            cvv :          "123"
+            cardHolderName:   "John Smith",
+            cardNumber:       "1232343451234",
+            expiryMonth:      "12",
+            expiryYear :      "2020",
+            cardSecurityCode: "123"
            }
         });
       });
@@ -1032,9 +1266,9 @@
       <p class="issue">Per <a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/97">
       issue 97</a>, we expect <strong>not</strong> to use
-      clients.OpenWindow and instead await a proposal for a new
-      openClientWindow method. We will need to update these
-      examples.</p>
+      <code>clients.OpenWindow()</code> and instead await a proposal for a new
+      openClientWindow method on the <a>PaymentRequestEvent</a>.
+      We will need to update these examples.</p>
       <pre class="example highlight" title=
       "Handling the paymentrequest event" id=
       "example-paymentrequest-event">
@@ -1049,6 +1283,7 @@
             }
           });
 
+          // Note -- this will probably chage to e.openClientWindow(...)
           clients.openWindow("https://www.example.com/bobpay/pay")
           .then(function(windowClient) {
             windowClient.postMessage(e.data);
@@ -1165,5 +1400,6 @@ window.addEventListener("message", function(e) {
       </ul>
     </section>
   </section>
+  <section class="appendix" id="idl-index"></section>
 </body>
 </html>
