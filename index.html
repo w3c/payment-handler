@@ -280,7 +280,7 @@
       <li>When the merchant calls Payment Request API (e.g., when
       the user pushes a button on a checkout page), the user agent
       computes a list of matching payment handlers, comparing the
-      payment methods accepted by the user with those supported by
+      payment methods accepted by the merchant with those supported by
       registered payment handlers. For payment methods that support
       additional filtering, merchant and payment handler
       capabilities are compared as part of determining whether
@@ -758,7 +758,7 @@
     Request API, the user agent displays a list of matching origins
     for the user to make a selection. This specification includes a
     limited number of display requirements; most user experience
-    details are left to user agents.</p>
+    details are left to implementers.</p>
     <section>
       <h3>Ordering of Payment Handlers</h3>
       <ul>
@@ -1070,7 +1070,7 @@
           <dt><code>respondWith</code> method</dt>
           <dd>
             This method is used by the payment handler to provide a
-            <a>PaymentAppResponse</a> when the payment successfully
+            <a>PaymentAppResponse</a> when user interaction successfully
             completes.
           </dd>
         </dl>
@@ -1189,8 +1189,8 @@
           Promise.</p>
           <p>If the Promise is rejected, the user agent MUST run
           the <dfn>payment app failure algorithm</dfn>. The exact
-          details of this algorithm is left for user agent
-          implementers to decide on. Acceptable behaviors include,
+          details of this algorithm are left to 
+          implementers. Acceptable behaviors include,
           but are not limited to:</p>
           <ul>
             <li>Letting the user try again, with the same payment
