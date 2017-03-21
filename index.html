@@ -48,6 +48,7 @@
             wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/83744/status",
 
             issueBase:    "https://github.com/w3c/webpayments-payment-apps-api/issues/",
+            githubAPI:    "https://api.github.com/repos/w3c/webpayments-payment-apps-api",
 
             localBiblio:  {
                 "PAYMENT-REQUEST-API": {
@@ -1056,8 +1057,8 @@
       [Exposed=ServiceWorker]
       interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequest appRequest;
-        <a>Promise</a>&lt;<a>WindowClient</a>&gt; openWindow(DOMString url);
-        void respondWith(<a>Promise</a>&lt;<a>PaymentAppResponse</a>&gt;appResponse);
+        Promise&lt;WindowClient&gt; openWindow(USVString url);
+        void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
       };
       </pre>
         <section>
@@ -1066,29 +1067,30 @@
           associated with this <a>payment request</a>.</p>
         </section>
         <section>
-          <h3><dfn data-lt="openWindow()">openWindow</dfn>
-          method</h3>
+          <h3><dfn>openWindow()</dfn> method</h3>
           <p>This method is used by the payment handler to show a
-          window to the user. It invokes the <a>Open Window
-          Algorithm</a>.</p>
+          window to the user. When called, it runs the <a>open window
+          algorithm</a>.</p>
         </section>
         <section>
-          <h3><dfn>respondWith</dfn> method</h3>
+          <h3><dfn>respondWith()</dfn> method</h3>
           <p>This method is used by the payment handler to provide
           a <a>PaymentAppResponse</a> when the payment successfully
           completes.</p>
         </section>
         <section>
           <h3>Internal Slots</h3>
-          <p>Instances of <a>PaymentRequest</a> are created with
+          <p>Instances of <a>PaymentRequestEvent</a> are created with
           the internal slots in the following table:</p>
           <table>
             <tr>
               <th>Internal Slot</th>
+              <th>Default Value</th>
               <th>Description (<em>non-normative</em>)</th>
             </tr>
             <tr>
               <td><dfn>[[\windowClient]]</dfn></td>
+              <td>null</td>
               <td>
                 The currently active <a>WindowClient</a>. This is
                 set if a payment handler is currently showing a
@@ -1100,21 +1102,21 @@
         <section>
           <h3>Handling a payment request event</h3>
           <p>Upon receiving a <a>payment request</a> by way of
-          <code>PaymentRequest.show()</code> and subsequent user
+          <a data-cite="!payment-request#show-method">PaymentRequest.show()</a> and subsequent user
           selection of a payment handler, the <a>user agent</a>
-          MUST run the following steps or their equivalent:</p>
+          MUST run the following steps:</p>
           <ol>
             <li>Let <var>registration</var> be the <a>service
-            worker registration</a> corresponding to the payment
-            handler selected by the user.
+            worker registration</a> corresponding to the <a>payment
+            handler</a> selected by the user.
             </li>
             <li>If <var>registration</var> is not found, reject the
-            Promise that was created by
-            <code>PaymentRequest.show()</code> with a
+            <a>Promise</a> that was created by
+            <a data-cite="!payment-request#show-method">PaymentRequest.show()</a> with a
             <a>DOMException</a> whose value
             "<a>InvalidStateError</a>" and terminate these steps.
             </li>
-            <li>Invoke the <a>Handle Functional Event</a> algorithm
+            <li>Invoke the <a>handle functional event</a> algorithm
             with a <a>service worker registration</a> of
             <var>registration</var> and <var>callbackSteps</var>
             set to the following steps:
@@ -1123,7 +1125,7 @@
                 was provided as an argument.</li>
                 <li>Create a <a>trusted event</a>, <var>e</var>,
                 that uses the
-                <code><a>PaymentRequestEvent</a></code> interface,
+                <a>PaymentRequestEvent</a> interface,
                 with the event type <code>paymentrequest</code>,
                 which does not bubble, cannot be canceled, and has
                 no default action.
@@ -1141,8 +1143,8 @@
                 <li>If the <a>payment handler</a> has not provided
                 a <a>payment app response</a> as described in
                 <a href="#sec-payment-app-response"></a>, reject
-                the Promise that was created by
-                <code>PaymentRequest.show()</code> with a
+                the <a>Promise</a> that was created by
+                < data-cite="!payment-request#show-method">PaymentRequest.show()</a> with a
                 <a>DOMException</a> whose value
                 "<a>OperationError</a>".
                 </li>
@@ -1153,7 +1155,7 @@
       </section>
     </section>
     <section>
-      <h3>Payment Handler Windows</h3>
+      <h3><dfn data-lt="payment handler window">Payment Handler Windows</dfn></h3>
       <p>An invoked payment handler may or may not need to display
       information about itself or request user input. Some examples
       of potential payment handler displays include:</p>
@@ -1170,20 +1172,23 @@
         configuration) performs its duties without opening a window
         or requiring user interaction.</li>
       </ul>
-      <p>A payment handler that requires visual display and user
-      interaction, may call <a>openWindow()</a>. Since user agents
+      <p>A <a>payment handler</a> that requires visual display and user
+      interaction, may call <a>openWindow()</a> to display a page to the
+      user.</p>
+
+      <p class="note"> Since user agents
       know that this method is connected to the payment request
       event, they SHOULD render the window in a way that is
-      consistent with the flow and not confusing to the user.</p>
-      <p>The resulting window client is bound to the tab/window
+      consistent with the flow and not confusing to the user.
+      The resulting window client is bound to the tab/window
       that initiated the <a>payment request</a>. A single
       <a>payment handler</a> SHOULD NOT be allowed to open more
       than one client window using this method.</p>
+
       <section>
         <h3><dfn>Open Window Algorithm</dfn></h3>
-        <p class="note">This algorithm is <i>very</i> similar to
-        the <a href=
-        "https://www.w3.org/TR/service-workers/#clients-openwindow">
+        <p class="issue" data-number="115">This algorithm is <i>very</i> similar to
+        the <a data-cite="!service-workers#clients-openwindow">
         Open Window Algorithm</a> in the Service Workers
         specification. Should we refer to the Service Workers
         specification instead of copying their steps?</p>
@@ -1194,53 +1199,50 @@
           <li>Let <var>request</var> be the <a>PaymentRequest</a>
           that triggered this payment request event.
           </li>
-          <li>If <var>request</var>.[[\state]] is not
-          "interactive", then return a Promise rejected with a <a>
-            DOMException</a> whose value is
+          <li>If <var>request</var>.<a data-cite="!payment-request#dfn-state-1">[[\state]]</a> is not
+          "<a data-cite="!payment-request#dfn-interactive">interactive</a>", then return a <a>Promise</a> rejected with a <a>
+            DOMException</a> whose name is
             "<a>InvalidStateError</a>".
           </li>
-          <li>Let <var>url</var> be the result of parsing the
+          <li>Let <var>url</var> be the result of <a data-cite="!whatwg-url#concept-url-parser">parsing</a> the
           <var>url</var> argument.</li>
-          <li>If <var>url</var> is failure, return a Promise
-          rejected with a <a>TypeError</a>.
-          </li>
-          <li>If url is about:blank, return a Promise rejected with
-          a <a>TypeError</a>.
+          <li>If the url parsing throws an exception, return a <a>Promise</a>
+          rejected with that exception.</li>
+          <li>If url is about:blank, return a <a>Promise</a> rejected with
+          a <code>TypeError</code>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
-          <li>Run these steps in parallel:
-            <ol class="algorithm">
-              <li>Let <var>newContext</var> be a new <a>top level
+          <li>Run these steps <a data-cite="!whatwg-html#in-parallel">in parallel</a>:
+            <ol>
+              <li>Let <var>newContext</var> be a new <a data-cite="!whatwg-html#top-level-browsing-context">top level
               browsing context</a>.
               </li>
-              <li>Navigate <var>newContext</var> to <var>url</var>,
+              <li><a data-cite="!whatwg-html#navigate">Navigate</a> <var>newContext</var> to <var>url</var>,
               with exceptions enabled and replacement enabled.</li>
               <li>If the navigation throws an exception, reject
               <var>promise</var> with that exception and abort
               these steps.</li>
-              <li>If the origin is not the same as the
+              <li>If the origin of <var>newContext</var> is not the same as the
               <var>event</var>.<a>appRequest</a>.<a href=
               "#dom-paymentapprequest-origin">origin</a>, then:
-                <ol class="algorithm">
-                  <li>Resolve promise with null.</li>
+                <ol>
+                  <li>Reject <var>promise</var> with a <a>DOMException</a> whose name is "<a>SecurityError</a>".</li>
                   <li>Abort these steps.</li>
                 </ol>
               </li>
-              <li>Let <var>client</var> be the result of running
-              <a href=
-              "https://www.w3.org/TR/service-workers/#capture-windowclient-algorithm">
-                Capture Window Client</a> algorithm, or its
-                equivalent, with <var>newContext</var> as the
+              <li>Let <var>client</var> be the result of running the
+              <a data-cite="!service-workers#capture-windowclient-algorithm">
+                capture window client</a> algorithm with <var>newContext</var> as the
                 argument.
               </li>
               <li>If <var>event</var>.<a>[[\windowClient]]</a> is
               not null, then:
-                <ol class="algorithm">
+                <ol>
                   <li>If
-                  <var>event</var>.<a>[[\windowClient]]</a>.visibilityState
+                  <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite="!service-workers#client-visibilitystate-attribute">visibilityState</a>
                   is not "unloaded", reject <var>promise</var> with
-                  a <a>DOMException</a> whose value is
+                  a <a>DOMException</a> whose name is
                   "<a>InvalidStateError</a>" and abort these steps.
                   </li>
                 </ol>
@@ -1299,7 +1301,7 @@
             <li>Letting the user try again, with the same payment
             handler or with a different one.</li>
             <li>Rejecting the Promise that was created by
-            <code>PaymentRequest.show()</code>.</li>
+            <a data-cite="!payment-request#show-method">PaymentRequest.show()</a>.</li>
           </ul>
           <p>If this Promise is successfully resolved, the user
           agent MUST run the <a>user accepts the payment request
