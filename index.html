@@ -338,8 +338,8 @@
       <h2><a>PaymentManager</a> interface</h2>
       <pre id="payment-manager-idl" class="idl">
       interface PaymentManager {
-        attribute PaymentInstruments instruments;
-        attribute PaymentWallets wallets;
+        [SameObject] readonly attribute PaymentInstruments instruments;
+        [SameObject] readonly attribute PaymentWallets wallets;
       };
       </pre>
       <dl>
