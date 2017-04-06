@@ -177,9 +177,8 @@
     <dl>
       <dt>Payment Request API</dt>
       <dd>The terms <dfn>payment method</dfn>, <dfn>PaymentRequest</dfn>,
-      <dfn>PaymentResponse</dfn>, <dfn>supportedMethods</dfn>, <dfn>paymentDetailsModifier</dfn>, <dfn>paymentDetails</dfn>, <dfn>PaymentMethodData</dfn>, <dfn>ID</dfn>, and <dfn>user accepts the payment
-      request algorithm</dfn> are defined by the Payment Request
-      API specification [[!PAYMENT-REQUEST-API]].</dd>
+      <dfn>PaymentResponse</dfn>, <dfn>supportedMethods</dfn>, <dfn>paymentDetailsModifier</dfn>, <dfn>paymentDetails</dfn>, <dfn>PaymentMethodData</dfn>, <dfn>ID</dfn> and <dfn>user accepts the payment request algorithm</dfn>  are defined by the Payment Request
+      API specification [[!PAYMENT-REQUEST-API]]. This specification also relies on the Payment Request API usage of <dfn>Promise</dfn>, <dfn>internal slot</dfn>, <dfn>TypeError</dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON-serializable</dfn>.</dd>
       <dt>Payment Method Identifiers</dt>
       <dd>The terms <dfn data-lt="payment method identifier|payment method identifiers">payment method identifier</dfn> is defined by the Payment Method
 	Identifier specification [[!METHOD-IDENTIFIERS]].</dd>
@@ -192,26 +191,6 @@
       clone</dfn>, <dfn>event handler</dfn>, <dfn>event handler
 	event type</dfn>, <dfn>trusted event</dfn>, and
       <dfn>user interaction task source</dfn> are defined by [[!HTML5]].</dd>
-      <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language
-      Specification</dt>
-      <dd>
-          The terms <dfn data-cite=
-          "!ECMA-262-2015#sec-promise-objects">Promise</dfn>, <dfn data-cite=
-          "!ECMA-262-2015#sec-object-internal-methods-and-internal-slots">internal
-          slot</dfn>, <dfn data-cite=
-          "!ECMA-262-2015#sec-native-error-types-used-in-this-standard-typeerror">
-          TypeError</dfn>, and <dfn data-cite=
-          "!ECMA-262-2015#sec-json.stringify">JSON.stringify</dfn> are
-          defined by [[!ECMA-262-2015]].
-        <p>
-          The term <dfn data-lt=
-			"JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
-          a given object means to run the algorithm specified by the original
-          value of the <a>JSON.stringify</a> function on the supplied object,
-          passing the supplied object as the sole argument, and return the
-          resulting string. This can throw an exception.
-        </p>
-      </dd>
       <dt>DOM4</dt>
       <dd>
         <p><dfn>DOMException</dfn> and the following DOMException
