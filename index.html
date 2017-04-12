@@ -232,7 +232,7 @@
       <dd>The term <dfn data-cite="!SECURE-CONTEXTS#secure-context">secure context</dfn> is defined by the
       Secure Contexts specification [[!SECURE-CONTEXTS]].</dd>
       <dt>Service Workers</dt>
-      <dd>The terms <dfn data-cite="!SERVICE-WORKERS#service-worker-concept">service worker</dfn>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>, <dfn data-cite="!SERVICE-WORKERS#handle-functional-event-algorithm">handle functional event</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime promises</dfn>, and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
+      <dd>The terms <dfn data-cite="!SERVICE-WORKERS#service-worker-concept">service worker</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-service-worker-client">service worker client</dfn>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>, <dfn data-cite="!SERVICE-WORKERS#handle-functional-event-algorithm">handle functional event</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime promises</dfn>, and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
       [[!SERVICE-WORKERS]].</dd>
     </dl>
   </section>
@@ -1302,7 +1302,9 @@
           });
         }));
       });
-    </pre>
+      </pre>
+      	  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
+
       <p>Using the simple scheme described above, a trivial HTML
       page that is loaded into the <a>payment handler window</a> to
       implement the <em>basic card</em> scheme might look like the
@@ -1343,7 +1345,7 @@ window.addEventListener("message", function(e) {
   }
 });
 &lt;/script&gt;
-    </pre>
+      </pre>
     </section>
 
     </section>
@@ -1448,7 +1450,7 @@ window.addEventListener("message", function(e) {
            }
         });
       });
-    </pre>
+	  </pre>
           <p class="note">[[!PAYMENT-REQUEST-API]] defines an
           <a>ID</a> that parties in the
           ecosystem (including payment app providers and payees)
