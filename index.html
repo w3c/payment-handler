@@ -869,20 +869,20 @@
       <section>
 	<h2><dfn>topLevelOrigin</dfn> attribute</h2>
         <p>
-          This attribute a string that indicates the <a data-cite=
+          This attribute is a string that indicates the <a data-cite=
 							"!HTML5#origin">origin</a>
-          of the top level <a>payee</a> web page. It MUST be formatted
-          according to the "<a href=
-			       "https://tools.ietf.org/html/rfc6454#section-6.1">Unicode
-            Serialization of an Origin</a>" algorithm defined in
+          of the top level <a>payee</a> web page. The string MUST be formatted
+          according to the "<a data-cite="!RFC6454#section-6.1">Unicode Serialization of an Origin</a>" algorithm defined in
           section 6.1 of [[!RFC6454]].
         </p>
       </section>
       <section>
 	<h2><dfn>paymentRequestOrigin</dfn> attribute</h2>
         <p>
-          If a <a>PaymentRequest</a> is initiated within an iframe
-	  whose <a data-cite="!HTML5#origin">origin</a> differs from <a>topLevelOrigin</a>, this attribute indicates the iframe origin. It MUST be formatted according to the "<a href="https://tools.ietf.org/html/rfc6454#section-6.1">Unicode Serialization of an Origin</a>" algorithm defined in section 6.1 of [[!RFC6454]].
+          This attribute is a string that indicates the <a data-cite=
+							"!HTML5#origin">origin</a>
+	  where a <a>PaymentRequest</a> was initialized.
+	  For example, when a <a>PaymentRequest</a> is initialized within an iframe, the value of this attribute is the origin of the iframe. The string MUST be formatted according to the "<a data-cite="!RFC6454#section-6.1">Unicode Serialization of an Origin</a>" algorithm defined in section 6.1 of [[!RFC6454]].
         </p>
       </section>
       <section>
@@ -1228,7 +1228,13 @@
               with exceptions enabled and replacement enabled.</li>
               <li>If the navigation throws an exception, reject
 		<var>promise</var> with that exception and abort
-              these steps.</li>
+		these steps.</li>
+	       <li>If the origin of <var>newContext</var> is not the same as the <a>server worker client</a> origin associated with the payment handler, then:
+              <ol>
+                <li>Reject <var>promise</var> with a <a>DOMException</a> whose name is "<a>SecurityError</a>".</li>
+                <li>Abort these steps.</li>
+              </ol>
+            </li>
               <li>Let <var>client</var> be the result of running the
               <a data-cite="!SERVICE-WORKERS#capture-windowclient-algorithm">
                 capture window client</a> algorithm with <var>newContext</var> as the
