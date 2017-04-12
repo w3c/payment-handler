@@ -369,13 +369,6 @@
       payment handler to indicate the <a>PaymentInstrument</a>
 	selected by the user.</p>
 
-      
-      <pre class="example js" title="Removing all instruments">
-        return paymentManager.instruments.keys().then((keys) =&gt; {
-          Promise.all(keys.map(paymentManager.instruments.delete(key)))
-        });
-      </pre>
-
       <section>
         <h2><dfn>delete()</dfn> method</h2>
         <p>
@@ -475,7 +468,7 @@
             <li> Run the following steps in parallel:
               <ol>
 		<li>Remove all <a>PaymentInstrument</a>s from
-		  the collection and resolve <var>p</var> with <b>true</b>.</li>
+		  the collection and resolve <var>p</var>.</li>
               </ol>
 	    </li>
             <li> Return <var>p</var></li>
@@ -635,7 +628,7 @@
           <li> Run the following steps in parallel:
             <ol>
 	      <li>Remove all <a>PaymentWallets</a> from
-		the collection and resolve <var>p</var> with <b>true</b>.</li>
+		the collection and resolve <var>p</var>.</li>
             </ol>
 	  </li>
           <li> Return <var>p</var></li>
