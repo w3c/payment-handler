@@ -238,6 +238,11 @@
   </section>
   <section id="model">
     <h2>Overview of Handling Payment Requests</h2>
+
+    <p>A <dfn>Payment Handler</dfn> is a function registered by the
+      user with the user agent to
+      handle <a>PaymentRequestEvent</a>s.</p>
+    
     <p>In this document we envision the following flow:</p>
     <ol>
       <li>An origin requests permission from the user to handle
@@ -305,7 +310,7 @@
     authentication, user interaction, and so on.</p>
   </section>
   <section id="registration">
-    <h2><dfn>Payment Handler</dfn> Registration</h2>
+    <h2>Registration</h2>
     <section>
       <h2>Extension to the <code>ServiceWorkerRegistration</code> interface</h2>
       <p>This specification extends the <a>ServiceWorkerRegistration</a> interface.</p>
@@ -355,6 +360,7 @@
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
           Promise&lt;boolean&gt;           has(DOMString instrumentKey);
           Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
+          Promise&lt;void&gt;           clear();
       };
       </pre>
       <p>The <a>PaymentInstruments</a> interface represents a collection of
@@ -459,6 +465,23 @@
             <li> Return <var>p</var></li>
           </ol>
       </section>
+
+      <section>
+        <h2><dfn>clear()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:
+              <ol>
+		<li>Remove all <a>PaymentInstrument</a>s from
+		  the collection and resolve <var>p</var> with <b>true</b>.</li>
+              </ol>
+	    </li>
+            <li> Return <var>p</var></li>
+          </ol>
+	</section>
+
     </section>
     <section data-dfn-for="PaymentInstrument" data-link-for="PaymentInstrument">
       <h2><dfn>PaymentInstrument</dfn> dictionary</h2>
@@ -507,7 +530,9 @@
           Promise&lt;boolean&gt;       has(DOMString walletKey);
           Promise&lt;void&gt;          set(DOMString walletKey, PaymentWallet details);
       };
+          Promise&lt;void&gt;           clear();
       </pre>
+      
       <p>Where it appears, The <dfn>walletKey</dfn> argument is
       a unique identifier for the wallet.</p>
 
@@ -599,6 +624,22 @@
             </ol>
             <li> Return <var>p</var></li>
           </ol>
+      </section>
+
+      <section>
+        <h2><dfn>clear()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
+        <ol>
+          <li> Let <var>p</var> be a new promise.</li>
+          <li> Run the following steps in parallel:
+            <ol>
+	      <li>Remove all <a>PaymentWallets</a> from
+		the collection and resolve <var>p</var> with <b>true</b>.</li>
+            </ol>
+	  </li>
+          <li> Return <var>p</var></li>
+        </ol>
       </section>
     </section>
 
