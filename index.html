@@ -61,16 +61,6 @@
                     ],
                     status:   "WD"
                 },
-                "BASIC-CARD": {
-                    title:    "Basic Card Payment",
-                    href:     "https://www.w3.org/TR/payment-method-basic-card/",
-                    authors:  [
-                        "Adrian Bateman",
-                        "Zach Koch",
-                        "Roy McElmurray"
-                    ],
-                    status:   "WD"
-                },
                 "METHOD-IDENTIFIERS": {
                     title:    "Payment Method Identifiers",
                     href:     "https://www.w3.org/TR/payment-method-id/",
@@ -176,76 +166,73 @@
     specifications.</p>
     <dl>
       <dt>Payment Request API</dt>
-      <dd>The terms <dfn>payment method</dfn>, <dfn>PaymentRequest</dfn>,
-      <dfn>PaymentResponse</dfn>, <dfn>supportedMethods</dfn>, <dfn>paymentDetailsModifier</dfn>, <dfn>paymentDetails</dfn>, <dfn>PaymentMethodData</dfn>, <dfn>ID</dfn> and <dfn>user accepts the payment request algorithm</dfn>  are defined by the Payment Request
-      API specification [[!PAYMENT-REQUEST-API]]. This specification also relies on the Payment Request API usage of <dfn>Promise</dfn>, <dfn>internal slot</dfn>, <dfn>TypeError</dfn>, <dfn>JSON.stringify</dfn>, and <dfn>JSON-serializable</dfn>.</dd>
+      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#payment-method">payment method</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentrequest">PaymentRequest</dfn>,
+      <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentresponse">PaymentResponse</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentmethoddata-dictionary">PaymentMethodData</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#id-attribute">ID</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#show-method">show()</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#user-accepts-the-payment-request-algorithm">user accepts the payment request algorithm</dfn>  are defined by the Payment Request
+      API specification [[!PAYMENT-REQUEST-API]].
+      </dd>
+      <dt>
+          ECMA-262 6th Edition, The ECMAScript 2015 Language Specification
+      </dt>
+      <dd>
+        The terms <dfn data-cite=
+		       "!ECMA-262-2015#sec-promise-objects">Promise</dfn>, <dfn data-cite=
+										"!ECMA-262-2015#sec-object-internal-methods-and-internal-slots">internal
+          slot</dfn>, <code><dfn data-cite=
+          "!ECMA-262-2015#sec-native-error-types-used-in-this-standard-typeerror">
+          TypeError</dfn></code>, and <code><dfn data-cite=
+          "!ECMA-262-2015#sec-json.stringify">JSON.stringify</dfn></code> are
+          defined by [[!ECMA-262-2015]].
+          <p>
+            The term <dfn data-lt=
+            "JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
+            a given object means to run the algorithm specified by the original
+            value of the <a>JSON.stringify</a> function on the supplied object,
+            passing the supplied object as the sole argument, and return the
+            resulting string. This can throw an exception.
+          </p>
+        </dd>
       <dt>Payment Method Identifiers</dt>
-      <dd>The terms <dfn data-lt="payment method identifier|payment method identifiers">payment method identifier</dfn> is defined by the Payment Method
+      <dd>The terms <dfn data-lt="payment method identifiers">payment method identifier</dfn> is defined by the Payment Method
 	Identifier specification [[!METHOD-IDENTIFIERS]].</dd>
       <dt>Basic Card Payment</dt>
-      <dd>The terms <dfn>basic-card</dfn>, <dfn>supportedNetworks</dfn>, and <dfn>supportedTypes</dfn> are defined in [[BASIC-CARD]].</dd>
+      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#method-id">basic-card</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#supportedNetworks">supportedNetworks</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#supportedTypes">supportedTypes</dfn> are defined in [[!payment-method-basic-card]].</dd>
 
       <dt>HTML5</dt>
-      <dd>The terms <dfn>global object</dfn>, <dfn>origin</dfn>,
+      <dd>The terms <dfn>global object</dfn>,
       <dfn>top-level browsing context</dfn>, <dfn>structured
       clone</dfn>, <dfn>event handler</dfn>, <dfn>event handler
 	event type</dfn>, <dfn>trusted event</dfn>, and
       <dfn>user interaction task source</dfn> are defined by [[!HTML5]].</dd>
-      <dt>DOM4</dt>
-      <dd>
-        <p><dfn>DOMException</dfn> and the following DOMException
-        types from [[!DOM4]] are used:</p>
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>Message (optional)</th>
-          </tr>
-          <tr>
-            <td><dfn>AbortError</dfn></td>
-            <td>The operation was aborted</td>
-          </tr>
-          <tr>
-            <td><dfn>InvalidStateError</dfn></td>
-            <td>The object is in an invalid state</td>
-          </tr>
-          <tr>
-            <td><dfn>NotFoundError</dfn></td>
-            <td>The object can not be found here.</td>
-          </tr>
-          <tr>
-            <td><dfn>SecurityError</dfn></td>
-            <td>The operation is only supported in a secure
-            context</td>
-          </tr>
-          <tr>
-            <td><dfn>OperationError</dfn></td>
-            <td>The operation failed for an operation-specific
-            reason.</td>
-          </tr>
-        </table>
-	<p>The term <dfn data-cite= "!DOM4#firing-events">fires</dfn> (an event) is defined in [[!DOM4]].
+      <dt>RFC6454</dt>
+      <dd>The term <dfn>origin</dfn> is defined in [[!RFC6454]].</dd>
+      <dt>DOM</dt>
+      <dd>The term <dfn data-cite= "!DOM4#firing-events">fires</dfn> (an event) is defined in [[!DOM4]].
       </dd>
-      <dt>WebIDL</dt>
+      <dt>Web IDL</dt>
       <dd>
-        <p>The following DOMException types from [[!WEBIDL]] are
-        used:</p>
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>Message (optional)</th>
-          </tr>
-          <tr>
-            <td><dfn>NotAllowedError</dfn></td>
-            <td>The request is not allowed by the user agent or the
-            platform in the current context.</td>
-          </tr>
-        </table>
-      </dd>
+        <p><dfn data-cite=
+            "!WEBIDL-LS#dfn-DOMException">DOMException</dfn> and the
+            following <a>DOMException</a> types from [[!WEBIDL-LS]] are used:
+          </p>
+          <ul>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#operationerror">OperationError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#securityerror">SecurityError</dfn></code>"
+            </li>
+          </ul>
       <dt>Secure Contexts</dt>
       <dd>The terms <dfn>secure context</dfn> is defined by the
       Secure Contexts specification [[!POWERFUL-FEATURES]].</dd>
       <dt>Service Workers</dt>
-      <dd>The terms <dfn>service worker</dfn>, <dfn>ServiceWorkerRegistration</dfn>, <dfn>ServiceWorkerGlobalScope</dfn>, <dfn>handle functional event</dfn>, <dfn>extend lifetime promises</dfn>, and <dfn>scope URL</dfn> are defined in
+      <dd>The terms <code><dfn>service worker</dfn></code>, <code><dfn>ServiceWorkerRegistration</dfn></code>, <code><dfn>ServiceWorkerGlobalScope</dfn></code>, <dfn>handle functional event</dfn>, <dfn>extend lifetime promises</dfn>, and <dfn>scope URL</dfn> are defined in
       [[!SERVICE-WORKERS]].</dd>
     </dl>
   </section>
@@ -274,8 +261,7 @@
           of Instruments supported by the payment handler.</li>
         </ul>
       </li>
-      <li>When the merchant (or other <dfn>payee</dfn>) calls Payment Request API (e.g., when
-      the user pushes a button on a checkout page), the user agent
+      <li>When the merchant (or other <dfn>payee</dfn>) calls the [[PAYMENT-REQUEST-API]] method  <a>show()</a> (e.g., when the user pushes a button on a checkout page), the user agent
       computes a list of matching payment handlers, comparing the
       payment methods accepted by the merchant with those supported by
       registered payment handlers. For payment methods that support
@@ -321,7 +307,7 @@
   <section id="registration">
     <h2><dfn>Payment Handler</dfn> Registration</h2>
     <section>
-      <h2>Extension to the ServiceWorkerRegistration interface</h2>
+      <h2>Extension to the <code>ServiceWorkerRegistration</code> interface</h2>
       <p>This specification extends the <a>ServiceWorkerRegistration</a> interface.</p>
       <pre class="idl">
         partial interface ServiceWorkerRegistration {
@@ -373,19 +359,19 @@
       </pre>
       <p>The <a>PaymentInstruments</a> interface represents a collection of
       payment instruments, each uniquely identified by an <dfn>instrumentKey</dfn>.
-      The <a>instrumentKey</a> identifier will be passed to the
+      The <var>instrumentKey</var> identifier will be passed to the
       payment handler to indicate the <a>PaymentInstrument</a>
 	selected by the user.</p>
 
       
-      <pre class="example highlight" title="Removing all instruments">
+      <pre class="example js" title="Removing all instruments">
         return paymentManager.instruments.keys().then((keys) =&gt; {
           Promise.all(keys.map(paymentManager.instruments.delete(key)))
         });
       </pre>
 
       <section>
-        <h2><dfn>delete</dfn> method</h2>
+        <h2><dfn>delete()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -393,7 +379,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <a>instrumentKey</a>, remove it from
+              with a matching <var>instrumentKey</var>, remove it from
               the collection and resolve <var>p</var> with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
@@ -402,7 +388,7 @@
 	</section>
 
       <section>
-        <h2><dfn>get</dfn> method</h2>
+        <h2><dfn>get()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -410,7 +396,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <a>instrumentKey</a>, resolve <var>p</var>
+              with a matching <var>instrumentKey</var>, resolve <var>p</var>
               with that <a>PaymentInstrument</a>.
               <li> Otherwise, reject <var>p</var> with a
               <a>DOMException</a> whose value is
@@ -421,7 +407,7 @@
       </section>
 
       <section>
-        <h2><dfn>keys</dfn> method</h2>
+        <h2><dfn>keys()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -429,7 +415,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains all
-              the <a>instrumentKey</a>s for the <a>PaymentInstrument</a>s
+              the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
               contained in the collection.
             </ol>
             <li> Return <var>p</var></li>
@@ -437,7 +423,7 @@
       </section>
 
       <section>
-        <h2><dfn>has</dfn> method</h2>
+        <h2><dfn>has()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -445,7 +431,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <a>instrumentKey</a>, resolve <var>p</var>
+              with a matching <var>instrumentKey</var>, resolve <var>p</var>
               with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
@@ -454,7 +440,7 @@
       </section>
 
       <section>
-        <h2><dfn>set</dfn> method</h2>
+        <h2><dfn>set()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -462,12 +448,12 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <a>instrumentKey</a>, replace it with
-              the <a>PaymentInstrument</a> in <dfn>details</dfn>.
+              with a matching <var>instrumentKey</var>, replace it with
+              the <a>PaymentInstrument</a> in <var>details</var>.
               <li> Otherwise, <a>PaymentInstrument</a>
-              insert the <a>PaymentInstrument</a> in <a>details</a>
+              insert the <a>PaymentInstrument</a> in <var>details</var>
               as a new member of the collection and associate it with the
-              key <a>instrumentKey</a>.
+              key <var>instrumentKey</var>.
               <li> Resolve <var>p</var>.</li>
             </ol>
             <li> Return <var>p</var></li>
@@ -522,11 +508,11 @@
           Promise&lt;void&gt;          set(DOMString walletKey, PaymentWallet details);
       };
       </pre>
-      <p>Where it appears, The <dfn>walletKey</dfn> parameter is
+      <p>Where it appears, The <dfn>walletKey</dfn> argument is
       a unique identifier for the wallet.</p>
 
       <section>
-        <h2><dfn>delete</dfn> method</h2>
+        <h2><dfn>delete()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -534,7 +520,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentWallet</a>
-              with a matching <a>walletKey</a>, remove it from
+              with a matching <var>walletKey</var>, remove it from
               the collection and resolve <var>p</var> with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
@@ -543,7 +529,7 @@
       </section>
 
       <section>
-        <h2><dfn>get</dfn> method</h2>
+        <h2><dfn>get()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -551,7 +537,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentWallet</a>
-              with a matching <a>walletKey</a>, resolve <var>p</var>
+              with a matching <var>walletKey</var>, resolve <var>p</var>
               with that <a>PaymentWallet</a>.
               <li> Otherwise, reject <var>p</var> with a
               <a>DOMException</a> whose value is
@@ -562,7 +548,7 @@
       </section>
 
       <section>
-        <h2><dfn>keys</dfn> method</h2>
+        <h2><dfn>keys()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -570,7 +556,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li>Resolve <var>p</var> with a sequence that contains all
-              the <a>walletKey</a>s for the <a>PaymentWallet</a>s
+              the <var>walletKey</var>s for the <a>PaymentWallet</a>s
               contained in the collection.
             </ol>
             <li> Return <var>p</var></li>
@@ -578,7 +564,7 @@
       </section>
 
       <section>
-        <h2><dfn>has</dfn> method</h2>
+        <h2><dfn>has()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -586,7 +572,7 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentWallet</a>
-              with a matching <a>walletKey</a>, resolve <var>p</var>
+              with a matching <var>walletKey</var>, resolve <var>p</var>
               with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
@@ -595,7 +581,7 @@
       </section>
 
       <section>
-        <h2><dfn>set</dfn> method</h2>
+        <h2><dfn>set()</dfn> method</h2>
         <p>
           When called, this method executes the following steps:</p>
           <ol>
@@ -603,12 +589,12 @@
             <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentWallet</a>
-              with a matching <a>walletKey</a>, replace it with
-              the <a>PaymentWallet</a> in <a>details</a>.
+              with a matching <var>walletKey</var>, replace it with
+              the <a>PaymentWallet</a> in <var>details</var>.
               <li> Otherwise, <a>PaymentWallet</a>
-              insert the <a>PaymentWallet</a> in <a>details</a>
+              insert the <a>PaymentWallet</a> in <var>details</var>
               as a new member of the collection and associate it with the
-              key <a>walletKey</a>.
+              key <var>walletKey</var>.
               <li> Resolve <var>p</var>.</li>
             </ol>
             <li> Return <var>p</var></li>
@@ -646,7 +632,7 @@
         </dd>
       </dl>
     </section>
-    <section id="register-example">
+    <section id="register-example" class="informative">
       <h2>Registration Example</h2>
       <p>The following example shows how to register a payment
       handler:</p>
@@ -658,7 +644,7 @@
       <a>PaymentManager</a>),
       but this is likely to change.
       </p>
-      <pre class="example highlight" title=
+      <pre class="example js" title=
       "Payment Handler Registration">
         window.addEventListerner("DOMContentLoaded", async() =&gt; {
           const { registration } =
@@ -871,9 +857,8 @@
           This attribute a string that indicates the <a data-cite=
 							"!HTML5#origin">origin</a>
           of the <a>payee</a> web page. It MUST be formatted
-          according to the "<a href=
-			       "https://tools.ietf.org/html/rfc6454#section-6.1">Unicode
-            Serialization of an Origin</a>" algorithm defined in
+          according to the <a data-cite="!rfc6454#section-6.1">Unicode
+            Serialization of an Origin</a> algorithm defined in
           section 6.1 of [[!RFC6454]].
         </p>
       </section>
@@ -903,7 +888,7 @@
 	  This attribute indicates the total amount being requested
 	  for payment. It is initialized with a <a>structured
 	    clone</a> of the <a>total</a> field of the
-          <a>PaymentDetails</a> provided when the
+          <a>PaymentDetailsInit</a> provided when the
           corresponding <a>PaymentRequest</a> object was
           instantiated.
         </p>
@@ -1255,13 +1240,13 @@
         </ol>
       </section>
 
-      	<section id="post-example">
+      <section id="post-example" class="informative">
       <h2>Example of handling the <a>PaymentRequestEvent</a></h2>
       <p>This example shows how to write a service worker that
 	listens to the <a>PaymentRequestEvent</a>. When a
 	<a>PaymentRequestEvent</a> is received, the service worker opens a window in order
       to interact with the user.</p>
-      <pre class="example highlight" title=
+      <pre class="example js" title=
       "Handling the PaymentRequestEvent">
       self.addEventListener('paymentrequest', function(e) {
         e.respondWith(new Promise(function(resolve, reject) {
@@ -1288,9 +1273,9 @@
       page that is loaded into the <a>payment handler window</a> to
       implement the <em>basic card</em> scheme might look like the
       following:</p>
-      <pre class="example highlight" title=
+      <pre class="example html" title=
       "Simple Payment Handler Window">
-&lt;html&gt; &lt;body&gt; &lt;form id="form"&gt;
+&lt;form id="form"&gt;
 &lt;table&gt;
   &lt;tr&gt;&lt;th&gt;Cardholder Name:&lt;/th&gt;&lt;td&gt;&lt;input name="cardholderName"&gt;&lt;/td&gt;&lt;/tr&gt;
   &lt;tr&gt;&lt;th&gt;Card Number:&lt;/th&gt;&lt;td&gt;&lt;input name="cardNumber"&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -1323,7 +1308,7 @@ window.addEventListener("message", function(e) {
     window.close();
   }
 });
-&lt;/script&gt; &lt;/body&gt; &lt;/html&gt;
+&lt;/script&gt;
     </pre>
     </section>
 
@@ -1403,18 +1388,18 @@ window.addEventListener("message", function(e) {
             assign it to
             <var>response</var>.<a data-lt="PaymentAppResponse.methodName">methodName</a>.
             </li>
-            <li>If <var>appResponse</var>.<a>details</a> is
+            <li>If <var>appResponse</var>.<var>details</var> is
             not present, run the <a>payment app failure
             algorithm</a> and terminate these steps.
             </li>
             <li>Create a <a>structured clone</a> of
-            <var>appResponse</var>.<a>details</a> and assign
-            it to <var>response</var>.<a>details</a>.
+            <var>appResponse</var>.<var>details</var> and assign
+            it to <var>response</var>.<var>details</var>.
             </li>
           </ol>
           <p>The following example shows how to respond to a
           payment request:</p>
-          <pre class="example highlight" title=
+          <pre class="example js" title=
           "Sending a Payment Response">
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
         /* ... processing may occur here ... */
