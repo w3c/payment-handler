@@ -245,7 +245,7 @@
       <dd>The terms <dfn>secure context</dfn> is defined by the
       Secure Contexts specification [[!POWERFUL-FEATURES]].</dd>
       <dt>Service Workers</dt>
-      <dd>The terms <dfn>service worker</dfn>, <dfn>ServiceWorkerRegistration</dfn>, <dfn>ServiceWorkerGlobalScope</dfn>, <dfn>handle functional event</dfn>, <dfn>extend lifetime promises</dfn>, and <dfn>scope URL</dfn> are defined in
+      <dd>The terms <dfn data-cite="!SERVICE-WORKERS#service-worker-concept">service worker</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-service-worker-client">service worker client</dfn>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>, <dfn data-cite="!SERVICE-WORKERS#handle-functional-event-algorithm">handle functional event</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime promises</dfn>, and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
       [[!SERVICE-WORKERS]].</dd>
     </dl>
   </section>
@@ -1229,7 +1229,7 @@
               <li>If the navigation throws an exception, reject
 		<var>promise</var> with that exception and abort
 		these steps.</li>
-	       <li>If the origin of <var>newContext</var> is not the same as the <a>server worker client</a> origin associated with the payment handler, then:
+	       <li>If the origin of <var>newContext</var> is not the same as the <a>service worker client</a> origin associated with the payment handler, then:
               <ol>
                 <li>Reject <var>promise</var> with a <a>DOMException</a> whose name is "<a>SecurityError</a>".</li>
                 <li>Abort these steps.</li>
