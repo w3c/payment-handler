@@ -195,14 +195,14 @@
       <dd>The terms <dfn data-lt="payment method identifiers">payment method identifier</dfn> is defined by the Payment Method
 	Identifier specification [[!METHOD-IDENTIFIERS]].</dd>
       <dt>Basic Card Payment</dt>
-      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#method-id">basic-card</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#supportedNetworks">supportedNetworks</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#supportedTypes">supportedTypes</dfn> are defined in [[!payment-method-basic-card]].</dd>
+      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#method-id">basic-card</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#supportedNetworks">supportedNetworks</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#supportedTypes">supportedTypes</dfn> are defined in [[!PAYMENT-METHOD-BASIC-CARD]].</dd>
 
       <dt>HTML5</dt>
-      <dd>The terms <dfn>global object</dfn>,
-      <dfn>top-level browsing context</dfn>, <dfn>structured
-      clone</dfn>, <dfn>event handler</dfn>, <dfn>event handler
-	event type</dfn>, <dfn>trusted event</dfn>, and
-      <dfn>user interaction task source</dfn> are defined by [[!HTML5]].</dd>
+      <dd>The terms <dfn data-cite="!HTML5#global-object">global object</dfn>,
+      <dfn data-cite="!HTML5#top-level-browsing-context">top-level browsing context</dfn>, <dfn data-cite="!HTML5#structured-clone">structured
+      clone</dfn>, <dfn data-cite="!HTML5#event-handlers">event handler</dfn>, <dfn data-cite="!HTML5#event-handler-event-type">event handler
+	event type</dfn>, <dfn data-cite="!HTML5#concept-events-trusted">trusted event</dfn>, and
+      <dfn data-cite="!HTML5#user-interaction-task-source">user interaction task source</dfn> are defined by [[!HTML5]].</dd>
       <dt>RFC6454</dt>
       <dd>The term <dfn>origin</dfn> is defined in [[!RFC6454]].</dd>
       <dt>DOM</dt>
@@ -229,10 +229,10 @@
             </li>
           </ul>
       <dt>Secure Contexts</dt>
-      <dd>The terms <dfn>secure context</dfn> is defined by the
-      Secure Contexts specification [[!POWERFUL-FEATURES]].</dd>
+      <dd>The term <dfn data-cite="!secure-contexts#secure-context">secure context</dfn> is defined by the
+      Secure Contexts specification [[!SECURE-CONTEXTS]].</dd>
       <dt>Service Workers</dt>
-      <dd>The terms <code><dfn>service worker</dfn></code>, <code><dfn>ServiceWorkerRegistration</dfn></code>, <code><dfn>ServiceWorkerGlobalScope</dfn></code>, <dfn>handle functional event</dfn>, <dfn>extend lifetime promises</dfn>, and <dfn>scope URL</dfn> are defined in
+      <dd>The terms <dfn data-cite="!SERVICE-WORKERS#service-worker-concept">service worker</dfn>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>, <dfn data-cite="!SERVICE-WORKERS#handle-functional-event-algorithm">handle functional event</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime promises</dfn>, and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
       [[!SERVICE-WORKERS]].</dd>
     </dl>
   </section>
@@ -857,7 +857,7 @@
           This attribute a string that indicates the <a data-cite=
 							"!HTML5#origin">origin</a>
           of the <a>payee</a> web page. It MUST be formatted
-          according to the <a data-cite="!rfc6454#section-6.1">Unicode
+          according to the <a data-cite="!RFC6454#section-6.1">Unicode
             Serialization of an Origin</a> algorithm defined in
           section 6.1 of [[!RFC6454]].
         </p>
@@ -1449,8 +1449,7 @@ window.addEventListener("message", function(e) {
     <section>
       <h2>Secure Communications</h2>
       <ul>
-        <li>See <a href=
-        "https://www.w3.org/TR/service-workers/#security-considerations">
+        <li>See <a data-cite="SERVICE-WORKERS#security-considerations">
           Service Worker security considerations</a>
         </li>
         <li>Payment method security is outside the scope of this
