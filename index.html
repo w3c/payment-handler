@@ -1116,8 +1116,8 @@
                 </li>
                 <li>Set the <a data-lt="PaymentRequestEvent.appRequest">appRequest</a> attribute of
                 <var>e</var> to a new <a>PaymentAppRequest</a>
-                instance, populated as described in <a href=
-                "#sec-app-request"></a>.
+                instance using the <a>MethodData Population Algorithm</a>
+		and the <a>Modifiers Population Algorithm</a>.
                 </li>
                 <li>Dispatch <var>e</var> to
                 <var>global</var>.</li>
@@ -1191,7 +1191,7 @@
           <var>url</var> argument.</li>
           <li>If the url parsing throws an exception, return a <a>Promise</a>
           rejected with that exception.</li>
-          <li>If url is about:blank, return a <a>Promise</a> rejected with
+          <li>If <var>url</var> is <code>about:blank</code>, return a <a>Promise</a> rejected with
           a <a>TypeError</a>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
