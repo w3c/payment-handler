@@ -1247,8 +1247,8 @@
               <li><a data-cite="!whatwg-html#navigate">Navigate</a> <var>newContext</var> to <var>url</var>,
               with exceptions enabled and replacement enabled.</li>
               <li>If the navigation throws an exception, reject
-		<var>promise</var> with that exception and abort
-		these steps.</li>
+		<var>promise</var> with that exception and abort these steps.
+	      </li>
 	       <li>If the origin of <var>newContext</var> is not the same as the <a>service worker client</a> origin associated with the payment handler, then:
               <ol>
                 <li>Reject <var>promise</var> with a <a>DOMException</a> whose name is "<a>SecurityError</a>".</li>
