@@ -319,6 +319,9 @@
           readonly attribute PaymentManager paymentManager;
         };
       </pre>
+
+      	<p class="issue" title="Issue 127 - Do we need Payment Manager and Payment Handler?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/127">Issue 129</a>: The distinction is unclear. A proposal is to remove the phrase Payment Manager from the spec, renaming the "PaymentManager" interface the "PaymentHandler" interface.</p>
+
     </section>
     <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
       <h2><dfn>PaymentManager</dfn> interface</h2>
@@ -350,6 +353,7 @@
         do not appear in any groups should still be presented to
           users by the browser for selection.</p>
       </section>
+      
     </section>
     <section data-dfn-for="PaymentInstruments" data-link-for="PaymentInstruments">
       <h2><dfn>PaymentInstruments</dfn> interface</h2>
@@ -473,6 +477,8 @@
 	    </li>
             <li> Return <var>p</var></li>
           </ol>
+
+	<p class="issue" title="Issue 129 - Clear()"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue 129</a>: This clear() method intends to address the issue.</p>
 	</section>
 
     </section>
@@ -512,6 +518,9 @@
         <a>supportedNetworks</a>, and another for
         <a>supportedTypes</a>.</dd>
       </dl>
+
+      <p class="issue" title="Issue 125 - ImageObjects not Defined"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/125">Issue 125</a>: ImageObjects comes from the Web App Manifest specification. Should we reference the definition normatively, or make use of a simpler structure here?</p>
+
     </section>
     <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
       <h2><dfn>PaymentWallets</dfn> interface</h2>
@@ -633,6 +642,8 @@
 	  </li>
           <li> Return <var>p</var></li>
         </ol>
+
+	<p class="issue" title="Issue 129 - Clear()"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue 129</a>: This clear() method intends to address the issue.</p>
       </section>
     </section>
 
@@ -873,6 +884,9 @@
     <a>PaymentRequestEvent</a> with a <a>PaymentAppRequest</a>, and
     uses the subsequent <a>PaymentAppResponse</a> to create a
     PaymentReponse for [[!PAYMENT-REQUEST-API]].</p>
+
+    <p class="issue" title="Issue 117 - Support for Abort() being delegated to Payment Handler"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/117">Issue 117</a>: Payment Request API supports delegation of responsibiliyt to manage an abort to a payment app. There is a proposal to add a paymentRequestAborted event to the Payment Handler interface. The event will have a respondWith method that takes a boolean parameter indicating if the paymentRequest has been successfully aborted.</p>
+    
     <section data-dfn-for="PaymentAppRequest" data-link-for="PaymentAppRequest">
       <h2><dfn>PaymentAppRequest</dfn> interface</h2>
       <pre class="idl">
@@ -1105,6 +1119,11 @@
 	  a <a>PaymentAppResponse</a> when the payment successfully
 	  completes.</p>
       </section>
+
+    <p class="issue" title="Issue 123 - Share user data with payment app?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/123">Issue 123</a>: Should payment apps receive user data stored in the user agent upon explicit consent from the user? The payment app could request permission either at installation or when the payment app is first invoked.</p>
+
+    <p class="issue" title="Issue 119 - DOM Events compatibility"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/119">Issue 119</a>: For DOM events compatibility, need to add a constructor, and the members of the corresponding dictionary need to match the attributes of the event.</p>
+
     </section>
     <section>
       <h2>Internal Slots</h2>
@@ -1310,7 +1329,7 @@
         }));
       });
       </pre>
-      	  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
+      	  <p class="issue" title="Issue 128 - Revisit examples" href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
 
       <p>Using the simple scheme described above, a trivial HTML
       page that is loaded into the <a>payment handler window</a> to
