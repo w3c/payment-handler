@@ -115,7 +115,7 @@
     published the Payment Request API [[!PAYMENT-REQUEST-API]] as a
     standard way to initiate payment requests from E-Commerce Web
     sites and applications.</p>
-    <p>A <dfn id="payment-app">payment app</dfn> is a Web
+    <p>A <dfn>payment app</dfn> is a Web
     application that manages payment requests on behalf of the user
     by supporting one or more payment methods. To enable a Web
     application to handle payment requests, this specification
@@ -141,7 +141,7 @@
       <dd>
         <p>A <a>user agent</a> MUST behave as described in this
         specification in order to be considered conformant. In this
-        specification, <a>user agent</a> means a <em>Web browser or
+        specification, <dfn>user agent</dfn>> means a <em>Web browser or
         other interactive user agent</em> as defined in
         [[!HTML5]].</p>
         <p>User agents MAY implement algorithms given in this
@@ -161,100 +161,88 @@
     </dl>
   </section>
   <section id="dependencies">
-    <h3>Dependencies</h3>
+    <h2>Dependencies</h2>
     <p>This specification relies on several other underlying
     specifications.</p>
     <dl>
       <dt>Payment Request API</dt>
-      <dd>The terms <dfn>PaymentRequest</dfn>,
-      <dfn>PaymentResponse</dfn>, and <dfn>user accepts the payment
-      request algorithm</dfn> are defined by the Payment Request
-      API specification [[!PAYMENT-REQUEST-API]].</dd>
+      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#payment-method">payment method</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentrequest">PaymentRequest</dfn>,
+      <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentresponse">PaymentResponse</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#paymentmethoddata-dictionary">PaymentMethodData</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#id-attribute">ID</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#show-method">show()</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#user-accepts-the-payment-request-algorithm">user accepts the payment request algorithm</dfn>  are defined by the Payment Request
+      API specification [[!PAYMENT-REQUEST-API]].
+      </dd>
+      <dt>
+          ECMA-262 6th Edition, The ECMAScript 2015 Language Specification
+      </dt>
+      <dd>
+        The terms <dfn data-cite=
+		       "!ECMA-262-2015#sec-promise-objects">Promise</dfn>, <dfn data-cite=
+										"!ECMA-262-2015#sec-object-internal-methods-and-internal-slots">internal
+          slot</dfn>, <code><dfn data-cite=
+          "!ECMA-262-2015#sec-native-error-types-used-in-this-standard-typeerror">
+          TypeError</dfn></code>, and <code><dfn data-cite=
+          "!ECMA-262-2015#sec-json.stringify">JSON.stringify</dfn></code> are
+          defined by [[!ECMA-262-2015]].
+          <p>
+            The term <dfn data-lt=
+            "JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
+            a given object means to run the algorithm specified by the original
+            value of the <a>JSON.stringify</a> function on the supplied object,
+            passing the supplied object as the sole argument, and return the
+            resulting string. This can throw an exception.
+          </p>
+        </dd>
+      <dt>Payment Method Identifiers</dt>
+      <dd>The terms <dfn data-lt="payment method identifiers">payment method identifier</dfn> is defined by the Payment Method
+	Identifier specification [[!METHOD-IDENTIFIERS]].</dd>
+      <dt>Basic Card Payment</dt>
+      <dd>The terms <dfn data-cite="!PAYMENT-REQUEST-API#method-id">basic-card</dfn>, <dfn data-cite="!PAYMENT-REQUEST-API#supportedNetworks">supportedNetworks</dfn>, and <dfn data-cite="!PAYMENT-REQUEST-API#supportedTypes">supportedTypes</dfn> are defined in [[!PAYMENT-METHOD-BASIC-CARD]].</dd>
+
       <dt>HTML5</dt>
-      <dd>The terms <dfn>global object</dfn>,<dfn>origin</dfn>,
-      <dfn>queue a task</dfn>, <dfn>browsing context</dfn>,
-      <dfn>top-level browsing context</dfn>, <dfn>structured
-      clone</dfn>, <dfn>event handler</dfn>, <dfn>event handler
-      event type</dfn>, <dfn>trusted event</dfn>, and <dfn>current
-      settings object</dfn> are defined by [[!HTML5]].</dd>
-      <dt>ECMA-262 6th Edition, The ECMAScript 2015 Language
-      Specification</dt>
-      <dd>The term <dfn>Promise</dfn> is defined by
-      [[!ECMA-262-2015]].</dd>
-      <dt>DOM4</dt>
-      <dd>
-        <p><dfn>DOMException</dfn> and the following DOMException
-        types from [[!DOM4]] are used:</p>
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>Message (optional)</th>
-          </tr>
-          <tr>
-            <td><code><dfn>AbortError</dfn></code></td>
-            <td>The operation was aborted</td>
-          </tr>
-          <tr>
-            <td><code><dfn>InvalidStateError</dfn></code></td>
-            <td>The object is in an invalid state</td>
-          </tr>
-          <tr>
-            <td><code><dfn>NotFoundError</dfn></code></td>
-            <td>The object can not be found here.</td>
-          </tr>
-          <tr>
-            <td><code><dfn>SecurityError</dfn></code></td>
-            <td>The operation is only supported in a secure
-            context</td>
-          </tr>
-          <tr>
-            <td><code><dfn>OperationError</dfn></code></td>
-            <td>The operation failed for an operation-specific
-            reason.</td>
-          </tr>
-        </table>
+      <dd>The terms <dfn data-cite="!HTML5#global-object">global object</dfn>,
+      <dfn data-cite="!HTML5#top-level-browsing-context">top-level browsing context</dfn>, <dfn data-cite="!HTML5#structured-clone">structured
+      clone</dfn>, <dfn data-cite="!HTML5#event-handlers">event handler</dfn>, <dfn data-cite="!HTML5#event-handler-event-type">event handler
+	event type</dfn>, <dfn data-cite="!HTML5#concept-events-trusted">trusted event</dfn>, and
+      <dfn data-cite="!HTML5#user-interaction-task-source">user interaction task source</dfn> are defined by [[!HTML5]].</dd>
+      <dt>RFC6454</dt>
+      <dd>The term <dfn>origin</dfn> is defined in [[!RFC6454]].</dd>
+      <dt>DOM</dt>
+      <dd>The term <dfn data-cite= "!DOM4#firing-events">fires</dfn> (an event) is defined in [[!DOM4]].
       </dd>
-      <dt>WebIDL</dt>
+      <dt>Web IDL</dt>
       <dd>
-        <p>The following DOMException types from [[!WEBIDL]] are
-        used:</p>
-        <table>
-          <tr>
-            <th>Type</th>
-            <th>Message (optional)</th>
-          </tr>
-          <tr>
-            <td><code><dfn>NotAllowedError</dfn></code></td>
-            <td>The request is not allowed by the user agent or the
-            platform in the current context.</td>
-          </tr>
-        </table>
-      </dd>
+        <p><dfn data-cite=
+            "!WEBIDL-LS#dfn-DOMException">DOMException</dfn> and the
+            following <a>DOMException</a> types from [[!WEBIDL-LS]] are used:
+          </p>
+          <ul>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#operationerror">OperationError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#securityerror">SecurityError</dfn></code>"
+            </li>
+          </ul>
       <dt>Secure Contexts</dt>
-      <dd>The terms <dfn>secure context</dfn> is defined by the
-      Secure Contexts specification [[!POWERFUL-FEATURES]].</dd>
-      <dt>URL</dt>
-      <dd>The <dfn>URL</dfn> concept and <dfn>URL parser</dfn> are
-      defined in [[!WHATWG-URL]].</dd>
-      <dt>Fetch</dt>
-      <dd>The terms <dfn>Fetch</dfn>, <dfn>Request</dfn>,
-      <dfn data-lt="body">Request Body</dfn>, <dfn data-lt=
-      "method">Request Method</dfn>, <dfn>Header List</dfn>,
-      <dfn>Response</dfn>, <dfn>Context</dfn> and <dfn>Network
-      Error</dfn> are defined in [[!FETCH]].</dd>
+      <dd>The term <dfn data-cite="!SECURE-CONTEXTS#secure-context">secure context</dfn> is defined by the
+      Secure Contexts specification [[!SECURE-CONTEXTS]].</dd>
       <dt>Service Workers</dt>
-      <dd>The terms <dfn data-lt=
-      "service worker|service workers">service worker</dfn>
-      <dfn>service worker registration</dfn>, <dfn>active
-      worker</dfn>, <dfn>installing worker</dfn>, <dfn>waiting
-      worker</dfn>, <dfn>handle functional event</dfn>, <dfn>extend
-      lifetime promises</dfn>, and <dfn data-lt=
-      "scope url|scope urls">scope URL</dfn> are defined in
-      [[SERVICE-WORKERS]].</dd>
+      <dd>The terms <dfn data-cite="!SERVICE-WORKERS#service-worker-concept">service worker</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-service-worker-client">service worker client</dfn>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>, <code><dfn data-cite="!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>, <dfn data-cite="!SERVICE-WORKERS#handle-functional-event-algorithm">handle functional event</dfn>, <dfn data-cite="!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime promises</dfn>, and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
+      [[!SERVICE-WORKERS]].</dd>
     </dl>
   </section>
   <section id="model">
     <h2>Overview of Handling Payment Requests</h2>
+
+    <p>A <dfn>Payment Handler</dfn> is a function registered by the
+      user with the user agent to
+      handle <a>PaymentRequestEvent</a>s.</p>
+    
     <p>In this document we envision the following flow:</p>
     <ol>
       <li>An origin requests permission from the user to handle
@@ -278,8 +266,7 @@
           of Instruments supported by the payment handler.</li>
         </ul>
       </li>
-      <li>When the merchant calls Payment Request API (e.g., when
-      the user pushes a button on a checkout page), the user agent
+      <li>When the merchant (or other <dfn>payee</dfn>) calls the [[PAYMENT-REQUEST-API]] method  <a>show()</a> (e.g., when the user pushes a button on a checkout page), the user agent
       computes a list of matching payment handlers, comparing the
       payment methods accepted by the merchant with those supported by
       registered payment handlers. For payment methods that support
@@ -290,10 +277,11 @@
       displaying and grouping Instruments according to information
       (labels and icons) provided at registration or otherwise
       available from the Web app.</li>
-      <li>When the user selects an Instrument, the user agent fires the
-      paymentrequest event in the service worker whose registration
+      <li>When the user (the <dfn>payer</dfn>) selects an Instrument, the user agent <a>fires</a> an event (cf. the <a>user interaction task source</a>)
+	using the <a>PaymentRequestEvent</a> interface
+	in the service worker whose registration
       included the payment handler that provided that Instrument. The
-      paymentrequest event includes some information from the
+      <a>PaymentRequestEvent</a> includes some information from the
       PaymentRequest (defined in [[!PAYMENT-REQUEST-API]]) as well
       as additional information (e.g., origin and selected
       Instrument).</li>
@@ -322,40 +310,37 @@
     authentication, user interaction, and so on.</p>
   </section>
   <section id="registration">
-    <h2>Payment Handler Registration</h2>
+    <h2>Registration</h2>
     <section>
-      <h3>Extensions to the <a>ServiceWorkerRegistration</a>
-      interface</h3>
-      <p>The Service Worker specification defines a
-      <code>ServiceWorkerRegistration</code> interface
-      [[!SERVICE-WORKERS]], which this specification extends.</p>
-      <pre id="service-worker-registration-idl" class="idl">
+      <h2>Extension to the <code>ServiceWorkerRegistration</code> interface</h2>
+      <p>This specification extends the <a>ServiceWorkerRegistration</a> interface.</p>
+      <pre class="idl">
         partial interface ServiceWorkerRegistration {
           readonly attribute PaymentManager paymentManager;
         };
       </pre>
     </section>
-    <section id="payment-manager">
-      <h2><a>PaymentManager</a> interface</h2>
-      <pre id="payment-manager-idl" class="idl">
+    <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
+      <h2><dfn>PaymentManager</dfn> interface</h2>
+      <pre class="idl">
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [SameObject] readonly attribute PaymentWallets wallets;
       };
       </pre>
-      <dl>
-        <dt><code>instruments</code> attribute</dt>
-        <dd>
-          This attribute allows manipulation of payment instruments
+      <section>
+	<h2><dfn>instruments</dfn> attribute</h2>
+        <p>This attribute allows manipulation of payment instruments
           associated with a payment handler. To be presented to the
           user as part of the payment request flow, payment
           handlers must have at least one registered payment
           Instrument, and that Instrument needs to match the payment
           methods and required capabilities specified by the
-          payment request.
-        </dd>
-        <dt><code>wallets</code> attribute</dt>
-        <dd>This attribute allows payment handlers to group payment
+          payment request.</p>
+      </section>
+      <section>
+        <h2><dfn>wallets</dfn> attribute</h2>
+        <p>This attribute allows payment handlers to group payment
         instruments together and provide a name and icon for such a
         group (e.g., to group together "business account" payment
         instruments separately from "personal account" payment
@@ -363,53 +348,54 @@
         handlers is completely optional. If payment handlers use
         this grouping mechanism, then matching payment instruments that
         do not appear in any groups should still be presented to
-        users by the browser for selection.</dd>
-      </dl>
+          users by the browser for selection.</p>
+      </section>
     </section>
-    <section id="payment-instruments">
-      <h2><a>PaymentInstruments</a> interface</h2>
-      <pre id="payment-instruments-idl" class="idl">
+    <section data-dfn-for="PaymentInstruments" data-link-for="PaymentInstruments">
+      <h2><dfn>PaymentInstruments</dfn> interface</h2>
+      <pre class="idl">
       interface PaymentInstruments {
-          Promise&lt;boolean&gt;              delete(DOMString instrumentKey);
+          Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
           Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;              has(DOMString instrumentKey);
-          Promise&lt;void&gt;                 set(DOMString instrumentKey,
-                                              PaymentInstrument details);
+          Promise&lt;boolean&gt;           has(DOMString instrumentKey);
+          Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
+          Promise&lt;void&gt;           clear();
       };
       </pre>
       <p>The <a>PaymentInstruments</a> interface represents a collection of
-      payment instruments, each uniquely identified by an <a>instrumentKey</a>.
-      The <a>instrumentKey</a> identifier will be passed to the
+      payment instruments, each uniquely identified by an <dfn>instrumentKey</dfn>.
+      The <var>instrumentKey</var> identifier will be passed to the
       payment handler to indicate the <a>PaymentInstrument</a>
-      selected by the user.</p>
-      <dl>
+	selected by the user.</p>
 
-        <dt><code>delete</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>delete()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <code>instrumentKey</code>, remove it from
+              with a matching <var>instrumentKey</var>, remove it from
               the collection and resolve <var>p</var> with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+	</section>
 
-        <dt><code>get</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>get()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <code>instrumentKey</code>, resolve <var>p</var>
+              with a matching <var>instrumentKey</var>, resolve <var>p</var>
               with that <a>PaymentInstrument</a>.
               <li> Otherwise, reject <var>p</var> with a
               <a>DOMException</a> whose value is
@@ -417,71 +403,82 @@
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>keys</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>keys()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
-              <li>Resolve <var>p</var> with a sequence that contains all
-              the <code>instrumentKey</code>s for the <a>PaymentInstrument</a>s
-              contained in the collection.
+              <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains all
+              the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
+              contained in the collection, in original insertion order.
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>has</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>has()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <code>instrumentKey</code>, resolve <var>p</var>
+              with a matching <var>instrumentKey</var>, resolve <var>p</var>
               with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>set</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>set()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
               <li> If the collection contains a <a>PaymentInstrument</a>
-              with a matching <code>instrumentKey</code>, replace it with
-              the <a>PaymentInstrument</a> in <code>details</code>.
+              with a matching <var>instrumentKey</var>, replace it with
+              the <a>PaymentInstrument</a> in <var>details</var>.
               <li> Otherwise, <a>PaymentInstrument</a>
-              insert the <a>PaymentInstrument</a> in <code>details</code>
+              insert the <a>PaymentInstrument</a> in <var>details</var>
               as a new member of the collection and associate it with the
-              key <code>instrumentKey</code>.
+              key <var>instrumentKey</var>.
               <li> Resolve <var>p</var>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
-      </dl>
+      </section>
 
-      <pre class="example highlight" title="Removing all instruments">
-        return paymentManager.instruments.keys().then((keys) =&gt; {
-          Promise.all(keys.map(paymentManager.instruments.delete(key)))
-        });
-      </pre>
-
+      <section>
+        <h2><dfn>clear()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
+          <ol>
+            <li> Let <var>p</var> be a new promise.</li>
+            <li> Run the following steps in parallel:
+              <ol>
+		<li>Remove all <a>PaymentInstrument</a>s from
+		  the collection and resolve <var>p</var>.</li>
+              </ol>
+	    </li>
+            <li> Return <var>p</var></li>
+          </ol>
+	</section>
 
     </section>
-    <section id="payment-instrument">
-      <h2><a>PaymentInstrument</a> dictionary</h2>
-      <pre id="payment-instrumnt-idl" class="idl">
+    <section data-dfn-for="PaymentInstrument" data-link-for="PaymentInstrument">
+      <h2><dfn>PaymentInstrument</dfn> dictionary</h2>
+      <pre class="idl">
       dictionary PaymentInstrument {
         required DOMString name;
         sequence&lt;ImageObjects&gt; icons;
@@ -490,160 +487,177 @@
       };
       </pre>
       <dl>
-        <dt><code>name</code> member</dt>
-        <dd>The <code>name</code> member is a string that
-        represents the label for this payment Instrument as it is
+        <dt><dfn>name</dfn> member</dt>
+        <dd>The <a>name</a> member is a string that
+        represents the label for this PaymentInstrument as it is
         usually displayed to the user.</dd>
-        <dt><code>icons</code> member</dt>
-        <dd>The <code>icons</code> member is an array of image
+        <dt><dfn>icons</dfn> member</dt>
+        <dd>The <a>icons</a> member is an array of image
         objects that can serve as iconic representations of the
         payment Instrument when presented to the user for
         selection.</dd>
-        <dt><code>enabledMethods</code> member</dt>
+        <dt><dfn>enabledMethods</dfn> member</dt>
         <dd>
-          The <dfn id=
-          "payment-instrument-enabled-methods"><code>enabledMethods</code></dfn>
+          The <a>enabledMethods</a>
           member lists the <a>payment method identifiers</a> of the
           payment methods enabled by this Instrument.
         </dd>
-        <dt><code>capabilities</code> member</dt>
-        <dd>The <dfn id=
-        "payment-instrument-capabilities"><code>capabilities</code></dfn>
+        <dt><dfn>capabilities</dfn> member</dt>
+        <dd>The <a>capabilities</a>
         member contains a list of payment-method-specific
         capabilities that this payment handler is capable of
         supporting for this Instrument. For example, for the
-        <code>basic-card</code> payment method, this object will
+        <a>basic-card</a> payment method, this object will
         consist of an object with two fields: one for
-        <code>supportedNetworks</code>, and another for
-        <code>supportedTypes</code>.</dd>
+        <a>supportedNetworks</a>, and another for
+        <a>supportedTypes</a>.</dd>
       </dl>
     </section>
-    <section id="payment-wallets">
-      <h2><a>PaymentWallets</a> interface</h2>
-      <pre id="payment-wallets-idl" class="idl">
+    <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
+      <h2><dfn>PaymentWallets</dfn> interface</h2>
+      <pre class="idl">
       interface PaymentWallets {
-          Promise&lt;boolean&gt;              delete(DOMString walletKey);
-          Promise&lt;WalletDetails&gt; get(DOMString walletKey);
+          Promise&lt;boolean&gt;       delete(DOMString walletKey);
+          Promise&lt;PaymentWallet&gt; get(DOMString walletKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;              has(DOMString walletKey);
-          Promise&lt;void&gt;                 set(DOMString walletKey,
-                                              WalletDetails details);
+          Promise&lt;boolean&gt;       has(DOMString walletKey);
+          Promise&lt;void&gt;          set(DOMString walletKey, PaymentWallet details);
       };
+          Promise&lt;void&gt;           clear();
       </pre>
-      <p>Where it appears, The <code>walletKey</code> parameter is
+      
+      <p>Where it appears, The <dfn>walletKey</dfn> argument is
       a unique identifier for the wallet.</p>
-      <dl>
 
-        <dt><code>delete</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>delete()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
-              <li> If the collection contains a <a>WalletDetails</a>
-              with a matching <code>walletKey</code>, remove it from
+              <li> If the collection contains a <a>PaymentWallet</a>
+              with a matching <var>walletKey</var>, remove it from
               the collection and resolve <var>p</var> with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>get</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>get()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
-              <li> If the collection contains a <a>WalletDetails</a>
-              with a matching <code>walletKey</code>, resolve <var>p</var>
-              with that <a>WalletDetails</a>.
+              <li> If the collection contains a <a>PaymentWallet</a>
+              with a matching <var>walletKey</var>, resolve <var>p</var>
+              with that <a>PaymentWallet</a>.
               <li> Otherwise, reject <var>p</var> with a
               <a>DOMException</a> whose value is
               "<a>NotFoundError</a>".
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>keys</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>keys()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
               <li>Resolve <var>p</var> with a sequence that contains all
-              the <code>walletKey</code>s for the <a>WalletDetails</a>s
-              contained in the collection.
+              the <var>walletKey</var>s for the <a>PaymentWallet</a>s
+              contained in the collection, in original insertion order.
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>has</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>has()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
-              <li> If the collection contains a <a>WalletDetails</a>
-              with a matching <code>walletKey</code>, resolve <var>p</var>
+              <li> If the collection contains a <a>PaymentWallet</a>
+              with a matching <var>walletKey</var>, resolve <var>p</var>
               with <b>true</b>.</li>
               <li> Otherwise, resolve <var>p</var> with <b>false</b>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-        <dt><code>set</code> method</dt>
-        <dd>
-          When called, this method executes the following steps:
+      <section>
+        <h2><dfn>set()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
           <ol>
             <li> Let <var>p</var> be a new promise.</li>
-            <li> Run the following steps in parallel:</li>
+            <li> Run the following steps in parallel:
             <ol>
-              <li> If the collection contains a <a>WalletDetails</a>
-              with a matching <code>walletKey</code>, replace it with
-              the <a>WalletDetails</a> in <code>details</code>.
-              <li> Otherwise, <a>WalletDetails</a>
-              insert the <a>WalletDetails</a> in <code>details</code>
+              <li> If the collection contains a <a>PaymentWallet</a>
+              with a matching <var>walletKey</var>, replace it with
+              the <a>PaymentWallet</a> in <var>details</var>.
+              <li> Otherwise, <a>PaymentWallet</a>
+              insert the <a>PaymentWallet</a> in <var>details</var>
               as a new member of the collection and associate it with the
-              key <code>walletKey</code>.
+              key <var>walletKey</var>.
               <li> Resolve <var>p</var>.</li>
             </ol>
             <li> Return <var>p</var></li>
           </ol>
-        </dd>
+      </section>
 
-      </dl>
-
+      <section>
+        <h2><dfn>clear()</dfn> method</h2>
+        <p>
+          When called, this method executes the following steps:</p>
+        <ol>
+          <li> Let <var>p</var> be a new promise.</li>
+          <li> Run the following steps in parallel:
+            <ol>
+	      <li>Remove all <a>PaymentWallets</a> from
+		the collection and resolve <var>p</var>.</li>
+            </ol>
+	  </li>
+          <li> Return <var>p</var></li>
+        </ol>
+      </section>
     </section>
-    <section id="wallet-details">
-      <h2><a>WalletDetails</a> dictionary</h2>
-      <pre id="wallet-details-idl" class="idl">
-      dictionary WalletDetails {
+
+    <section data-dfn-for="PaymentWallet" data-link-for="PaymentWallet">
+      <h2><dfn>PaymentWallet</dfn> dictionary</h2>
+      <pre class="idl">
+      dictionary PaymentWallet {
           required DOMString name;
           sequence&lt;ImageObject&gt; icons;
           required sequence&lt;DOMString&gt; instrumentKeys;
       };
       </pre>
       <dl>
-        <dt><code>name</code> member</dt>
-        <dd>The <code>name</code> member is a string that
+        <dt><dfn>name</dfn> member</dt>
+        <dd>The <a>name</a> member is a string that
         represents the label for this wallet as it is usually
         displayed to the user.</dd>
-        <dt><code>icons</code> member</dt>
-        <dd>The <code>icons</code> member is an array of image
+        <dt><dfn>icons</dfn> member</dt>
+        <dd>The <a>icons</a> member is an array of image
         objects that can serve as iconic representations of the
         wallet when presented to the user for selection.</dd>
-        <dt><code>instrumentKeys</code> member</dt>
-        <dd>The <code>instrumentKeys</code> member is a
-        list of <code>instrumentKey</code>s from
-        <a>PaymentManager</a>.<code>instruments</code>,
+        <dt><dfn>instrumentKeys</dfn> member</dt>
+        <dd>The <a>instrumentKeys</a> member is a
+        list of <a>instrumentKey</a>s from
+        <a>PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
         indicating which <a>PaymentInstrument</a> objects are associated
         with this <a>Wallet</a>, and should be displayed as being "contained in"
         the wallet. While it is not generally good practice, there is no
@@ -652,8 +666,8 @@
         </dd>
       </dl>
     </section>
-    <section id="register-example">
-      <h3>Registration Example</h3>
+    <section id="register-example" class="informative">
+      <h2>Registration Example</h2>
       <p>The following example shows how to register a payment
       handler:</p>
       <p class="issue" title="Issue 94 - Permission"><a href=
@@ -664,7 +678,7 @@
       <a>PaymentManager</a>),
       but this is likely to change.
       </p>
-      <pre class="example highlight" title=
+      <pre class="example js" title=
       "Payment Handler Registration">
         window.addEventListerner("DOMContentLoaded", async() =&gt; {
           const { registration } =
@@ -761,7 +775,7 @@
     limited number of display requirements; most user experience
     details are left to implementers.</p>
     <section>
-      <h3>Ordering of Payment Handlers</h3>
+      <h2>Ordering of Payment Handlers</h2>
       <ul>
         <li>The user agent <span class='rfc2119'>MUST</span> favor
         user-side order preferences (based on user configuration or
@@ -791,7 +805,7 @@
       </ul>
     </section>
     <section>
-      <h3>Display of Instruments</h3>
+      <h2>Display of Instruments</h2>
       <p>The user agent <span class='rfc2119'>MUST</span> enable
       the user to select any displayed Instrument.</p>
       <ul>
@@ -816,7 +830,7 @@
       responsibility to display instruments to the user.</p>
     </section>
     <section>
-      <h3>Grouping of Instruments</h3>
+      <h2>Grouping of Instruments</h2>
       <p>At times, the same origin may wish to group instruments with
       greater flexibility and granularity than merely "by origin."
       These use cases include:</p>
@@ -827,16 +841,16 @@
         business wallet vs personal wallet)</li>
         <li>Multiple instruments held with a single provider</li>
       </ul>
-      <p>A <dfn id="wallet">Wallet</dfn> is a grouping of Instruments
+      <p>A <dfn>Wallet</dfn> is a grouping of Instruments
       for display purposes.</p>
       <p>To enable developers to build payment apps in a variety of
       ways, we decouple the registration (and subsequent display)
-      of Instruments from how payment handlers respond to
-      paymentrequest events. However, the user agent is responsible
+      of Instruments from how payment handlers respond to a
+      <a>PaymentRequestEvent</a>. However, the user agent is responsible
       for communicating the user's selection in the event.</p>
     </section>
     <section>
-      <h3>Selection of Instruments</h3>
+      <h2>Selection of Instruments</h2>
       <p>Users agents may wish to enable the user to select
       individual displayed Instruments. The payment handler would
       receive information about the selected Instrument and could take
@@ -854,13 +868,13 @@
     </section>
   </section>
   <section id="invocation">
-    <h2>Payment Handler Invocation, Display and Response</h2>
+    <h2>Invocation</h2>
     <p>Once the user has selected an Instrument, the user agent fires a
-    <a>paymentrequest event</a> with a Payment App Request, and
-    uses the subsequent Payment App Response to create a
+    <a>PaymentRequestEvent</a> with a <a>PaymentAppRequest</a>, and
+    uses the subsequent <a>PaymentAppResponse</a> to create a
     PaymentReponse for [[!PAYMENT-REQUEST-API]].</p>
-    <section id="sec-app-request">
-      <h2><a>PaymentAppRequest</a> interface</h2>
+    <section data-dfn-for="PaymentAppRequest" data-link-for="PaymentAppRequest">
+      <h2><dfn>PaymentAppRequest</dfn> interface</h2>
       <pre class="idl">
       interface PaymentAppRequest {
         readonly attribute DOMString origin;
@@ -871,62 +885,72 @@
         readonly attribute DOMString instrumentId;
       };
       </pre>
-      <dl>
-        <dt><dfn>origin</dfn> attribute</dt>
-        <dd>
-          This attribute a string that indicates the <a>origin</a>
+      <section>
+	<h2><dfn>origin</dfn> attribute</h2>
+        <p>
+          This attribute a string that indicates the <a data-cite=
+							"!HTML5#origin">origin</a>
           of the <a>payee</a> web page. It MUST be formatted
-          according to the "<a href=
-          "https://tools.ietf.org/html/rfc6454#section-6.1">Unicode
-          Serialization of an Origin</a>" algorithm defined in
+          according to the <a data-cite="!RFC6454#section-6.1">Unicode
+            Serialization of an Origin</a> algorithm defined in
           section 6.1 of [[!RFC6454]].
-        </dd>
-        <dt><dfn>id</dfn> attribute</dt>
-        <dd>
-          When getting, the <code>id</code> attribute returns the
-          <code>[[\details]].id</code> from the <a>PaymentRequest</a> that
-          corresponds to this <code>PaymentAppRequest</code>.
-        </dd>
-        <dt><dfn>methodData</dfn> attribute</dt>
-        <dd>
-          This attribute contains <code>PaymentMethodData</code>
+        </p>
+      </section>
+      <section>
+	<h2><dfn>id</dfn> attribute</h2>
+        <p>
+          When getting, the <a>id</a> attribute returns the
+          [[\details]].<a>id</a> from the <a>PaymentRequest</a> that
+          corresponds to this <a>PaymentAppRequest</a>.
+        </p>
+      </section>
+      <section>
+	<h2><dfn>methodData</dfn> attribute</h2>
+        <p>
+          This attribute contains <a>PaymentMethodData</a>
           dictionaries containing the <a>payment method
-          identifiers</a> for the <a>payment methods</a> that the
+            identifiers</a> for the <a>payment method</a>(s) that the
           web site accepts and any associated <a>payment method</a>
           specific data. It is populated from the
-          <a>PaymentRequest</a> using the <a>Method Data Population
-          Algorithm</a> defined below.
-        </dd>
-        <dt><dfn>total</dfn> attribute</dt>
-        <dd>
-          This attribute indicates the total amount being requested
-          for payment. It is initialized with a <a>structured
-          clone</a> of the <code>total</code> field of the
-          <code>PaymentDetails</code> provided when the
+          <a>PaymentRequest</a> using the <a>MethodData Population
+            Algorithm</a> defined below.
+        </p>
+      </section>
+      <section>
+	<h2><dfn>total</dfn> attribute</h2>
+	<p>
+	  This attribute indicates the total amount being requested
+	  for payment. It is initialized with a <a>structured
+	    clone</a> of the <a>total</a> field of the
+          <a>PaymentDetailsInit</a> provided when the
           corresponding <a>PaymentRequest</a> object was
           instantiated.
-        </dd>
-        <dt><dfn>modifiers</dfn> attribute</dt>
-        <dd>
-          This sequence of <code>PaymentDetailsModifier</code>
+        </p>
+      </section>
+      <section>
+	<h2><dfn>modifiers</dfn> attribute</h2>
+        <p>
+          This sequence of <a>PaymentDetailsModifier</a>
           dictionaries contains modifiers for particular payment
           method identifiers (e.g., if the payment amount or
           currency type varies based on a per-payment-method
           basis). It is populated from the <a>PaymentRequest</a>
           using the <a>Modifiers Population Algorithm</a> defined
           below.
-        </dd>
-        <dt><dfn>instrumentId</dfn> attribute</dt>
-        <dd>
+        </p>
+      </section>
+      <section>
+	<h2><dfn>instrumentId</dfn> attribute</h2>
+        <p>
           This attribute indicates the <a>PaymentInstrument</a>
           selected by the user. It corresponds to the
-          <code>id</code> field provided during registration.
-        </dd>
-      </dl>
+          <a>id</a> field provided during registration.
+        </p>
+      </section>
 
       <section>
-        <h3><dfn>Method Data Population Algorithm</dfn></h3>
-        <p>To initialize the value of the <code>methodData</code>,
+        <h2><dfn>MethodData Population Algorithm</dfn></h2>
+        <p>To initialize the value of the <a>methodData</a>,
         the user agent MUST perform the following steps or their
         equivalent:</p>
         <ol>
@@ -934,15 +958,15 @@
           set.</li>
           <li>For each <a>PaymentInstrument</a> <var>instrument</var> in
           the <a>payment handler</a>'s
-          <code>PaymentManager.instruments</code>, add all entries
-          in <var>instrument</var>.<code>enabledMethods</code> to <var>
+          <a>PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>, add all entries
+          in <var>instrument</var>.<a data-lt="PaymentInstrument.enabledMethods">enabledMethods</a> to <var>
             registeredMethods</var>.
           </li>
-          <li>Create a new empty <code>Sequence</code>.</li>
+          <li>Create a new empty <a>Sequence</a>.</li>
           <li>Set <var>dataList</var> to the newly created
-          <code>Sequence</code>.</li>
+          <a>Sequence</a>.</li>
           <li>For each item in
-          <code>PaymentRequest</code>@<var>[[\methodData]]</var> in
+          <a>PaymentRequest</a>@<var>[[\methodData]]</var> in
           the corresponding payment request, perform the following
           steps:
             <ol>
@@ -950,33 +974,33 @@
               consideration.</li>
               <li>Set <var>commonMethods</var> to the set
               intersection of
-              <var>inData</var>.<code>supportedMethods</code> and
+              <var>inData</var>.<a>supportedMethods</a> and
               <var>registeredMethods</var>.</li>
               <li>If <var>commonMethods</var> is empty, skip the
               remaining substeps and move on to the next item (if
               any).</li>
-              <li>Create a new <code>PaymentMethodData</code>
+              <li>Create a new <a>PaymentMethodData</a>
               object.</li>
               <li>Set <var>outData</var> to the newly created
-              <code>PaymentMethodData</code>.</li>
+              <a>PaymentMethodData</a>.</li>
               <li>Set
-              <var>outData</var>.<code>supportedMethods</code> to a
+              <var>outData</var>.<a>supportedMethods</a> to a
               list containing the members of
               <var>commonMethods</var>.</li>
               <li>Set <var>outData</var>.data to a <a>structured
-              clone</a> of <var>inData</var>.<code>data</code>.
+              clone</a> of <var>inData</var>.data.
               </li>
               <li>Append <var>outData</var> to
               <var>dataList</var>.</li>
             </ol>
           </li>
-          <li>Set <code>methodData</code> to
+          <li>Set <a>methodData</a> to
           <var>dataList</var>.</li>
         </ol>
       </section>
       <section>
-        <h3><dfn>Modifiers Population Algorithm</dfn></h3>
-        <p>To initialize the value of the <code>modifiers</code>,
+        <h2><dfn>Modifiers Population Algorithm</dfn></h2>
+        <p>To initialize the value of the <a>modifiers</a>,
         the user agent MUST perform the following steps or their
         equivalent:</p>
         <ol>
@@ -984,15 +1008,15 @@
           set.</li>
           <li>For each <a>PaymentInstrument</a> <var>instrument</var> in
           the <a>payment handler</a>'s
-          <code>PaymentManager.instruments</code>, add all entries
-          in <var>instrument</var>.<code>enabledMethods</code> to <var>
+          <a>PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>, add all entries
+          in <var>instrument</var>.<a data-lt="PaymentInstrument.enabledMethods">enabledMethods</a> to <var>
             registeredMethods</var>.
           </li>
-          <li>Create a new empty <code>Sequence</code>.</li>
+          <li>Create a new empty <a>Sequence</a>.</li>
           <li>Set <var>modifierList</var> to the newly created
-          <code>Sequence</code>.</li>
+          <a>Sequence</a>.</li>
           <li>For each item in
-          <code>PaymentRequest</code>@<var>[[\paymentDetails]]</var>.<code>modifiers</code>
+          <a>PaymentRequest</a>@<var>[[\paymentDetails]]</var>.<a>modifiers</a>
           in the corresponding payment request, perform the
           following steps:
             <ol>
@@ -1000,87 +1024,83 @@
               consideration.</li>
               <li>Set <var>commonMethods</var> to the set
               intersection of
-              <var>inModifier</var>.<code>supportedMethods</code>
+              <var>inModifier</var>.<a>supportedMethods</a>
               and <var>registeredMethods</var>.</li>
               <li>If <var>commonMethods</var> is empty, skip the
               remaining substeps and move on to the next item (if
               any).</li>
-              <li>Create a new <code>PaymentDetailsModifier</code>
+              <li>Create a new <a>PaymentDetailsModifier</a>
               object.</li>
               <li>Set <var>outModifier</var> to the newly created
-              <code>PaymentDetailsModifier</code>.</li>
+              <a>PaymentDetailsModifier</a>.</li>
               <li>Set
-              <var>outModifier</var>.<code>supportedMethods</code>
+              <var>outModifier</var>.<a>supportedMethods</a>
               to a list containing the members of
               <var>commonMethods</var>.</li>
-              <li>Set <var>outModifier</var>.<code>total</code> to
+              <li>Set <var>outModifier</var>.<a>total</a> to
               a <a>structured clone</a> of
-              <var>inModifier</var>.<code>total</code>.
+              <var>inModifier</var>.<a>total</a>.
               </li>
               <li>Append <var>outModifier</var> to
               <var>modifierList</var>.</li>
             </ol>
           </li>
-          <li>Set <code>modifiers</code> to
+          <li>Set <a>modifiers</a> to
           <var>modifierList</var>.</li>
         </ol>
       </section>
     </section>
-    <section>
-      <h3>Invocation</h3>
-      <section>
-        <h3>Extension to <code>ServiceWorkerGlobalScope</code></h3>
-        <p>The Service Worker specification defines a
-        <code>ServiceWorkerGlobalScope</code> interface
-        [[!SERVICE-WORKERS]], which this specification extends.</p>
+    <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for="ServiceWorkerGlobalScope">
+      <h2>Extension to <a>ServiceWorkerGlobalScope</a></h2>
+        <p>
+	  This specification extends the <a>ServiceWorkerGlobalScope</a> interface.</p>
         <pre class="idl">
         partial interface ServiceWorkerGlobalScope {
           attribute EventHandler onpaymentrequest;
         };
-      </pre>
-        <dl>
-          <dt><code>onpaymentrequest</code> attribute</dt>
-          <dd>
-            The <code>onpaymentrequest</code> attribute is an
+	</pre>
+	<section>
+	  <h2><dfn>onpaymentrequest</dfn> attribute</h2>
+          <p>
+            The <a>onpaymentrequest</a> attribute is an
             <a>event handler</a> whose corresponding <a>event
-            handler event type</a> is <code>paymentrequest</code>.
-          </dd>
-        </dl>
-        <p>The <a>PaymentRequestEvent</a> interface represents a
-        received <a>payment request</a>.</p>
-      </section>
-      <section>
-        <h3>The <code>paymentrequest</code> Event</h3>
-        <p>The <a>PaymentRequestEvent</a> represents a received
-        <a>payment request</a>.</p>
-        <pre class="idl">
-      [Exposed=ServiceWorker]
-      interface PaymentRequestEvent : ExtendableEvent {
+              handler event type</a> is <a>paymentrequest</a>.
+          </p>
+	</section>
+  </section>
+  <section data-dfn-for="PaymentRequestEvent" data-link-for="PaymentRequestEvent">
+    <h2>The <dfn>PaymentRequestEvent</dfn></h2>
+    <p>The <a>PaymentRequestEvent</a> represents a received <a>PaymentRequest</a>.</p>
+      <pre class="idl">
+	[Exposed=ServiceWorker]
+	interface PaymentRequestEvent : ExtendableEvent {
         readonly attribute PaymentAppRequest appRequest;
         Promise&lt;WindowClient&gt; openWindow(USVString url);
         void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
-      };
+	};
       </pre>
-        <section>
-          <h3><dfn>appRequest</dfn> attribute</h3>
-          <p>This attribute contains the <a>PaymentAppRequest</a>
-          associated with this <a>payment request</a>.</p>
-        </section>
-        <section>
-          <h3><dfn>openWindow()</dfn> method</h3>
-          <p>This method is used by the payment handler to show a
+      
+      <section>
+	<h2><dfn>appRequest</dfn> attribute</h2>
+        <p>This attribute contains the <a>PaymentAppRequest</a>
+          associated with this <a>PaymentRequest</a>.</p>
+      </section>
+      <section>
+	<h2><dfn>openWindow</dfn>() method</h2>
+        <p>This method is used by the payment handler to show a
           window to the user. When called, it runs the <a>open window
-          algorithm</a>.</p>
-        </section>
-        <section>
-          <h3><dfn>respondWith()</dfn> method</h3>
-          <p>This method is used by the payment handler to provide
-          a <a>PaymentAppResponse</a> when the payment successfully
-          completes.</p>
-        </section>
-        <section>
-          <h3>Internal Slots</h3>
-          <p>Instances of <a>PaymentRequestEvent</a> are created with
+            algorithm</a>.</p>
+      </section>
+      <section>
+	<h2><dfn>respondWith</dfn>() method</h2>
+	<p>This method is used by the payment handler to provide
+	  a <a>PaymentAppResponse</a> when the payment successfully
+	  completes.</p>
+      </section>
+    </section>
+    <section>
+      <h2>Internal Slots</h2>
+      <p>Instances of <a>PaymentRequestEvent</a> are created with
           the internal slots in the following table:</p>
           <table>
             <tr>
@@ -1092,7 +1112,7 @@
               <td><dfn>[[\windowClient]]</dfn></td>
               <td>null</td>
               <td>
-                The currently active <a>WindowClient</a>. This is
+                The currently active <dfn>WindowClient</dfn>. This is
                 set if a payment handler is currently showing a
                 window to the user. Otherwise, it is null.
               </td>
@@ -1100,24 +1120,22 @@
           </table>
         </section>
         <section>
-          <h3>Handling a payment request event</h3>
-          <p>Upon receiving a <a>payment request</a> by way of
-          <a data-cite="!payment-request#show-method">PaymentRequest.show()</a> and subsequent user
+          <h2>Handling a PaymentRequestEvent</h2>
+          <p>Upon receiving a <a>PaymentRequest</a> by way of
+          <a data-cite="!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> and subsequent user
           selection of a payment handler, the <a>user agent</a>
           MUST run the following steps:</p>
           <ol>
-            <li>Let <var>registration</var> be the <a>service
-            worker registration</a> corresponding to the <a>payment
-            handler</a> selected by the user.
+            <li>Let <var>registration</var> be the <a>ServiceWorkerRegistration</a> corresponding to the <a>payment handler</a> selected by the user.
             </li>
             <li>If <var>registration</var> is not found, reject the
             <a>Promise</a> that was created by
-            <a data-cite="!payment-request#show-method">PaymentRequest.show()</a> with a
+            <a data-cite="!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> with a
             <a>DOMException</a> whose value
             "<a>InvalidStateError</a>" and terminate these steps.
             </li>
             <li>Invoke the <a>handle functional event</a> algorithm
-            with a <a>service worker registration</a> of
+            with a <a>ServiceWorkerRegistration</a> of
             <var>registration</var> and <var>callbackSteps</var>
             set to the following steps:
               <ol>
@@ -1126,14 +1144,14 @@
                 <li>Create a <a>trusted event</a>, <var>e</var>,
                 that uses the
                 <a>PaymentRequestEvent</a> interface,
-                with the event type <code>paymentrequest</code>,
+                with the event type <a>paymentrequest</a>,
                 which does not bubble, cannot be canceled, and has
                 no default action.
                 </li>
-                <li>Set the <a>appRequest</a> attribute of
+                <li>Set the <a data-lt="PaymentRequestEvent.appRequest">appRequest</a> attribute of
                 <var>e</var> to a new <a>PaymentAppRequest</a>
-                instance, populated as described in <a href=
-                "#sec-app-request"></a>.
+                instance using the <a>MethodData Population Algorithm</a>
+		and the <a>Modifiers Population Algorithm</a>.
                 </li>
                 <li>Dispatch <var>e</var> to
                 <var>global</var>.</li>
@@ -1141,10 +1159,10 @@
                 lifetime promises</a> of <var>e</var> to resolve.
                 </li>
                 <li>If the <a>payment handler</a> has not provided
-                a <a>payment app response</a> as described in
+                a <a>PaymentAppResponse</a> as described in
                 <a href="#sec-payment-app-response"></a>, reject
                 the <a>Promise</a> that was created by
-                < data-cite="!payment-request#show-method">PaymentRequest.show()</a> with a
+                <a data-cite="!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> with a
                 <a>DOMException</a> whose value
                 "<a>OperationError</a>".
                 </li>
@@ -1153,9 +1171,8 @@
           </ol>
         </section>
       </section>
-    </section>
     <section>
-      <h3><dfn data-lt="payment handler window">Payment Handler Windows</dfn></h3>
+      <h2><dfn data-lt="payment handler window">Windows</dfn></h2>
       <p>An invoked payment handler may or may not need to display
       information about itself or request user input. Some examples
       of potential payment handler displays include:</p>
@@ -1173,22 +1190,22 @@
         or requiring user interaction.</li>
       </ul>
       <p>A <a>payment handler</a> that requires visual display and user
-      interaction, may call <a>openWindow()</a> to display a page to the
+      interaction, may call openWindow() to display a page to the
       user.</p>
 
       <p class="note"> Since user agents
-      know that this method is connected to the payment request
-      event, they SHOULD render the window in a way that is
+	know that this method is connected to the <a>PaymentRequestEvent</a>,
+	they SHOULD render the window in a way that is
       consistent with the flow and not confusing to the user.
       The resulting window client is bound to the tab/window
-      that initiated the <a>payment request</a>. A single
+      that initiated the <a>PaymentRequest</a>. A single
       <a>payment handler</a> SHOULD NOT be allowed to open more
       than one client window using this method.</p>
 
       <section>
-        <h3><dfn>Open Window Algorithm</dfn></h3>
+        <h2><dfn>Open Window Algorithm</dfn></h2>
         <p class="issue" data-number="115">This algorithm is <i>very</i> similar to
-        the <a data-cite="!service-workers#clients-openwindow">
+        the <a data-cite="!SERVICE-WORKERS#clients-openwindow">
         Open Window Algorithm</a> in the Service Workers
         specification. Should we refer to the Service Workers
         specification instead of copying their steps?</p>
@@ -1197,10 +1214,10 @@
           <a>PaymentRequestEvent</a>.
           </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a>
-          that triggered this payment request event.
+          that triggered this <a>PaymentRequestEvent</a>.
           </li>
-          <li>If <var>request</var>.<a data-cite="!payment-request#dfn-state-1">[[\state]]</a> is not
-          "<a data-cite="!payment-request#dfn-interactive">interactive</a>", then return a <a>Promise</a> rejected with a <a>
+          <li>If <var>request</var>.<a data-cite="!PAYMENT-REQUEST-API#dfn-state-1">[[\state]]</a> is not
+          "<a data-cite="!PAYMENT-REQUEST-API#dfn-interactive">interactive</a>", then return a <a>Promise</a> rejected with a <a>
             DOMException</a> whose name is
             "<a>InvalidStateError</a>".
           </li>
@@ -1208,14 +1225,14 @@
           <var>url</var> argument.</li>
           <li>If the url parsing throws an exception, return a <a>Promise</a>
           rejected with that exception.</li>
-          <li>If url is about:blank, return a <a>Promise</a> rejected with
-          a <code>TypeError</code>.
+          <li>If <var>url</var> is <code>about:blank</code>, return a <a>Promise</a> rejected with
+          a <a>TypeError</a>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
           <li>Run these steps <a data-cite="!whatwg-html#in-parallel">in parallel</a>:
             <ol>
-              <li>Let <var>newContext</var> be a new <a data-cite="!whatwg-html#top-level-browsing-context">top level
+              <li>Let <var>newContext</var> be a new <a data-cite="!whatwg-html#top-level-browsing-context">top-level
               browsing context</a>.
               </li>
               <li><a data-cite="!whatwg-html#navigate">Navigate</a> <var>newContext</var> to <var>url</var>,
@@ -1224,15 +1241,14 @@
               <var>promise</var> with that exception and abort
               these steps.</li>
               <li>If the origin of <var>newContext</var> is not the same as the
-              <var>event</var>.<a>appRequest</a>.<a href=
-              "#dom-paymentapprequest-origin">origin</a>, then:
+              <var>event</var>.<a data-lt="PaymentRequestEvent.appRequest">appRequest</a>.<a data-lt="PaymentAppRequest.origin">origin</a>, then:
                 <ol>
                   <li>Reject <var>promise</var> with a <a>DOMException</a> whose name is "<a>SecurityError</a>".</li>
                   <li>Abort these steps.</li>
                 </ol>
               </li>
               <li>Let <var>client</var> be the result of running the
-              <a data-cite="!service-workers#capture-windowclient-algorithm">
+              <a data-cite="!SERVICE-WORKERS#capture-windowclient-algorithm">
                 capture window client</a> algorithm with <var>newContext</var> as the
                 argument.
               </li>
@@ -1240,7 +1256,7 @@
               not null, then:
                 <ol>
                   <li>If
-                  <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite="!service-workers#client-visibilitystate-attribute">visibilityState</a>
+                  <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite="!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
                   is not "unloaded", reject <var>promise</var> with
                   a <a>DOMException</a> whose name is
                   "<a>InvalidStateError</a>" and abort these steps.
@@ -1257,120 +1273,15 @@
           <li>Return <var>promise</var>.</li>
         </ol>
       </section>
-    </section>
-    <section id="sec-payment-app-response">
-      <h2><a>PaymentAppResponse</a> dictionary</h2>
-      The <a>payment app response</a>
-      is conveyed using the following dictionary:
-      <pre class="idl">
-      dictionary PaymentAppResponse {
-        DOMString methodName;
-        object details;
-      };
-    </pre>
-      <dl>
-        <dt><code>methodName</code> attribute</dt>
-        <dd>
-          The <a>payment method identifier</a> for the <a>payment
-          method</a> that the user selected to fulfil the
-          transaction.
-        </dd>
-        <dt><code>details</code> attribute</dt>
-        <dd>
-          A <a>JSON-serializable object</a> that provides a
-          <a>payment method</a> specific message used by the
-          merchant to process the transaction and determine
-          successful fund transfer.
-        </dd>
-        <dd>
-          <p>The user agent receives a successful response from the
-          payment handler through resolution of the Promise
-          provided to the <code>respondWith</code> function of the
-          corresponding <a>PaymentRequestEvent</a> dictionary. The
-          application is expected to resolve the Promise with a
-          <code>PaymentAppResponse</code> instance containing the
-          payment response. In case of user cancellation or error,
-          the application may signal failure by rejecting the
-          Promise.</p>
-          <p>If the Promise is rejected, the user agent MUST run
-          the <dfn>payment app failure algorithm</dfn>. The exact
-          details of this algorithm are left to 
-          implementers. Acceptable behaviors include,
-          but are not limited to:</p>
-          <ul>
-            <li>Letting the user try again, with the same payment
-            handler or with a different one.</li>
-            <li>Rejecting the Promise that was created by
-            <a data-cite="!payment-request#show-method">PaymentRequest.show()</a>.</li>
-          </ul>
-          <p>If this Promise is successfully resolved, the user
-          agent MUST run the <a>user accepts the payment request
-          algorithm</a> as defined in [[!PAYMENT-REQUEST-API]],
-          replacing steps 6 and 7 with these steps or their
-          equivalent:</p>
-          <ol>
-            <li>Set <var>appResponse</var> to the
-            <code>PaymentAppResponse</code> instance used to
-            resolve the
-            <a>PaymentRequestEvent</a><code>.respondWith</code>
-            Promise.
-            </li>
-            <li>If <var>appResponse</var>.<code>methodName</code>
-            is not present or not set to one of the values from <a>
-              PaymentRequestEvent</a>.<code>appRequest</code>, run
-              the <a>payment app failure algorithm</a> and
-              terminate these steps.
-            </li>
-            <li>Create a <a>structured clone</a> of
-            <var>appResponse</var>.<code>methodName</code> and
-            assign it to
-            <var>response</var>.<code>methodName</code>.
-            </li>
-            <li>If <var>appResponse</var>.<code>details</code> is
-            not present, run the <a>payment app failure
-            algorithm</a> and terminate these steps.
-            </li>
-            <li>Create a <a>structured clone</a> of
-            <var>appResponse</var>.<code>details</code> and assign
-            it to <var>response</var>.<code>details</code>.
-            </li>
-          </ol>
-          <p>The following example shows how to respond to a
-          payment request:</p>
-          <pre class="example highlight" title=
-          "Sending a Payment Response">
-      paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
-        /* ... processing may occur here ... */
-        accept({
-          methodName: "basic-card",
-          details: {
-            cardHolderName:   "John Smith",
-            cardNumber:       "1232343451234",
-            expiryMonth:      "12",
-            expiryYear :      "2020",
-            cardSecurityCode: "123"
-           }
-        });
-      });
-    </pre>
-          <p class="note">[[!PAYMENT-REQUEST-API]] defines a
-          <code>paymentRequestID</code> that parties in the
-          ecosystem (including payment app providers and payees)
-          may use for reconciliation after network or other
-          failures.</p>
-        </dd>
-      </dl>
-    </section>
-    <section id="post-example">
-      <h3>Example of handling the <code>paymentrequest</code>
-      event</h3>
+
+      <section id="post-example" class="informative">
+      <h2>Example of handling the <a>PaymentRequestEvent</a></h2>
       <p>This example shows how to write a service worker that
-      listens to the paymentrequest event. When a payment request
-      event is received, the service worker opens a window in order
+	listens to the <a>PaymentRequestEvent</a>. When a
+	<a>PaymentRequestEvent</a> is received, the service worker opens a window in order
       to interact with the user.</p>
-      <pre class="example highlight" title=
-      "Handling the paymentrequest event" id=
-      "example-paymentrequest-event">
+      <pre class="example js" title=
+      "Handling the PaymentRequestEvent">
       self.addEventListener('paymentrequest', function(e) {
         e.respondWith(new Promise(function(resolve, reject) {
           self.addEventListener('message', listener = function(e) {
@@ -1391,14 +1302,16 @@
           });
         }));
       });
-    </pre>
+      </pre>
+      	  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
+
       <p>Using the simple scheme described above, a trivial HTML
       page that is loaded into the <a>payment handler window</a> to
       implement the <em>basic card</em> scheme might look like the
       following:</p>
-      <pre class="example highlight" title=
+      <pre class="example html" title=
       "Simple Payment Handler Window">
-&lt;html&gt; &lt;body&gt; &lt;form id="form"&gt;
+&lt;form id="form"&gt;
 &lt;table&gt;
   &lt;tr&gt;&lt;th&gt;Cardholder Name:&lt;/th&gt;&lt;td&gt;&lt;input name="cardholderName"&gt;&lt;/td&gt;&lt;/tr&gt;
   &lt;tr&gt;&lt;th&gt;Card Number:&lt;/th&gt;&lt;td&gt;&lt;input name="cardNumber"&gt;&lt;/td&gt;&lt;/tr&gt;
@@ -1431,14 +1344,124 @@ window.addEventListener("message", function(e) {
     window.close();
   }
 });
-&lt;/script&gt; &lt;/body&gt; &lt;/html&gt;
-    </pre>
+&lt;/script&gt;
+      </pre>
     </section>
-  </section>
+
+    </section>
+    <section>
+      <h2>Response</h2>
+      <section data-dfn-for="PaymentAppResponse" data-link-for="PaymentAppResponse">
+	<h2><dfn>PaymentAppResponse</dfn> dictionary</h2>
+      The PaymentAppResponse is conveyed using the following dictionary:
+	<pre class="idl">
+	  dictionary PaymentAppResponse {
+          DOMString methodName;
+          object details;
+	  };
+	</pre>
+	
+	<section>
+	  <h2><dfn>methodName</dfn> attribute</h2>
+          <p>
+          The <a>payment method identifier</a> for the <a>payment
+          method</a> that the user selected to fulfil the
+          transaction.
+        </p>
+	</section>
+      <section>
+	<h2><dfn>details</dfn> attribute</h2>
+        <p>
+          A <a>JSON-serializable</a> object that provides a
+          <a>payment method</a> specific message used by the
+          merchant to process the transaction and determine
+          successful fund transfer.
+        </p>
+          <p>The user agent receives a successful response from the
+          payment handler through resolution of the Promise
+          provided to the <a data-lt="PaymentRequestEvent.respondWith">respondWith()</a> function of the
+          corresponding <a>PaymentRequestEvent</a> dictionary. The
+          application is expected to resolve the Promise with a
+          <a>PaymentAppResponse</a> instance containing the
+          payment response. In case of user cancellation or error,
+          the application may signal failure by rejecting the
+          Promise.</p>
+          <p>If the Promise is rejected, the user agent MUST run
+          the <dfn>payment app failure algorithm</dfn>. The exact
+          details of this algorithm are left to 
+          implementers. Acceptable behaviors include,
+          but are not limited to:</p>
+          <ul>
+            <li>Letting the user try again, with the same payment
+            handler or with a different one.</li>
+            <li>Rejecting the Promise that was created by
+            <a data-cite="!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a>.</li>
+          </ul>
+      </section>
+      </section>
+      <section>
+	<h2>Extention to User Accepts the Payment Request Algorithm</h2>
+          <p>If the Promise is successfully resolved, the user
+          agent MUST run the <a>user accepts the payment request
+          algorithm</a> as defined in [[!PAYMENT-REQUEST-API]],
+          replacing steps 6 and 7 with these steps or their
+          equivalent:</p>
+          <ol>
+            <li>Set <var>appResponse</var> to the
+            <a>PaymentAppResponse</a> instance used to
+            resolve the
+            <a>PaymentRequestEvent</a>.<a data-lt="PaymentRequestEvent.respondWith">respondWith()</a>
+            Promise.
+            </li>
+            <li>If <var>appResponse</var>.<a data-lt="PaymentAppResponse.methodName">methodName</a>
+            is not present or not set to one of the values from <a>
+              PaymentRequestEvent</a>.<a data-lt="PaymentRequestEvent.appRequest">appRequest</a>, run
+              the <a>payment app failure algorithm</a> and
+              terminate these steps.
+            </li>
+            <li>Create a <a>structured clone</a> of
+            <var>appResponse</var>.<a data-lt="PaymentAppResponse.methodName">methodName</a> and
+            assign it to
+            <var>response</var>.<a data-lt="PaymentAppResponse.methodName">methodName</a>.
+            </li>
+            <li>If <var>appResponse</var>.<var>details</var> is
+            not present, run the <a>payment app failure
+            algorithm</a> and terminate these steps.
+            </li>
+            <li>Create a <a>structured clone</a> of
+            <var>appResponse</var>.<var>details</var> and assign
+            it to <var>response</var>.<var>details</var>.
+            </li>
+          </ol>
+          <p>The following example shows how to respond to a
+          payment request:</p>
+          <pre class="example js" title=
+          "Sending a Payment Response">
+      paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
+        /* ... processing may occur here ... */
+        accept({
+          methodName: "basic-card",
+          details: {
+            cardHolderName:   "John Smith",
+            cardNumber:       "1232343451234",
+            expiryMonth:      "12",
+            expiryYear :      "2020",
+            cardSecurityCode: "123"
+           }
+        });
+      });
+	  </pre>
+          <p class="note">[[!PAYMENT-REQUEST-API]] defines an
+          <a>ID</a> that parties in the
+          ecosystem (including payment app providers and payees)
+          may use for reconciliation after network or other
+          failures.</p>
+      </section>
+    </section>
   <section id="security">
     <h2>Security and Privacy Considerations</h2>
     <section>
-      <h3>Information about the User Environment</h3>
+      <h2>Information about the User Environment</h2>
       <ul>
         <li>The API does not share information about the user's
         registered payment handlers. Information from origins is
@@ -1450,7 +1473,7 @@ window.addEventListener("message", function(e) {
       </ul>
     </section>
     <section>
-      <h3>User Consent before Payment</h3>
+      <h2>User Consent before Payment</h2>
       <ul>
         <li>One goal of this specification is to minimize the user
         interaction required to make a payment. At the same time,
@@ -1460,10 +1483,9 @@ window.addEventListener("message", function(e) {
       </ul>
     </section>
     <section>
-      <h3>Secure Communications</h3>
+      <h2>Secure Communications</h2>
       <ul>
-        <li>See <a href=
-        "https://www.w3.org/TR/service-workers/#security-considerations">
+        <li>See <a data-cite="SERVICE-WORKERS#security-considerations">
           Service Worker security considerations</a>
         </li>
         <li>Payment method security is outside the scope of this
@@ -1472,14 +1494,14 @@ window.addEventListener("message", function(e) {
       </ul>
     </section>
     <section>
-      <h3>Payment App Authenticity</h3>
+      <h2>Payment App Authenticity</h2>
       <p class="note">The Web Payments Working Group is also
       discussing Payment App authenticity; see the (draft) <a href=
       "https://w3c.github.io/webpayments/proposals/Payment-Manifest-Proposal.html">
       Payment Method Manifest</a>.</p>
     </section>
     <section>
-      <h3>Data Validation</h3>
+      <h2>Data Validation</h2>
       <ul>
         <li>Payees should validate that the data they have received
         through the paymentRequest API is what they expect (e.g.,
@@ -1487,7 +1509,7 @@ window.addEventListener("message", function(e) {
       </ul>
     </section>
     <section>
-      <h3>Private Browsing Mode</h3>
+      <h2>Private Browsing Mode</h2>
       <ul>
         <li>When the Payment Request API is invoked in a "private
         browsing mode," the user agent should launch payment
