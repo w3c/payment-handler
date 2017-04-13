@@ -243,7 +243,7 @@
       user with the user agent to
       handle <a>PaymentRequestEvent</a>s.</p>
 
-    <p class="issue" title="Issue 127 - Payment Manager / Hancdler"><a href=
+    <p class="issue" title="Issue 127 - Payment Manager / Handler"><a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/127">
       Issue 97</a>. The distinction between Payment Handler and Payment Manager is not clear. There is a proposal to remove the phrase Payment Manager from the spec, renaming the "PaymentManager" interface the "PaymentHandler" interface.</p>
     
@@ -313,12 +313,33 @@
       <li>how communication takes place between the payee server
       and the payee Web application, or between a payment app
 	origin and other parties.</li>
-      <li>how third-party mobile payment apps interact (through proprietary mechanisms) with user agents, or how user agents themselves provide simple payment app functionality.</li>
     </ul>
     <p>Thus, an origin will rely on many other Web technologies
     defined elsewhere for lifecycle management, security, user
       authentication, user interaction, and so on.</p>
 
+    <section class="informative">
+      <h2>Structure of a Web Payment App</h2>
+      
+    <figure>
+       <img alt="Architecture of a (Web) payment apps as defined in this specification." src="app-arch.png"> 
+      <figcaption> A Web payment app is associated with an origin, and may be implemented by one or more payment handlers. A PaymentInstrument supports one or more payment methods. A PaymentWallet contains one or more PaymentInstrument and may be used to enhance the user experience (e.g., business wallet and personal wallet).
+</figcaption>
+     </figure>
+      
+    </section>
+
+    <section class="informative">
+      <h2>Relation to Other Types of Payment Apps</h2>
+
+      <p>This specification does not address how third-party mobile payment apps interact (through proprietary mechanisms) with user agents, or how user agents themselves provide simple payment app functionality.</p>
+
+    <figure>
+       <img alt="Different types of payment apps. Payment Handler API is for Web apps." src="app-types.png"> 
+      <figcaption> Payment Handler API enables Web apps to handle payments. Other types of payment apps may use other (proprietary) mechanisms. </figcaption>
+     </figure>
+
+    </section>
   </section>
   <section id="registration">
     <h2>Registration</h2>
