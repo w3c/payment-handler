@@ -140,7 +140,7 @@
       <dt><dfn>Conforming user agent</dfn></dt>
       <dd>
         <p>A <a>user agent</a> MUST behave as described in this
-        specification in order to be considered conformant. In this
+        specification to be considered conformant. In this
         specification, <dfn>user agent</dfn>> means a <em>Web browser or
         other interactive user agent</em> as defined in
         [[!HTML5]].</p>
@@ -319,6 +319,9 @@
           readonly attribute PaymentManager paymentManager;
         };
       </pre>
+
+      	<p class="issue" title="Issue 127 - Do we need Payment Manager and Payment Handler?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/127">Issue 127</a>: The distinction is unclear. A proposal is to remove the phrase Payment Manager from the spec, renaming the "PaymentManager" interface the "PaymentHandler" interface.</p>
+
     </section>
     <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
       <h2><dfn>PaymentManager</dfn> interface</h2>
@@ -350,6 +353,9 @@
         do not appear in any groups should still be presented to
           users by the browser for selection.</p>
       </section>
+
+      	<p class="issue" title="Issue 98 - Support grouped display of payment instruments?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>: Should the API support providing grouping information ("wallets") to the user agent? What should requirements be on user agents to display or provide for user interaction with this information?</p>
+      
     </section>
     <section data-dfn-for="PaymentInstruments" data-link-for="PaymentInstruments">
       <h2><dfn>PaymentInstruments</dfn> interface</h2>
@@ -473,6 +479,8 @@
 	    </li>
             <li> Return <var>p</var></li>
           </ol>
+
+	<p class="issue" title="Issue 129 - Clear()"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue 129</a>: This clear() method intends to address the issue.</p>
 	</section>
 
     </section>
@@ -512,6 +520,9 @@
         <a>supportedNetworks</a>, and another for
         <a>supportedTypes</a>.</dd>
       </dl>
+
+      <p class="issue" title="Issue 125 - ImageObjects not Defined"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/125">Issue 125</a>: ImageObjects comes from the Web App Manifest specification. Should we reference the definition normatively, or make use of a simpler structure here?</p>
+
     </section>
     <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
       <h2><dfn>PaymentWallets</dfn> interface</h2>
@@ -633,6 +644,8 @@
 	  </li>
           <li> Return <var>p</var></li>
         </ol>
+
+	<p class="issue" title="Issue 129 - Clear()"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue 129</a>: This clear() method intends to address the issue.</p>
       </section>
     </section>
 
@@ -670,7 +683,7 @@
       <h2>Registration Example</h2>
       <p>The following example shows how to register a payment
       handler:</p>
-      <p class="issue" title="Issue 94 - Permission"><a href=
+      <p class="issue" title="Issue 94 - Permission to Handle Payments"><a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/94">
       Issue 94</a>. The means for code requesting permission to handle
       payments is not yet defined. The code below is based on one
@@ -760,11 +773,6 @@
              });
           };
      </pre>
-      <p class="issue" title="Payment method identifiers">The
-      Editors will update the payment method identifier syntax in
-      this and other examples to align with
-      [[!METHOD-IDENTIFIERS]], once a final format has been agreed
-      upon.</p>
     </section>
   </section>
   <section id="instrument-display-ordering">
@@ -790,8 +798,10 @@
         handlers to control the ordering and define preselected
         defaults.</li>
       </ul>
-      <p>The following are examples of payment handler
-      ordering:</p>
+
+      <p class="issue" title="Issue 116 - PR API payment method ordering and relation to this spec."><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/116">Issue 116</a>: The second bullet above may be deleted based on <a href="https://github.com/w3c/browser-payment-api/issues/481">PR API issue 481</a>.</p>
+      
+      <p>The following are examples of payment handler ordering:</p>
       <ul>
         <li>For a given Web site, display payment handlers in an
         order that reflects usage patterns for the site (e.g., a
@@ -803,6 +813,9 @@
         matches the origin of a payment handler, show the payment
         handler at the top of the list.</li>
       </ul>
+
+      <p class="issue" title="Issue 174 - Merchant Preferences"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/74">Issue 74</a>: The Working Group has discussed two types of merchant preferences related to payment apps: (1) highlighting merchant-preferred payment apps already registered by the user and (2) recommending payment apps not yet registered by the user. The current draft of the specification does not address either point, and the Working Group is seeking feedback on the importance of these use cases. Note that for the second capability, merchants can recommend payment apps through other mechanisms such as links from their web sites.</p>
+
     </section>
     <section>
       <h2>Display of Instruments</h2>
@@ -873,6 +886,9 @@
     <a>PaymentRequestEvent</a> with a <a>PaymentAppRequest</a>, and
     uses the subsequent <a>PaymentAppResponse</a> to create a
     PaymentReponse for [[!PAYMENT-REQUEST-API]].</p>
+
+    <p class="issue" title="Issue 117 - Support for Abort() being delegated to Payment Handler"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/117">Issue 117</a>: Payment Request API supports delegation of responsibiliyt to manage an abort to a payment app. There is a proposal to add a paymentRequestAborted event to the Payment Handler interface. The event will have a respondWith method that takes a boolean parameter indicating if the paymentRequest has been successfully aborted.</p>
+    
     <section data-dfn-for="PaymentAppRequest" data-link-for="PaymentAppRequest">
       <h2><dfn>PaymentAppRequest</dfn> interface</h2>
       <pre class="idl">
@@ -1105,6 +1121,11 @@
 	  a <a>PaymentAppResponse</a> when the payment successfully
 	  completes.</p>
       </section>
+
+    <p class="issue" title="Issue 123 - Share user data with payment app?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/123">Issue 123</a>: Should payment apps receive user data stored in the user agent upon explicit consent from the user? The payment app could request permission either at installation or when the payment app is first invoked.</p>
+
+    <p class="issue" title="Issue 119 - DOM Events compatibility"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/119">Issue 119</a>: For DOM events compatibility, need to add a constructor, and the members of the corresponding dictionary need to match the attributes of the event.</p>
+
     </section>
     <section>
       <h2>Internal Slots</h2>
@@ -1212,11 +1233,10 @@
 
       <section>
         <h2><dfn>Open Window Algorithm</dfn></h2>
-        <p class="issue" data-number="115">This algorithm is <i>very</i> similar to
-        the <a data-cite="!SERVICE-WORKERS#clients-openwindow">
-        Open Window Algorithm</a> in the Service Workers
+        <p class="issue" title="Issues 115 and 97: the Open Window Algorithm"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/115">Issue 115</a>: This algorithm resembles the <a data-cite="!SERVICE-WORKERS#clients-openwindow"> Open Window Algorithm</a> in the Service Workers
         specification. Should we refer to the Service Workers
-        specification instead of copying their steps?</p>
+          specification instead of copying their steps? See also <a href="https://github.com/w3c/webpayments-payment-apps-api/issues/97">issue 97</a> on the algorithm to open windows.</p>
+	
         <ol class="algorithm">
           <li>Let <var>event</var> be this
           <a>PaymentRequestEvent</a>.
@@ -1285,8 +1305,7 @@
       <h2>Example of handling the <a>PaymentRequestEvent</a></h2>
       <p>This example shows how to write a service worker that
 	listens to the <a>PaymentRequestEvent</a>. When a
-	<a>PaymentRequestEvent</a> is received, the service worker opens a window in order
-      to interact with the user.</p>
+	<a>PaymentRequestEvent</a> is received, the service worker opens a window to interact with the user.</p>
       <pre class="example js" title=
       "Handling the PaymentRequestEvent">
       self.addEventListener('paymentrequest', function(e) {
@@ -1310,7 +1329,7 @@
         }));
       });
       </pre>
-      	  <p class="issue"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
+      	  <p class="issue" title="Issue 128 - Revisit examples"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue 128</a>: The Web Payments Working Group plans to revisit these two examples.</p>
 
       <p>Using the simple scheme described above, a trivial HTML
       page that is loaded into the <a>payment handler window</a> to
