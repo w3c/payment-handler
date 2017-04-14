@@ -141,7 +141,7 @@
       <dd>
         <p>A <a>user agent</a> MUST behave as described in this
         specification to be considered conformant. In this
-        specification, <dfn>user agent</dfn>> means a <em>Web browser or
+        specification, <dfn>user agent</dfn> means a <em>Web browser or
         other interactive user agent</em> as defined in
         [[!HTML5]].</p>
         <p>User agents MAY implement algorithms given in this
@@ -242,28 +242,37 @@
     <p>A <dfn>Payment Handler</dfn> is a function registered by the
       user with the user agent to
       handle <a>PaymentRequestEvent</a>s.</p>
+
+    <p class="issue" title="Issue 127 - Payment Manager / Handler"><a href=
+      "https://github.com/w3c/webpayments-payment-apps-api/issues/127">
+      Issue 97</a>. The distinction between Payment Handler and Payment Manager is not clear. There is a proposal to remove the phrase Payment Manager from the spec, renaming the "PaymentManager" interface the "PaymentHandler" interface.</p>
     
     <p>In this document we envision the following flow:</p>
     <ol>
       <li>An origin requests permission from the user to handle
       payment requests for a set of supported payment methods. For
       example, a user visiting a retail or bank site may be
-      prompted to register a payment handler from that origin. The
-      user agent is not required to prompt the user to grant
-      permission to the origin for each new supported payment
-      method. A origin's capabilities may thus evolve without
-      requiring additional user consent.</li>
-      <li>To handle payments, an origin has at least one and
-      possibly many service worker registrations. A service worker
-      registration has zero or one payment handler.</li>
+	prompted to register a payment handler from that origin.
+	The origin establishes the scope of the permission but the
+	origin's capabilities may evolve without requiring additional
+	user consent. Although from a permissions perspective
+	there is a single Web app per origin, this specification
+	provides mechanisms to origins for flexible structuring
+	and display of <a data-lt="PaymentManager.instruments">instruments</a> and <a data-lt="PaymentManager.wallets">wallets</a>.
+      </li>
+      <li>Payment apps make use of <a>service worker</a>s, starting
+	with registration of their capabilities with the user agent.
+        A service worker registration has zero or one <a>payment handler</a>.
+	However, an origin may implement a payment app with more than
+        one service worker registration.</li>
       <li>Registration associates with each payment handler:
         <ul>
-          <li>A list of supported payment methods.</li>
+          <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled payment methods</a>.</li>
           <li>[Optionally] the conditions under which the handler
-          supports a given payment method; these "capabilities"
-          play a role in matching computations.</li>
+          supports a given payment method; these <a data-lt="PaymentInstrument.capabilities">capabilities</a> play a role in matching computations.</li>
           <li>Information for organizing the display and grouping
-          of Instruments supported by the payment handler.</li>
+            of <a data-lt="PaymentManager.instruments">instruments</a> and
+	     <a data-lt="PaymentManager.wallets">wallets</a> supported by the payment handler.</li>
         </ul>
       </li>
       <li>When the merchant (or other <dfn>payee</dfn>) calls the [[PAYMENT-REQUEST-API]] method  <a>show()</a> (e.g., when the user pushes a button on a checkout page), the user agent
@@ -303,11 +312,34 @@
       <li>how an origin authenticates a user.</li>
       <li>how communication takes place between the payee server
       and the payee Web application, or between a payment app
-      origin and other parties.</li>
+	origin and other parties.</li>
     </ul>
     <p>Thus, an origin will rely on many other Web technologies
     defined elsewhere for lifecycle management, security, user
-    authentication, user interaction, and so on.</p>
+      authentication, user interaction, and so on.</p>
+
+    <section class="informative">
+      <h2>Structure of a Web Payment App</h2>
+      
+    <figure>
+       <img alt="Architecture of a (Web) payment apps as defined in this specification." src="app-arch.png"> 
+      <figcaption> A Web payment app is associated with an origin, and may be implemented by one or more payment handlers. A PaymentInstrument supports one or more payment methods. A PaymentWallet contains one or more PaymentInstrument and may be used to enhance the user experience (e.g., business wallet and personal wallet).
+</figcaption>
+     </figure>
+      
+    </section>
+
+    <section class="informative">
+      <h2>Relation to Other Types of Payment Apps</h2>
+
+      <p>This specification does not address how third-party mobile payment apps interact (through proprietary mechanisms) with user agents, or how user agents themselves provide simple payment app functionality.</p>
+
+    <figure>
+       <img alt="Different types of payment apps. Payment Handler API is for Web apps." src="app-types.png"> 
+      <figcaption> Payment Handler API enables Web apps to handle payments. Other types of payment apps may use other (proprietary) mechanisms. </figcaption>
+     </figure>
+
+    </section>
   </section>
   <section id="registration">
     <h2>Registration</h2>
@@ -329,6 +361,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [SameObject] readonly attribute PaymentWallets wallets;
+                              Promise&lt;boolean&gt;   requestPermission();
       };
       </pre>
       <section>
@@ -353,8 +386,18 @@
         do not appear in any groups should still be presented to
           users by the browser for selection.</p>
       </section>
+      <section>
+        <h2><dfn>requestPermission</dfn> method</h2>
+	<p class="issue" title="Issue 94 - Permission"><a href=
+      "https://github.com/w3c/webpayments-payment-apps-api/issues/94">
+      Issue 94</a>. The means for code requesting permission to handle
+	  payments is not yet defined.</p>
 
-      	<p class="issue" title="Issue 98 - Support grouped display of payment instruments?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>: Should the API support providing grouping information ("wallets") to the user agent? What should requirements be on user agents to display or provide for user interaction with this information?</p>
+	<p>The user agent is NOT REQUIRED to prompt the user to grant
+      permission to the origin for each new supported payment method.</p>
+      </section>
+
+      <p class="issue" title="Issue 98 - Support grouped display of payment instruments?"><a href="https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue 98</a>: Should the API support providing grouping information ("wallets") to the user agent? What should requirements be on user agents to display or provide for user interaction with this information?</p>
       
     </section>
     <section data-dfn-for="PaymentInstruments" data-link-for="PaymentInstruments">
@@ -507,12 +550,13 @@
         <dt><dfn>enabledMethods</dfn> member</dt>
         <dd>
           The <a>enabledMethods</a>
-          member lists the <a>payment method identifiers</a> of the
-          payment methods enabled by this Instrument.
+          member is a list of one or more
+	  <a>payment method identifiers</a> of the
+          <a>payment method</a>s supported by this Instrument.
         </dd>
         <dt><dfn>capabilities</dfn> member</dt>
         <dd>The <a>capabilities</a>
-        member contains a list of payment-method-specific
+        member is a list of payment-method-specific
         capabilities that this payment handler is capable of
         supporting for this Instrument. For example, for the
         <a>basic-card</a> payment method, this object will
@@ -669,7 +713,7 @@
         wallet when presented to the user for selection.</dd>
         <dt><dfn>instrumentKeys</dfn> member</dt>
         <dd>The <a>instrumentKeys</a> member is a
-        list of <a>instrumentKey</a>s from
+        list of one or more <a>instrumentKey</a>s from
         <a>PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
         indicating which <a>PaymentInstrument</a> objects are associated
         with this <a>Wallet</a>, and should be displayed as being "contained in"
@@ -685,11 +729,7 @@
       handler:</p>
       <p class="issue" title="Issue 94 - Permission to Handle Payments"><a href=
       "https://github.com/w3c/webpayments-payment-apps-api/issues/94">
-      Issue 94</a>. The means for code requesting permission to handle
-      payments is not yet defined. The code below is based on one
-      potential model (a <code>requestPermission()</code> method on the
-      <a>PaymentManager</a>),
-      but this is likely to change.
+	  Issue 94</a>. <a data-lt="PaymentManager.requestPermission()">requestPermission()</a> is not yet defined. The code below is based on one potential model, but this is likely to change.
       </p>
       <pre class="example js" title=
       "Payment Handler Registration">
