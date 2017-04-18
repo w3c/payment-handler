@@ -119,23 +119,22 @@
         requests from E-Commerce Web sites and applications.
       </p>
       <p>
-        A <dfn>payment app</dfn> is a Web application that manages payment
-        requests on behalf of the user by supporting one or more payment
-        methods. To enable a Web application to handle payment requests, this
-        specification defines:
+        A <dfn>payment app</dfn> is a Web application that can handle payment
+        requests on behalf of the user. This specification defines a number of
+        new Web platform features to handle payment requests:
       </p>
       <ul>
-        <li>How origins (i.e., Web sites) request permission to handle payment
-        requests on the user's behalf.
+        <li>An origin-based permission to handle payment request events.
         </li>
-        <li>How origins register their support for different payment methods
-        with the user agent.
+        <li>A payment request event type (<a>PaymentRequestEvent</a>). A <dfn>
+          payment handler</dfn> is an event handler for the
+          <a>PaymentRequestEvent</a>.
         </li>
-        <li>How origins provide information to faciliate the display of payment
-        instruments for selection by the user.
+        <li>An extension to the service worker registration interface
+        (<a>PaymentManager</a>) to manage the definition, display, and user
+        selection of payment instruments.
         </li>
-        <li>How user agents invoke and exchange data with payment handlers from
-        an origin.
+        <li>A mechanism to respond to the PaymentRequestEvent.
         </li>
       </ul>
       <p>
@@ -336,18 +335,6 @@
         Overview of Handling Payment Requests
       </h2>
       <p>
-        A <dfn>Payment Handler</dfn> is a function registered by the user with
-        the user agent to handle <a>PaymentRequestEvent</a>s.
-      </p>
-      <p class="issue" title="Issue 127 - Payment Manager / Handler">
-        <a href=
-        "https://github.com/w3c/webpayments-payment-apps-api/issues/127">Issue
-        97</a>. The distinction between Payment Handler and Payment Manager is
-        not clear. There is a proposal to remove the phrase Payment Manager
-        from the spec, renaming the "PaymentManager" interface the
-        "PaymentHandler" interface.
-      </p>
-      <p>
         In this document we envision the following flow:
       </p>
       <ol>
@@ -362,13 +349,11 @@
         "PaymentManager.instruments">instruments</a> and <a data-lt=
         "PaymentManager.wallets">wallets</a>.
         </li>
-        <li>Payment apps make use of <a>service worker</a>s, starting with
-        registration of their capabilities with the user agent. A service
-        worker registration has zero or one <a>payment handler</a>. However, an
-        origin may implement a payment app with more than one service worker
-        registration.
+        <li>
+          <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
-        <li>Registration associates with each payment handler:
+        <li>During service worker registration, the <a>PaymentManager</a> is
+        used to set:
           <ul>
             <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled
             payment methods</a>.
@@ -388,56 +373,99 @@
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
         [[PAYMENT-REQUEST-API]] method <a>show()</a> (e.g., when the user
         pushes a button on a checkout page), the user agent computes a list of
-        matching payment handlers, comparing the payment methods accepted by
+        candidate payment handlers, comparing the payment methods accepted by
         the merchant with those supported by registered payment handlers. For
         payment methods that support additional filtering, merchant and payment
         handler capabilities are compared as part of determining whether there
         is a match.
         </li>
-        <li>The user agent displays matching payment handlers, displaying and
-        grouping Instruments according to information (labels and icons)
-        provided at registration or otherwise available from the Web app.
+        <li>The user agent displays a set of choices to the user: the
+        registered <a data-lt="PaymentManager.instruments">instruments</a> of
+        the candidate payment handlers. The user agent displays and groups
+        these choices according to information (labels and icons) provided at
+        registration or otherwise available from the Web app.
         </li>
-        <li>When the user (the <dfn>payer</dfn>) selects an Instrument, the
-        user agent <a>fires</a> an event (cf. the <a>user interaction task
-        source</a>) using the <a>PaymentRequestEvent</a> interface in the
-        service worker whose registration included the payment handler that
-        provided that Instrument. The <a>PaymentRequestEvent</a> includes some
-        information from the PaymentRequest (defined in
+        <li>When the user (the <dfn>payer</dfn>) selects an <a data-lt=
+        "PaymentManager.instruments">instrument</a>, the user agent
+        <a>fires</a> a <a>PaymentRequestEvent</a> (cf. the <a>user interaction
+        task source</a>) in the service worker whose <a data-lt=
+        "ServiceWorkerRegistration.paymentManager">PaymentManager</a> the
+        instrument was registered with. The <a>PaymentRequestEvent</a> includes
+        some information from the PaymentRequest (defined in
         [[!PAYMENT-REQUEST-API]]) as well as additional information (e.g.,
-        origin and selected Instrument).
+        origin and selected instrument).
         </li>
         <li>Once activated, the payment handler performs whatever steps are
-        necessary to authenticate the user, process the payment, and return
-        payment information to the <a>payee</a>. If interaction with the user
-        is necessary, the <a>payment handler</a> can open a window for that
-        purpose.
+        necessary to <a href="#handling-a-payment-request">handle the payment
+        request</a>, and return an appropriate payment response to the
+        <a>payee</a>. If interaction with the user is necessary, the <a>payment
+        handler</a> can open a window for that purpose.
         </li>
-        <li>The user agent receives a response asynchronously once the user has
-        authorized payment. The response becomes the PaymentResponse (of
-        [[!PAYMENT-REQUEST-API]]).
+        <li>The user agent receives a response asynchronously once the payment
+        handler has finished handling the request. The response becomes the
+        PaymentResponse (of [[!PAYMENT-REQUEST-API]]).
         </li>
       </ol>
-      <p>
-        This specification does not address activities outside this flow,
-        including:
+      <p class="note">
+        An origin may implement a payment app with more than one service worker
+        and therefore multiple <a>payment handler</a>s may be registered per
+        origin. The handler that is invoked is determined by the selection made
+        by the user of a <a data-lt="PaymentManager.instruments">payment
+        instrument</a>. The <a>service worker</a> which stored the <a data-lt=
+        "PaymentManager.instruments">payment instrument</a> with its
+        <a data-lt="ServiceWorkerRegistration.paymentManager">PaymentManager</a>
+        is the one that will be invoked.
       </p>
-      <ul>
-        <li>how the user establishes an account with an origin that provides
-        payment services.
-        </li>
-        <li>how an origin authenticates a user.
-        </li>
-        <li>how communication takes place between the payee server and the
-        payee Web application, or between a payment app origin and other
-        parties.
-        </li>
-      </ul>
-      <p>
-        Thus, an origin will rely on many other Web technologies defined
-        elsewhere for lifecycle management, security, user authentication, user
-        interaction, and so on.
-      </p>
+      <section class="informative" id="handling-a-payment-request">
+        <h2>
+          Handling a Payment Request
+        </h2>
+        <p>
+          The logic of a payment handler is driven by the payment methods that
+          it supports. Some payment methods, such as <a>basic-card</a> expect
+          little to no processing by the payment handler which simply returns
+          payment card details in the response. It is then the job of the payee
+          website to process the payment using the returned data as input.
+        </p>
+        <p>
+          In contrast, some payment methods, such as a crypto-currency payments
+          or bank originated credit transfers, require that the payment handler
+          initiate processing of the payment. In such cases the payment handler
+          will return a payment reference, endpoint URL or some other data that
+          the payee website can use to determine the outcome of the payment (as
+          opposed to processing the payment itself).
+        </p>
+        <p>
+          Handling a payment request may include numerous interactions: with
+          the user through a new window or other APIs (such as
+          [[!WebCryptoAPI]]) or with other services and origins through web
+          requests or other means.
+        </p>
+        <p>
+          This specification does not address these activities that occur
+          between the payment handler accepting the <a>PaymentRequestEvent</a>
+          and the payment handler returning a response. All of these activities
+          which may be required to configure the payment handler and handle the
+          payment request, are left to the implementation of the payment
+          handler, including:
+        </p>
+        <ul>
+          <li>how the user establishes an account with an origin that provides
+          payment services.
+          </li>
+          <li>how an origin authenticates a user.
+          </li>
+          <li>how communication takes place between the payee server and the
+          payee Web application, or between a payment app origin and other
+          parties.
+          </li>
+        </ul>
+        <p>
+          Thus, an origin will rely on many other Web technologies defined
+          elsewhere for lifecycle management, security, user authentication,
+          user interaction, and so on.
+        </p>
+      </section>
       <section class="informative">
         <h2>
           Structure of a Web Payment App
@@ -479,27 +507,20 @@
       <h2>
         Registration
       </h2>
-      <section>
+      <section data-dfn-for="ServiceWorkerRegistration" data-link-for=
+      "ServiceWorkerRegistration">
         <h2>
           Extension to the <code>ServiceWorkerRegistration</code> interface
         </h2>
         <p>
           This specification extends the <a>ServiceWorkerRegistration</a>
-          interface.
+          interface with the addition of a <dfn>paymentManager</dfn> attribute.
         </p>
         <pre class="idl">
         partial interface ServiceWorkerRegistration {
           readonly attribute PaymentManager paymentManager;
         };
       </pre>
-        <p class="issue" title=
-        "Issue 127 - Do we need Payment Manager and Payment Handler?">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/127">Issue
-          127</a>: The distinction is unclear. A proposal is to remove the
-          phrase Payment Manager from the spec, renaming the "PaymentManager"
-          interface the "PaymentHandler" interface.
-        </p>
       </section>
       <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
         <h2>
@@ -512,17 +533,21 @@
                               Promise&lt;boolean&gt;   requestPermission();
       };
       </pre>
+        <p>
+          The <a>PaymentManager</a> is used by <a>payment app</a>s to manage
+          their associated wallets, instruments and supported payment methods.
+        </p>
         <section>
           <h2>
             <dfn>instruments</dfn> attribute
           </h2>
           <p>
             This attribute allows manipulation of payment instruments
-            associated with a payment handler. To be presented to the user as
-            part of the payment request flow, payment handlers must have at
-            least one registered payment Instrument, and that Instrument needs
-            to match the payment methods and required capabilities specified by
-            the payment request.
+            associated with a service worker (and therefore its payment
+            handler). To be a candidate payment handler, a handler must have at
+            least one registered payment instrument to present to the user.
+            That instrument needs to match the payment methods and required
+            capabilities specified by the payment request.
           </p>
         </section>
         <section>
@@ -530,25 +555,23 @@
             <dfn>wallets</dfn> attribute
           </h2>
           <p>
-            This attribute allows payment handlers to group payment instruments
-            together and provide a name and icon for such a group (e.g., to
-            group together "business account" payment instruments separately
-            from "personal account" payment instruments). The use of this
-            grouping mechanism by payment handlers is completely optional. If
-            payment handlers use this grouping mechanism, then matching payment
-            instruments that do not appear in any groups should still be
-            presented to users by the browser for selection.
+            This attribute allows the <a>Payment Manager</a> to group payment
+            instruments together and provide a name and icon for such a group
+            (e.g., to group together "business account" payment instruments
+            separately from "personal account" payment instruments). The use of
+            this grouping mechanism by payment handlers is completely optional.
+            If payment handlers use this grouping mechanism, then matching
+            payment instruments that do not appear in any groups should still
+            be presented to users by the user agent for selection.
           </p>
         </section>
         <section>
           <h2>
             <dfn>requestPermission()</dfn> method
           </h2>
-          <p class="issue" title="Issue 94 - Permission">
-            <a href=
-            "https://github.com/w3c/webpayments-payment-apps-api/issues/94">Issue
-            94</a>. The means for code requesting permission to handle payments
-            is not yet defined.
+          <p class="issue" title="Permission" data-number="94">
+            The means for code requesting permission to handle payments is not
+            yet defined.
           </p>
           <p>
             The user agent is NOT REQUIRED to prompt the user to grant
@@ -556,13 +579,10 @@
           </p>
         </section>
         <p class="issue" title=
-        "Issue 98 - Support grouped display of payment instruments?">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue
-          98</a>: Should the API support providing grouping information
-          ("wallets") to the user agent? What should requirements be on user
-          agents to display or provide for user interaction with this
-          information?
+        "Support grouped display of payment instruments?" data-number="98">
+          Should the API support providing grouping information ("wallets") to
+          the user agent? What should requirements be on user agents to display
+          or provide for user interaction with this information?
         </p>
       </section>
       <section data-dfn-for="PaymentInstruments" data-link-for=
@@ -699,10 +719,9 @@
                 a matching <var>instrumentKey</var>, replace it with the
                 <a>PaymentInstrument</a> in <var>details</var>.
                 </li>
-                <li>Otherwise, <a>PaymentInstrument</a> insert the
-                <a>PaymentInstrument</a> in <var>details</var> as a new member
-                of the collection and associate it with the key
-                <var>instrumentKey</var>.
+                <li>Otherwise, insert the <a>PaymentInstrument</a> in
+                <var>details</var> as a new member of the collection and
+                associate it with the key <var>instrumentKey</var>.
                 </li>
                 <li>Resolve <var>p</var>.
                 </li>
@@ -732,11 +751,7 @@
             <li>Return <var>p</var>
             </li>
           </ol>
-          <p class="issue" title="Issue 129 - Clear()">
-            <a href=
-            "https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue
-            129</a>: This clear() method intends to address the issue.
-          </p>
+          <p class="issue" title="Clear()" data-number="129"></p>
         </section>
       </section>
       <section data-dfn-for="PaymentInstrument" data-link-for=
@@ -758,14 +773,15 @@
           </dt>
           <dd>
             The <a>name</a> member is a string that represents the label for
-            this PaymentInstrument as it is usually displayed to the user.
+            this <a>PaymentInstrument</a> as it is usually displayed to the
+            user.
           </dd>
           <dt>
             <dfn>icons</dfn> member
           </dt>
           <dd>
             The <a>icons</a> member is an array of image objects that can serve
-            as iconic representations of the payment Instrument when presented
+            as iconic representations of the payment instrument when presented
             to the user for selection.
           </dd>
           <dt>
@@ -774,7 +790,7 @@
           <dd>
             The <a>enabledMethods</a> member is a list of one or more
             <a>payment method identifiers</a> of the <a>payment method</a>s
-            supported by this Instrument.
+            supported by this instrument.
           </dd>
           <dt>
             <dfn>capabilities</dfn> member
@@ -782,18 +798,16 @@
           <dd>
             The <a>capabilities</a> member is a list of payment-method-specific
             capabilities that this payment handler is capable of supporting for
-            this Instrument. For example, for the <a>basic-card</a> payment
+            this instrument. For example, for the <a>basic-card</a> payment
             method, this object will consist of an object with two fields: one
             for <a>supportedNetworks</a>, and another for
             <a>supportedTypes</a>.
           </dd>
         </dl>
-        <p class="issue" title="Issue 125 - ImageObjects not Defined">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/125">Issue
-          125</a>: ImageObjects comes from the Web App Manifest specification.
-          Should we reference the definition normatively, or make use of a
-          simpler structure here?
+        <p class="issue" title="ImageObjects not Defined" data-number="125">
+          ImageObjects comes from the Web App Manifest specification. Should we
+          reference the definition normatively, or make use of a simpler
+          structure here?
         </p>
       </section>
       <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
@@ -811,7 +825,10 @@
       };
       </pre>
         <p>
-          Where it appears, The <dfn>walletKey</dfn> argument is a unique
+          Wallets are collections of payment instruments.
+        </p>
+        <p>
+          Where it appears, the <dfn>walletKey</dfn> argument is a unique
           identifier for the wallet.
         </p>
         <section>
@@ -925,10 +942,9 @@
                 matching <var>walletKey</var>, replace it with the
                 <a>PaymentWallet</a> in <var>details</var>.
                 </li>
-                <li>Otherwise, <a>PaymentWallet</a> insert the
-                <a>PaymentWallet</a> in <var>details</var> as a new member of
-                the collection and associate it with the key
-                <var>walletKey</var>.
+                <li>Otherwise, insert the <a>PaymentWallet</a> in
+                <var>details</var> as a new member of the collection and
+                associate it with the key <var>walletKey</var>.
                 </li>
                 <li>Resolve <var>p</var>.
                 </li>
@@ -958,11 +974,7 @@
             <li>Return <var>p</var>
             </li>
           </ol>
-          <p class="issue" title="Issue 129 - Clear()">
-            <a href=
-            "https://github.com/w3c/webpayments-payment-apps-api/issues/129">Issue
-            129</a>: This clear() method intends to address the issue.
-          </p>
+          <p class="issue" title="Clear()" data-number="129"></p>
         </section>
       </section>
       <section data-dfn-for="PaymentWallet" data-link-for="PaymentWallet">
@@ -997,13 +1009,13 @@
           </dt>
           <dd>
             The <a>instrumentKeys</a> member is a list of one or more
-            <a>instrumentKey</a>s from <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, indicating which
-            <a>PaymentInstrument</a> objects are associated with this
-            <a>Wallet</a>, and should be displayed as being "contained in" the
-            wallet. While it is not generally good practice, there is no
-            restriction that prevents a <a>PaymentInstrument</a> from appearing
-            in more than one <a>Wallet</a>.
+            <a>instrumentKey</a>s from <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+            indicating which <a>PaymentInstrument</a> objects are associated
+            with this <a>Wallet</a>, and should be displayed as being
+            "contained in" the wallet. While it is not generally good practice,
+            there is no restriction that prevents a <a>PaymentInstrument</a>
+            from appearing in more than one <a>Wallet</a>.
           </dd>
         </dl>
       </section>
@@ -1014,10 +1026,9 @@
         <p>
           The following example shows how to register a payment handler:
         </p>
-        <p class="issue" title="Issue 94 - Permission to Handle Payments">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/94">Issue
-          94</a>. <a data-lt=
+        <p class="issue" title="Permission to Handle Payments" data-member=
+        "94">
+          <a data-lt=
           "PaymentManager.requestPermission()">requestPermission()</a> is not
           yet defined. The code below is based on one potential model, but this
           is likely to change.
@@ -1111,9 +1122,10 @@
       </h2>
       <p>
         After applying the matching algorithm defined in Payment Request API,
-        the user agent displays a list of matching origins for the user to make
-        a selection. This specification includes a limited number of display
-        requirements; most user experience details are left to implementers.
+        the user agent displays a list of instruments from matching payment
+        apps for the user to make a selection. This specification includes a
+        limited number of display requirements; most user experience details
+        are left to implementers.
       </p>
       <section>
         <h2>
@@ -1135,10 +1147,9 @@
           </li>
         </ul>
         <p class="issue" title=
-        "Issue 116 - PR API payment method ordering and relation to this spec.">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/116">Issue
-          116</a>: The second bullet above may be deleted based on <a href=
+        "PR API payment method ordering and relation to this spec."
+        data-number="116">
+          The second bullet above may be deleted based on <a href=
           "https://github.com/w3c/browser-payment-api/issues/481">PR API issue
           481</a>.
         </p>
@@ -1159,18 +1170,15 @@
           the list.
           </li>
         </ul>
-        <p class="issue" title="Issue 174 - Merchant Preferences">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/74">Issue
-          74</a>: The Working Group has discussed two types of merchant
-          preferences related to payment apps: (1) highlighting
-          merchant-preferred payment apps already registered by the user and
-          (2) recommending payment apps not yet registered by the user. The
-          current draft of the specification does not address either point, and
-          the Working Group is seeking feedback on the importance of these use
-          cases. Note that for the second capability, merchants can recommend
-          payment apps through other mechanisms such as links from their web
-          sites.
+        <p class="issue" title="Merchant Preferences" data-number="74">
+          The Working Group has discussed two types of merchant preferences
+          related to payment apps: (1) highlighting merchant-preferred payment
+          apps already registered by the user and (2) recommending payment apps
+          not yet registered by the user. The current draft of the
+          specification does not address either point, and the Working Group is
+          seeking feedback on the importance of these use cases. Note that for
+          the second capability, merchants can recommend payment apps through
+          other mechanisms such as links from their web sites.
         </p>
       </section>
       <section>
@@ -1179,7 +1187,7 @@
         </h2>
         <p>
           The user agent <span class='rfc2119'>MUST</span> enable the user to
-          select any displayed Instrument.
+          select any displayed instrument.
         </p>
         <ul>
           <li>At a minimum, we expect user agents to display an icon and label
@@ -1194,14 +1202,12 @@
           cards the origin knows about.
           </li>
         </ul>
-        <p class="issue" title="Issue 98 - display">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue
-          98</a>. There has been pushback to always requiring display of
-          instruments (e.g., on a mobile devices). User agents can
-          incrementally show instruments. Or user agents can return an empty
-          Instrument ID and it becomes the payment app's responsibility to
-          display instruments to the user.
+        <p class="issue" title="Display" data-number="98">
+          There has been push-back to always requiring display of instruments
+          (e.g., on a mobile devices). User agents can incrementally show
+          instruments. Or user agents can return an empty Instrument ID and it
+          becomes the payment app's responsibility to display instruments to
+          the user.
         </p>
       </section>
       <section>
@@ -1224,12 +1230,12 @@
           </li>
         </ul>
         <p>
-          A <dfn>Wallet</dfn> is a grouping of Instruments for display
+          A <dfn>Wallet</dfn> is a grouping of instruments for display
           purposes.
         </p>
         <p>
           To enable developers to build payment apps in a variety of ways, we
-          decouple the registration (and subsequent display) of Instruments
+          decouple the registration (and subsequent display) of instruments
           from how payment handlers respond to a <a>PaymentRequestEvent</a>.
           However, the user agent is responsible for communicating the user's
           selection in the event.
@@ -1246,16 +1252,13 @@
           eliminating an extra click (first open the payment app then select
           the Instrument).
         </p>
-        <p class="issue" title="Issue 98 - selection">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/98">Issue
-          98</a>. Should we require that, if displayed, individual Instruments
-          must be selectable? Or should we allow flexibility that Instruments
-          may be displayed, but selecting any one invokes all registered
-          payment handlers? One idea that has been suggested: the user agent
-          (e.g., on a mobile device) could first display the app-level
-          icon/logo. Upon selection, the user agent could display the
-          Instruments in a submenu.
+        <p class="issue" title="selection" data-number="98">
+          Should we require that, if displayed, individual instruments must be
+          selectable? Or should we allow flexibility that instruments may be
+          displayed, but selecting any one invokes all registered payment
+          handlers? One idea that has been suggested: the user agent (e.g., on
+          a mobile device) could first display the app-level icon/logo. Upon
+          selection, the user agent could display the Instruments in a submenu.
         </p>
       </section>
     </section>
@@ -1270,11 +1273,10 @@
         [[!PAYMENT-REQUEST-API]].
       </p>
       <p class="issue" title=
-      "Issue 117 - Support for Abort() being delegated to Payment Handler">
-        <a href=
-        "https://github.com/w3c/webpayments-payment-apps-api/issues/117">Issue
-        117</a>: Payment Request API supports delegation of responsibiliyt to
-        manage an abort to a payment app. There is a proposal to add a
+      "Support for Abort() being delegated to Payment Handler" data-number=
+      "117">
+        Payment Request API supports delegation of responsibility to manage an
+        abort to a payment app. There is a proposal to add a
         paymentRequestAborted event to the Payment Handler interface. The event
         will have a respondWith method that takes a boolean parameter
         indicating if the paymentRequest has been successfully aborted.
@@ -1394,11 +1396,11 @@
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, add all entries in
-            <var>instrument</var>.<a data-lt=
-            "PaymentInstrument.enabledMethods">enabledMethods</a> to
-            <var>registeredMethods</var>.
+            <a>payment handler</a>'s <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+              add all entries in <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -1448,11 +1450,11 @@
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, add all entries in
-            <var>instrument</var>.<a data-lt=
-            "PaymentInstrument.enabledMethods">enabledMethods</a> to
-            <var>registeredMethods</var>.
+            <a>payment handler</a>'s <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+              add all entries in <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -1561,20 +1563,17 @@
             <a>PaymentAppResponse</a> when the payment successfully completes.
           </p>
         </section>
-        <p class="issue" title="Issue 123 - Share user data with payment app?">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/123">Issue
-          123</a>: Should payment apps receive user data stored in the user
-          agent upon explicit consent from the user? The payment app could
-          request permission either at installation or when the payment app is
-          first invoked.
+        <p class="issue" title="Share user data with payment app?" data-number=
+        "123">
+          Should payment apps receive user data stored in the user agent upon
+          explicit consent from the user? The payment app could request
+          permission either at installation or when the payment app is first
+          invoked.
         </p>
-        <p class="issue" title="Issue 119 - DOM Events compatibility">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/119">Issue
-          119</a>: For DOM events compatibility, need to add a constructor, and
-          the members of the corresponding dictionary need to match the
-          attributes of the event.
+        <p class="issue" title="DOM Events compatibility" data-number="119">
+          For DOM events compatibility, need to add a constructor, and the
+          members of the corresponding dictionary need to match the attributes
+          of the event.
         </p>
       </section>
       <section>
@@ -1619,18 +1618,18 @@
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
           "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> and
-          subsequent user selection of a payment handler, the <a>user agent</a>
-          MUST run the following steps:
+          subsequent user selection of a payment instrument, the <a>user
+          agent</a> MUST run the following steps:
         </p>
         <ol>
           <li>Let <var>registration</var> be the
           <a>ServiceWorkerRegistration</a> corresponding to the <a>payment
-          handler</a> selected by the user.
+          instrument</a> selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the
           <a>Promise</a> that was created by <a data-cite=
           "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> with a
-          <a>DOMException</a> whose value "<a>InvalidStateError</a>" and
+          <a>DOMException</a> whose value is "<a>InvalidStateError</a>" and
           terminate these steps.
           </li>
           <li>Invoke the <a>handle functional event</a> algorithm with a
@@ -1707,16 +1706,14 @@
         <h2>
           <dfn>Open Window Algorithm</dfn>
         </h2>
-        <p class="issue" title="Issues 115 and 97: the Open Window Algorithm">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/115">Issue
-          115</a>: This algorithm resembles the <a data-cite=
+        <p class="issue" title="The Open Window Algorithm" data-number="115">
+          This algorithm resembles the <a data-cite=
           "!SERVICE-WORKERS#clients-openwindow">Open Window Algorithm</a> in
-          the Service Workers specification. Should we refer to the Service
-          Workers specification instead of copying their steps? See also
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/97">issue
-          97</a> on the algorithm to open windows.
+          the Service Workers specification.
+        </p>
+        <p class="issue" data-number="97">
+          Should we refer to the Service Workers specification instead of
+          copying their steps?
         </p>
         <ol class="algorithm">
           <li>Let <var>event</var> be this <a>PaymentRequestEvent</a>.
@@ -1828,11 +1825,8 @@
         }));
       });
       </pre>
-        <p class="issue" title="Issue 128 - Revisit examples">
-          <a href=
-          "https://github.com/w3c/webpayments-payment-apps-api/issues/128">Issue
-          128</a>: The Web Payments Working Group plans to revisit these two
-          examples.
+        <p class="issue" title="Revisit examples" data-number="128">
+          The Web Payments Working Group plans to revisit these two examples.
         </p>
         <p>
           Using the simple scheme described above, a trivial HTML page that is
@@ -2051,7 +2045,7 @@ window.addEventListener("message", function(e) {
         <p class="note">
           The Web Payments Working Group is also discussing Payment App
           authenticity; see the (draft) <a href=
-          "https://w3c.github.io/webpayments/proposals/Payment-Manifest-Proposal.html">
+          "https://w3c.github/webpayments/proposals/Payment-Manifest-Proposal.html">
           Payment Method Manifest</a>.
         </p>
       </section>
