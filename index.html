@@ -132,7 +132,7 @@
         </li>
         <li>An extension to the service worker registration interface
         (<a>PaymentManager</a>) to manage the definition, display, and user
-        selection of payment instruments.
+        selection of <a>PaymentInstrument</a>s.
         </li>
         <li>A mechanism to respond to the PaymentRequestEvent.
         </li>
@@ -475,8 +475,7 @@
           "Architecture of a (Web) payment apps as defined in this specification."
           src="app-arch.png">
           <figcaption>
-            A Web payment app is associated with an origin, and may be
-            implemented by one or more payment handlers. A PaymentInstrument
+            A Web payment app is associated with an origin. Payment handlers respond to PaymentRequestEvents. PaymentManagers  manage the definition, display, and user selection of PaymentInstruments. A PaymentInstrument
             supports one or more payment methods. A PaymentWallet contains one
             or more PaymentInstrument and may be used to enhance the user
             experience (e.g., business wallet and personal wallet).
