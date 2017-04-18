@@ -340,12 +340,6 @@
         A <dfn>Payment Handler</dfn> is a function registered by the user with
         the user agent to handle <a>PaymentRequestEvent</a>s.
       </p>
-      <p class="issue" title="Payment Manager / Handler" data-number="127">
-        The distinction between Payment Handler and Payment Manager is not
-        clear. There is a proposal to remove the phrase Payment Manager from
-        the spec, renaming the "PaymentManager" interface the "PaymentHandler"
-        interface.
-      </p>
       <p>
         In this document we envision the following flow:
       </p>
@@ -361,9 +355,9 @@
         "PaymentManager.instruments">instruments</a> and <a data-lt=
         "PaymentManager.wallets">wallets</a>.
         </li>
-        <li>Payment apps make use of <a>service worker</a>s which must define a
-        <a>payment handler</a> to handle the <a>PaymentRequestEvent</a>s that
-        are raised by the user agent.
+        <li>To handle payments, payment apps make use of <a>service worker</a>s
+        which define <a>payment handler</a>s to handle the
+        <a>PaymentRequestEvent</a>s that are raised by the user agent.
         </li>
         <li>During registration the service worker uses the <a data-lt=
         "ServiceWorkerRegistration.paymentManager">PaymentManager</a> to set:
@@ -421,7 +415,7 @@
       </ol>
       <p class="note">
         An origin may implement a payment app with more than one service worker
-        and therefor multiple <a>payment handler</a>s may be registered per
+        and therefore multiple <a>payment handler</a>s may be registered per
         origin. The handler that is invoked is determined by the selection made
         by the user of a <a data-lt="PaymentManager.instruments">payment
         instrument</a>. The <a>service worker</a> which stored the <a data-lt=
@@ -534,12 +528,6 @@
           readonly attribute PaymentManager paymentManager;
         };
       </pre>
-        <p class="issue" title=
-        "Do we need Payment Manager and Payment Handler?" data-number="127">
-          The distinction is unclear. A proposal is to remove the phrase
-          Payment Manager from the spec, renaming the "PaymentManager"
-          interface the "PaymentHandler" interface.
-        </p>
       </section>
       <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
         <h2>
