@@ -365,8 +365,8 @@
         <a>payment handler</a> to handle the <a>PaymentRequestEvent</a>s that
         are raised by the user agent.
         </li>
-        <li>During registration the service worker will use the
-        <a>PaymentManager</a> to set:
+        <li>During registration the service worker uses the <a data-lt=
+        "ServiceWorkerRegistration.paymentManager">PaymentManager</a> to set:
           <ul>
             <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled
             payment methods</a>.
@@ -392,27 +392,27 @@
         handler capabilities are compared as part of determining whether there
         is a match.
         </li>
-        <li>The user agent displays a set of choices to the user. These choices
-        are <a data-lt="PaymentManager.instruments">instruments</a> that were
-        registered through the <a>PaymentManager</a> of candidate payment
-        handlers, displaying and grouping the choices according to information
-        (labels and icons) provided at registration or otherwise available from
-        the Web app.
+        <li>The user agent displays a set of choices to the user: the
+        registered <a data-lt="PaymentManager.instruments">instruments</a> of
+        the candidate payment handlers. The user agent displays and groups
+        these choices according to information (labels and icons) provided at
+        registration or otherwise available from the Web app.
         </li>
         <li>When the user (the <dfn>payer</dfn>) selects an <a data-lt=
         "PaymentManager.instruments">instrument</a>, the user agent
         <a>fires</a> a <a>PaymentRequestEvent</a> (cf. the <a>user interaction
-        task source</a>) in the service worker whose <a>PaymentManager</a> the
+        task source</a>) in the service worker whose <a data-lt=
+        "ServiceWorkerRegistration.paymentManager">PaymentManager</a> the
         instrument was registered with. The <a>PaymentRequestEvent</a> includes
         some information from the PaymentRequest (defined in
         [[!PAYMENT-REQUEST-API]]) as well as additional information (e.g.,
         origin and selected instrument).
         </li>
         <li>Once activated, the payment handler performs whatever steps are
-        necessary to handle the payment request, and return an appropriate
-        payment response to the <a>payee</a>. If interaction with the user is
-        necessary, the <a>payment handler</a> can open a window for that
-        purpose.
+        necessary to <a href="#handling-a-payment-request">handle the payment
+        request</a>, and return an appropriate payment response to the
+        <a>payee</a>. If interaction with the user is necessary, the <a>payment
+        handler</a> can open a window for that purpose.
         </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
@@ -426,28 +426,59 @@
         by the user of a <a data-lt="PaymentManager.instruments">payment
         instrument</a>. The <a>service worker</a> which stored the <a data-lt=
         "PaymentManager.instruments">payment instrument</a> with its
-        <a>PaymentManager</a> is the one that will be invoked.
+        <a data-lt="ServiceWorkerRegistration.paymentManager">PaymentManager</a>
+        is the one that will be invoked.
       </p>
-      <p>
-        This specification does not address activities outside this flow,
-        including:
-      </p>
-      <ul>
-        <li>how the user establishes an account with an origin that provides
-        payment services.
-        </li>
-        <li>how an origin authenticates a user.
-        </li>
-        <li>how communication takes place between the payee server and the
-        payee Web application, or between a payment app origin and other
-        parties.
-        </li>
-      </ul>
-      <p>
-        Thus, an origin will rely on many other Web technologies defined
-        elsewhere for lifecycle management, security, user authentication, user
-        interaction, and so on.
-      </p>
+      <section class="informative" id="handling-a-payment-request">
+        <h2>
+          Handling a Payment Request
+        </h2>
+        <p>
+          The logic of a payment handler is driven by the payment methods that
+          it supports. Some payment methods, such as <a>basic-card</a> expect
+          little to no processing by the payment handler which simply returns
+          payment card details in the response. It is then the job of the payee
+          website to process the payment using the returned data as input.
+        </p>
+        <p>
+          In contrast, some payment methods, such as a crypto-currency payments
+          or bank originated credit transfers, require that the payment handler
+          initiate processing of the payment. In such cases the payment handler
+          will return a payment reference, endpoint URL or some other data that
+          the payee website can use to determine the outcome of the payment (as
+          opposed to processing the payment itself).
+        </p>
+        <p>
+          Handling a payment request may include numerous interactions: with
+          the user through a new window or other APIs (such as
+          [[!WebCryptoAPI]]) or with other services and origins through web
+          requests or other means.
+        </p>
+        <p>
+          This specification does not address these activities that occur
+          between the payment handler accepting the <a>PaymentRequestEvent</a>
+          and the payment handler returning a response. All of these activities
+          which may be required to configure the payment handler and handle the
+          payment request, are left to the implementation of the payment
+          handler, including:
+        </p>
+        <ul>
+          <li>how the user establishes an account with an origin that provides
+          payment services.
+          </li>
+          <li>how an origin authenticates a user.
+          </li>
+          <li>how communication takes place between the payee server and the
+          payee Web application, or between a payment app origin and other
+          parties.
+          </li>
+        </ul>
+        <p>
+          Thus, an origin will rely on many other Web technologies defined
+          elsewhere for lifecycle management, security, user authentication,
+          user interaction, and so on.
+        </p>
+      </section>
       <section class="informative">
         <h2>
           Structure of a Web Payment App
@@ -489,13 +520,14 @@
       <h2>
         Registration
       </h2>
-      <section>
+      <section data-dfn-for="ServiceWorkerRegistration" data-link-for=
+      "ServiceWorkerRegistration">
         <h2>
           Extension to the <code>ServiceWorkerRegistration</code> interface
         </h2>
         <p>
           This specification extends the <a>ServiceWorkerRegistration</a>
-          interface with the addition of a <a>PaymentManager</a> attribute.
+          interface with the addition of a <dfn>paymentManager</dfn> attribute.
         </p>
         <pre class="idl">
         partial interface ServiceWorkerRegistration {
@@ -997,13 +1029,13 @@
           </dt>
           <dd>
             The <a>instrumentKeys</a> member is a list of one or more
-            <a>instrumentKey</a>s from <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, indicating which
-            <a>PaymentInstrument</a> objects are associated with this
-            <a>Wallet</a>, and should be displayed as being "contained in" the
-            wallet. While it is not generally good practice, there is no
-            restriction that prevents a <a>PaymentInstrument</a> from appearing
-            in more than one <a>Wallet</a>.
+            <a>instrumentKey</a>s from <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+            indicating which <a>PaymentInstrument</a> objects are associated
+            with this <a>Wallet</a>, and should be displayed as being
+            "contained in" the wallet. While it is not generally good practice,
+            there is no restriction that prevents a <a>PaymentInstrument</a>
+            from appearing in more than one <a>Wallet</a>.
           </dd>
         </dl>
       </section>
@@ -1384,11 +1416,11 @@
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, add all entries in
-            <var>instrument</var>.<a data-lt=
-            "PaymentInstrument.enabledMethods">enabledMethods</a> to
-            <var>registeredMethods</var>.
+            <a>payment handler</a>'s <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+              add all entries in <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -1438,11 +1470,11 @@
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a>PaymentManager</a>.<a data-lt=
-            "PaymentManager.instruments">instruments</a>, add all entries in
-            <var>instrument</var>.<a data-lt=
-            "PaymentInstrument.enabledMethods">enabledMethods</a> to
-            <var>registeredMethods</var>.
+            <a>payment handler</a>'s <a data-lt=
+            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+              add all entries in <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
