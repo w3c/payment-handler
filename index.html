@@ -119,24 +119,22 @@
         requests from E-Commerce Web sites and applications.
       </p>
       <p>
-        A <dfn>payment app</dfn> is a Web application that handles payment
-        requests on behalf of the user by supporting one or more payment
-        methods. To enable a Web application to handle payment requests, this
-        specification defines:
+        A <dfn>payment app</dfn> is a Web application that can handle payment
+        requests on behalf of the user. This specification defines a number of
+        new Web platform features to handle payment requests:
       </p>
       <ul>
-        <li>How payment apps request permission to handle payment requests on
-        the user's behalf.
+        <li>An origin-based permission to handle payment request events.
         </li>
-        <li>How payment apps register their support for different payment
-        methods with the user agent.
+        <li>A payment request event type (<a>PaymentRequestEvent</a>). A <dfn>
+          payment handler</dfn> is an event handler for the
+          <a>PaymentRequestEvent</a>.
         </li>
-        <li>How payment apps provide information to the user agent, to
-        faciliate the display of choices for selection by the user, that
-        determine which payment apps are invoked, to handle a payment request.
+        <li>An extension to the service worker registration interface
+        (<a>PaymentManager</a>) to manage the definition, display, and user
+        selection of payment instruments.
         </li>
-        <li>How user agents invoke and exchange data with payment handlers from
-        a payment app.
+        <li>A mechanism to respond to the PaymentRequestEvent.
         </li>
       </ul>
       <p>
@@ -337,10 +335,6 @@
         Overview of Handling Payment Requests
       </h2>
       <p>
-        A <dfn>Payment Handler</dfn> is a function registered by the user with
-        the user agent to handle <a>PaymentRequestEvent</a>s.
-      </p>
-      <p>
         In this document we envision the following flow:
       </p>
       <ol>
@@ -355,12 +349,11 @@
         "PaymentManager.instruments">instruments</a> and <a data-lt=
         "PaymentManager.wallets">wallets</a>.
         </li>
-        <li>To handle payments, payment apps make use of <a>service worker</a>s
-        which define <a>payment handler</a>s to handle the
-        <a>PaymentRequestEvent</a>s that are raised by the user agent.
+        <li>
+          <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
-        <li>During registration the service worker uses the <a data-lt=
-        "ServiceWorkerRegistration.paymentManager">PaymentManager</a> to set:
+        <li>During service worker registration, the <a>PaymentManager</a> is
+        used to set:
           <ul>
             <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled
             payment methods</a>.
@@ -550,7 +543,7 @@
           </h2>
           <p>
             This attribute allows manipulation of payment instruments
-            associated with a service worker (and therefor its payment
+            associated with a service worker (and therefore its payment
             handler). To be invoked by the user as part of the payment request
             flow, payment handlers must have at least one registered payment
             instrument to present to the user. That instrument needs to match
@@ -575,7 +568,7 @@
         </section>
         <section>
           <h2>
-            <dfn>requestPermission</dfn> method
+            <dfn>requestPermission()</dfn> method
           </h2>
           <p class="issue" title="Permission" data-number="94">
             The means for code requesting permission to handle payments is not
@@ -2053,7 +2046,7 @@ window.addEventListener("message", function(e) {
         <p class="note">
           The Web Payments Working Group is also discussing Payment App
           authenticity; see the (draft) <a href=
-          "https://w3c.github.io/webpayments/proposals/Payment-Manifest-Proposal.html">
+          "https://w3c.github/webpayments/proposals/Payment-Manifest-Proposal.html">
           Payment Method Manifest</a>.
         </p>
       </section>
