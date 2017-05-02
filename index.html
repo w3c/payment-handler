@@ -557,14 +557,20 @@
             <dfn>wallets</dfn> attribute
           </h2>
           <p>
-            This attribute allows the <a>Payment Manager</a> to group payment
-            instruments together and provide a name and icon for such a group
-            (e.g., to group together "business account" payment instruments
-            separately from "personal account" payment instruments). The use of
-            this grouping mechanism by payment handlers is completely optional.
-            If payment handlers use this grouping mechanism, then matching
-            payment instruments that do not appear in any groups should still
-            be presented to users by the user agent for selection.
+            This attribute is used to group payment instruments (e.g., to group
+            together "business account" payment instruments separately from
+            "personal account" payment instruments). Developers can provide a
+            name and icon for such a group. The use of this grouping mechanism
+            by payment handlers is completely optional. If payment handlers use
+            this grouping mechanism, then matching payment instruments that do
+            not appear in any groups should still be presented to users by the
+            user agent for selection.
+          </p>
+          <p class="issue" title=
+          "Support grouped display of payment instruments?" data-number="98">
+            Should the API support providing grouping information ("wallets")
+            to the user agent? What should requirements be on user agents to
+            display or provide for user interaction with this information?
           </p>
         </section>
         <section>
@@ -580,12 +586,6 @@
             permission to the origin for each new supported payment method.
           </p>
         </section>
-        <p class="issue" title=
-        "Support grouped display of payment instruments?" data-number="98">
-          Should the API support providing grouping information ("wallets") to
-          the user agent? What should requirements be on user agents to display
-          or provide for user interaction with this information?
-        </p>
       </section>
       <section data-dfn-for="PaymentInstruments" data-link-for=
       "PaymentInstruments">
@@ -1207,7 +1207,7 @@
         <p class="issue" title="Display" data-number="98">
           There has been push-back to always requiring display of instruments
           (e.g., on a mobile devices). User agents can incrementally show
-          instruments. Or user agents can return an empty Instrument ID and it
+          instruments. Or user agents can return an empty instrumentKey and it
           becomes the payment app's responsibility to display instruments to
           the user.
         </p>
@@ -1270,8 +1270,8 @@
       </h2>
       <p>
         Once the user has selected an Instrument, the user agent fires a
-        <a>PaymentRequestEvent</a> with a <a>PaymentAppRequest</a>, and uses
-        the subsequent <a>PaymentAppResponse</a> to create a PaymentReponse for
+        <a>PaymentRequestEvent</a> and uses the subsequent
+        <a>PaymentAppResponse</a> to create a PaymentReponse for
         [[!PAYMENT-REQUEST-API]].
       </p>
       <p class="issue" title=
@@ -1283,21 +1283,53 @@
         will have a respondWith method that takes a boolean parameter
         indicating if the paymentRequest has been successfully aborted.
       </p>
-      <section data-dfn-for="PaymentAppRequest" data-link-for=
-      "PaymentAppRequest">
+      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
+      "ServiceWorkerGlobalScope">
         <h2>
-          <dfn>PaymentAppRequest</dfn> interface
+          Extension to <a>ServiceWorkerGlobalScope</a>
         </h2>
+        <p>
+          This specification extends the <a>ServiceWorkerGlobalScope</a>
+          interface.
+        </p>
         <pre class="idl">
-      interface PaymentAppRequest {
-        readonly attribute DOMString topLevelOrigin;
-        readonly attribute DOMString paymentRequestOrigin;
-        readonly attribute DOMString id;
-        readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-        readonly attribute PaymentItem total;
-        readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
-        readonly attribute DOMString instrumentId;
-      };
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler onpaymentrequest;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>onpaymentrequest</dfn> attribute
+          </h2>
+          <p>
+            The <a>onpaymentrequest</a> attribute is an <a>event handler</a>
+            whose corresponding <a>event handler event type</a> is
+            <a>paymentrequest</a>.
+          </p>
+        </section>
+      </section>
+      <section data-dfn-for="PaymentRequestEvent" data-link-for=
+      "PaymentRequestEvent">
+        <h2>
+          The <dfn>PaymentRequestEvent</dfn>
+        </h2>
+        <p>
+          The <a>PaymentRequestEvent</a> represents a received
+          <a>PaymentRequest</a>.
+        </p>
+        <pre class="idl">
+        [Exposed=ServiceWorker]
+        interface PaymentRequestEvent : ExtendableEvent {
+          readonly attribute DOMString topLevelOrigin;
+          readonly attribute DOMString paymentRequestOrigin;
+          readonly attribute DOMString paymentRequestId;
+          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+          readonly attribute PaymentItem total;
+          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          readonly attribute DOMString instrumentKey;
+          Promise&lt;WindowClient&gt; openWindow(USVString url);
+          void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
+        };
       </pre>
         <section>
           <h2>
@@ -1331,12 +1363,12 @@
         </section>
         <section>
           <h2>
-            <dfn>id</dfn> attribute
+            <dfn>paymentRequestId</dfn> attribute
           </h2>
           <p>
-            When getting, the <a>id</a> attribute returns the
+            When getting, the <a>paymentRequestId</a> attribute returns the
             [[\details]].<a>id</a> from the <a>PaymentRequest</a> that
-            corresponds to this <a>PaymentAppRequest</a>.
+            corresponds to this <a>PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1378,14 +1410,45 @@
         </section>
         <section>
           <h2>
-            <dfn>instrumentId</dfn> attribute
+            <dfn>instrumentKey</dfn> attribute
           </h2>
           <p>
             This attribute indicates the <a>PaymentInstrument</a> selected by
-            the user. It corresponds to the <a>id</a> field provided during
-            registration.
+            the user. It corresponds to the <a data-lt=
+            "instrumentKey">instrumentKey</a> provided to the
+            <a>PaymentManager.instruments</a> interface during registration.
           </p>
         </section>
+        <section>
+          <h2>
+            <dfn>openWindow</dfn>() method
+          </h2>
+          <p>
+            This method is used by the payment handler to show a window to the
+            user. When called, it runs the <a>open window algorithm</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>respondWith</dfn>() method
+          </h2>
+          <p>
+            This method is used by the payment handler to provide a
+            <a>PaymentAppResponse</a> when the payment successfully completes.
+          </p>
+        </section>
+        <p class="issue" title="Share user data with payment app?" data-number=
+        "123">
+          Should payment apps receive user data stored in the user agent upon
+          explicit consent from the user? The payment app could request
+          permission either at installation or when the payment app is first
+          invoked.
+        </p>
+        <p class="issue" title="DOM Events compatibility" data-number="119">
+          For DOM events compatibility, need to add a constructor, and the
+          members of the corresponding dictionary need to match the attributes
+          of the event.
+        </p>
         <section>
           <h2>
             <dfn>MethodData Population Algorithm</dfn>
@@ -1496,88 +1559,6 @@
           </ol>
         </section>
       </section>
-      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
-      "ServiceWorkerGlobalScope">
-        <h2>
-          Extension to <a>ServiceWorkerGlobalScope</a>
-        </h2>
-        <p>
-          This specification extends the <a>ServiceWorkerGlobalScope</a>
-          interface.
-        </p>
-        <pre class="idl">
-        partial interface ServiceWorkerGlobalScope {
-          attribute EventHandler onpaymentrequest;
-        };
-        </pre>
-        <section>
-          <h2>
-            <dfn>onpaymentrequest</dfn> attribute
-          </h2>
-          <p>
-            The <a>onpaymentrequest</a> attribute is an <a>event handler</a>
-            whose corresponding <a>event handler event type</a> is
-            <a>paymentrequest</a>.
-          </p>
-        </section>
-      </section>
-      <section data-dfn-for="PaymentRequestEvent" data-link-for=
-      "PaymentRequestEvent">
-        <h2>
-          The <dfn>PaymentRequestEvent</dfn>
-        </h2>
-        <p>
-          The <a>PaymentRequestEvent</a> represents a received
-          <a>PaymentRequest</a>.
-        </p>
-        <pre class="idl">
-        [Exposed=ServiceWorker]
-        interface PaymentRequestEvent : ExtendableEvent {
-        readonly attribute PaymentAppRequest appRequest;
-        Promise&lt;WindowClient&gt; openWindow(USVString url);
-        void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
-        };
-      </pre>
-        <section>
-          <h2>
-            <dfn>appRequest</dfn> attribute
-          </h2>
-          <p>
-            This attribute contains the <a>PaymentAppRequest</a> associated
-            with this <a>PaymentRequest</a>.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>openWindow</dfn>() method
-          </h2>
-          <p>
-            This method is used by the payment handler to show a window to the
-            user. When called, it runs the <a>open window algorithm</a>.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>respondWith</dfn>() method
-          </h2>
-          <p>
-            This method is used by the payment handler to provide a
-            <a>PaymentAppResponse</a> when the payment successfully completes.
-          </p>
-        </section>
-        <p class="issue" title="Share user data with payment app?" data-number=
-        "123">
-          Should payment apps receive user data stored in the user agent upon
-          explicit consent from the user? The payment app could request
-          permission either at installation or when the payment app is first
-          invoked.
-        </p>
-        <p class="issue" title="DOM Events compatibility" data-number="119">
-          For DOM events compatibility, need to add a constructor, and the
-          members of the corresponding dictionary need to match the attributes
-          of the event.
-        </p>
-      </section>
       <section>
         <h2>
           Internal Slots
@@ -1647,10 +1628,34 @@
               and has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.appRequest">appRequest</a> attribute of
-              <var>e</var> to a new <a>PaymentAppRequest</a> instance using the
-              <a>MethodData Population Algorithm</a> and the <a>Modifiers
-              Population Algorithm</a>.
+              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a> attribute
+              of <var>e</var> to the origin of the top level payee web page.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
+              attribute of <var>e</var> to the origin of the context where
+              PaymentRequest was initialized.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
+              attribute of <var>e</var> to the [[\details]].<a>id</a> from the
+              <a>PaymentRequest</a>.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.methodData">methodData</a> and <a data-lt=
+              "PaymentRequestEvent.modifiers">modifiers</a> attributes of <var>
+                e</var> by executing the <a>MethodData Population Algorithm</a>
+                and <a>Modifiers Population Algorithm</a> respectively.
+              </li>
+              <li>Set the <a data-lt="PaymentRequestEvent.total">total</a>
+              attribute of <var>e</var> to a <a>structured clone</a> of the
+              total field on the <a>PaymentDetailsInit</a> from the
+              corresponding <a>PaymentRequest</a>.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.instrumentKey">instrumentKey</a> attribute
+              of <var>e</var> to the <a>instrumentKey</a> of the selected
+              <a>PaymentInstrument</a>.
               </li>
               <li>Dispatch <var>e</var> to <var>global</var>.
               </li>
@@ -1950,7 +1955,7 @@ window.addEventListener("message", function(e) {
           <li>If <var>appResponse</var>.<a data-lt=
           "PaymentAppResponse.methodName">methodName</a> is not present or not
           set to one of the values from
-            <a>PaymentRequestEvent</a>.<a data-lt="PaymentRequestEvent.appRequest">appRequest</a>,
+            <a>PaymentRequestEvent</a>.<a data-lt="PaymentRequestEvent.methodData">methodData</a>,
             run the <a>payment app failure algorithm</a> and terminate these
             steps.
           </li>
