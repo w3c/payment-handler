@@ -46,34 +46,11 @@
 
             wg:           "Web Payments Working Group",
             wgURI:        "https://www.w3.org/Payments/WG/",
-            wgPublicList: "public-payments-wg",
+
             wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/83744/status",
 
             issueBase:    "https://github.com/w3c/webpayments-payment-handler/issues/",
             githubAPI:    "https://api.github.com/repos/w3c/webpayments-payment-handler",
-
-            localBiblio:  {
-                "PAYMENT-REQUEST-API": {
-                    title:    "Payment Request API",
-                    href:     "http://www.w3.org/TR/payment-request/",
-                    authors:  [
-                        "Adrian Bateman",
-                        "Zach Koch",
-                        "Roy McElmurray"
-                    ],
-                    status:   "WD"
-                },
-                "METHOD-IDENTIFIERS": {
-                    title:    "Payment Method Identifiers",
-                    href:     "https://www.w3.org/TR/payment-method-id/",
-                    authors:  [
-                        "Adrian Bateman",
-                        "Zach Koch",
-                        "Roy McElmurry"
-                    ],
-                    status:   "WD"
-                }
-            }
         };
     </script>
     <style>
@@ -88,12 +65,13 @@
   <body>
     <section id='abstract'>
       <p>
-        Payment Request API [[!PAYMENT-REQUEST-API]] provides a standard way to
-        initiate payment requests from Web pages and applications. User agents
-        implementing that API prompt the user to select a way to handle the
-        payment request, after which the user agent returns a payment response
-        to the originating site. This specification defines capabilities that
-        enable Web applications to handle payment requests.
+        The <a data-cite="payment-request">Payment Request API</a> provides a
+        standard way to initiate payment requests from Web pages and
+        applications. User agents implementing that API prompt the user to
+        select a way to handle the payment request, after which the user agent
+        returns a payment response to the originating site. This specification
+        defines capabilities that enable Web applications to handle payment
+        requests.
       </p>
     </section>
     <section id='sotd'>
@@ -115,8 +93,8 @@
         The Web Payments Working Group seeks to streamline payments on the Web
         to help reduce "shopping cart abandonment" and make it easier to deploy
         new payment methods on the Web. It has published the Payment Request
-        API [[!PAYMENT-REQUEST-API]] as a standard way to initiate payment
-        requests from E-Commerce Web sites and applications.
+        API [[!payment-request]] as a standard way to initiate payment requests
+        from E-Commerce Web sites and applications.
       </p>
       <p>
         A <dfn>payment app</dfn> is a Web application that can handle payment
@@ -189,26 +167,25 @@
           Payment Request API
         </dt>
         <dd>
-          The terms <dfn data-cite=
-          "!PAYMENT-REQUEST-API#payment-method">payment method</dfn>,
+          The terms <dfn data-cite="!payment-request#payment-method">payment
+          method</dfn>, <dfn data-cite=
+          "!payment-request#dom-paymentrequest">PaymentRequest</dfn>,
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#dom-paymentrequest">PaymentRequest</dfn>,
+          "!payment-request#dom-paymentresponse">PaymentResponse</dfn>,
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#dom-paymentresponse">PaymentResponse</dfn>,
+          "!payment-request#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
+          "!payment-request#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
+          "!payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
+          "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
+          <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
+          <dfn data-cite="!payment-request#show-method">show()</dfn>, and
           <dfn data-cite=
-          "!PAYMENT-REQUEST-API#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
-          <dfn data-cite="!PAYMENT-REQUEST-API#id-attribute">ID</dfn>,
-          <dfn data-cite="!PAYMENT-REQUEST-API#show-method">show()</dfn>, and
-          <dfn data-cite=
-          "!PAYMENT-REQUEST-API#user-accepts-the-payment-request-algorithm">user
+          "!payment-request#user-accepts-the-payment-request-algorithm">user
           accepts the payment request algorithm</dfn> are defined by the
-          Payment Request API specification [[!PAYMENT-REQUEST-API]].
+          Payment Request API specification [[!payment-request]].
         </dd>
         <dt>
           ECMA-262 6th Edition, The ECMAScript 2015 Language Specification
@@ -237,18 +214,17 @@
         <dd>
           The terms <dfn data-lt="payment method identifiers">payment method
           identifier</dfn> is defined by the Payment Method Identifier
-          specification [[!METHOD-IDENTIFIERS]].
+          specification [[!payment-method-id]].
         </dd>
         <dt>
           Basic Card Payment
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!PAYMENT-REQUEST-API#method-id">basic-card</dfn>, <dfn data-cite=
-          "!PAYMENT-REQUEST-API#supportedNetworks">supportedNetworks</dfn>, and
-          <dfn data-cite=
-          "!PAYMENT-REQUEST-API#supportedTypes">supportedTypes</dfn> are
-          defined in [[!PAYMENT-METHOD-BASIC-CARD]].
+          "!payment-request#method-id">basic-card</dfn>, <dfn data-cite=
+          "!payment-request#supportedNetworks">supportedNetworks</dfn>, and
+          <dfn data-cite="!payment-request#supportedTypes">supportedTypes</dfn>
+          are defined in [[!PAYMENT-METHOD-BASIC-CARD]].
         </dd>
         <dt>
           HTML5
@@ -371,10 +347,10 @@
           </ul>
         </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
-        [[PAYMENT-REQUEST-API]] method <a>show()</a> (e.g., when the user
-        pushes a button on a checkout page), the user agent computes a list of
-        candidate payment handlers, comparing the payment methods accepted by
-        the merchant with those supported by registered payment handlers. For
+        [[payment-request]] method <a>show()</a> (e.g., when the user pushes a
+        button on a checkout page), the user agent computes a list of candidate
+        payment handlers, comparing the payment methods accepted by the
+        merchant with those supported by registered payment handlers. For
         payment methods that support additional filtering, merchant and payment
         handler capabilities are compared as part of determining whether there
         is a match.
@@ -392,8 +368,8 @@
         "ServiceWorkerRegistration.paymentManager">PaymentManager</a> the
         instrument was registered with. The <a>PaymentRequestEvent</a> includes
         some information from the PaymentRequest (defined in
-        [[!PAYMENT-REQUEST-API]]) as well as additional information (e.g.,
-        origin and selected instrument).
+        [[!payment-request]]) as well as additional information (e.g., origin
+        and selected instrument).
         </li>
         <li>Once activated, the payment handler performs whatever steps are
         necessary to <a href="#handling-a-payment-request">handle the payment
@@ -403,7 +379,7 @@
         </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
-        PaymentResponse (of [[!PAYMENT-REQUEST-API]]).
+        PaymentResponse (of [[!payment-request]]).
         </li>
       </ol>
       <p class="note">
@@ -976,7 +952,11 @@
             <li>Return <var>p</var>
             </li>
           </ol>
-          <p class="issue" title="Clear()">See <a href="https://github.com/w3c/webpayments-payment-handler/issues/129">issue 129</a>.</p>
+          <p class="issue" title="Clear()">
+            See <a href=
+            "https://github.com/w3c/webpayments-payment-handler/issues/129">issue
+            129</a>.
+          </p>
         </section>
       </section>
       <section data-dfn-for="PaymentWallet" data-link-for="PaymentWallet">
@@ -1205,11 +1185,13 @@
           </li>
         </ul>
         <p class="issue" title="Display">
-          In <a href="https://github.com/w3c/webpayments-payment-handler/issues/98">issue 98</a> there has been push-back to always requiring display of instruments
-          (e.g., on a mobile devices). User agents can incrementally show
-          instruments. Or user agents can return an empty instrumentKey and it
-          becomes the payment app's responsibility to display instruments to
-          the user.
+          In <a href=
+          "https://github.com/w3c/webpayments-payment-handler/issues/98">issue
+          98</a> there has been push-back to always requiring display of
+          instruments (e.g., on a mobile devices). User agents can
+          incrementally show instruments. Or user agents can return an empty
+          instrumentKey and it becomes the payment app's responsibility to
+          display instruments to the user.
         </p>
       </section>
       <section>
@@ -1255,12 +1237,15 @@
           the Instrument).
         </p>
         <p class="issue" title="selection">
-          Again related to <a href="https://github.com/w3c/webpayments-payment-handler/issues/98">issue 98</a>: Should we require that, if displayed, individual instruments must be
-          selectable? Or should we allow flexibility that instruments may be
-          displayed, but selecting any one invokes all registered payment
-          handlers? One idea that has been suggested: the user agent (e.g., on
-          a mobile device) could first display the app-level icon/logo. Upon
-          selection, the user agent could display the Instruments in a submenu.
+          Again related to <a href=
+          "https://github.com/w3c/webpayments-payment-handler/issues/98">issue
+          98</a>: Should we require that, if displayed, individual instruments
+          must be selectable? Or should we allow flexibility that instruments
+          may be displayed, but selecting any one invokes all registered
+          payment handlers? One idea that has been suggested: the user agent
+          (e.g., on a mobile device) could first display the app-level
+          icon/logo. Upon selection, the user agent could display the
+          Instruments in a submenu.
         </p>
       </section>
     </section>
@@ -1272,7 +1257,7 @@
         Once the user has selected an Instrument, the user agent fires a
         <a>PaymentRequestEvent</a> and uses the subsequent
         <a>PaymentAppResponse</a> to create a PaymentReponse for
-        [[!PAYMENT-REQUEST-API]].
+        [[!payment-request]].
       </p>
       <p class="issue" title=
       "Support for Abort() being delegated to Payment Handler" data-number=
@@ -1600,7 +1585,7 @@
         </h2>
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
-          "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> and
+          "!payment-request#show-method">PaymentRequest.show()</a> and
           subsequent user selection of a payment instrument, the <a>user
           agent</a> MUST run the following steps:
         </p>
@@ -1611,7 +1596,7 @@
           </li>
           <li>If <var>registration</var> is not found, reject the
           <a>Promise</a> that was created by <a data-cite=
-          "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> with a
+          "!payment-request#show-method">PaymentRequest.show()</a> with a
           <a>DOMException</a> whose value is "<a>InvalidStateError</a>" and
           terminate these steps.
           </li>
@@ -1666,8 +1651,8 @@
               <a>PaymentAppResponse</a> as described in <a href=
               "#sec-payment-app-response"></a>, reject the <a>Promise</a> that
               was created by <a data-cite=
-              "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a> with
-              a <a>DOMException</a> whose value "<a>OperationError</a>".
+              "!payment-request#show-method">PaymentRequest.show()</a> with a
+              <a>DOMException</a> whose value "<a>OperationError</a>".
               </li>
             </ol>
           </li>
@@ -1729,15 +1714,13 @@
           triggered this <a>PaymentRequestEvent</a>.
           </li>
           <li>If <var>request</var>.<a data-cite=
-          "!PAYMENT-REQUEST-API#dfn-state-1">[[\state]]</a> is not
-          "<a data-cite=
-          "!PAYMENT-REQUEST-API#dfn-interactive">interactive</a>", then return
-          a <a>Promise</a> rejected with a <a>DOMException</a> whose name is
+          "!payment-request#dfn-state-1">[[\state]]</a> is not "<a data-cite=
+          "!payment-request#dfn-interactive">interactive</a>", then return a
+          <a>Promise</a> rejected with a <a>DOMException</a> whose name is
           "<a>InvalidStateError</a>".
           </li>
           <li>Let <var>url</var> be the result of <a data-cite=
-          "!whatwg-url#concept-url-parser">parsing</a> the <var>url</var>
-          argument.
+          "!URL#concept-url-parser">parsing</a> the <var>url</var> argument.
           </li>
           <li>If the url parsing throws an exception, return a <a>Promise</a>
           rejected with that exception.
@@ -1747,15 +1730,14 @@
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
-          <li>Run these steps <a data-cite="!whatwg-html#in-parallel">in
-          parallel</a>:
+          <li>Run these steps <a data-cite="!HTML#in-parallel">in parallel</a>:
             <ol>
               <li>Let <var>newContext</var> be a new <a data-cite=
-              "!whatwg-html#top-level-browsing-context">top-level browsing
+              "!HTML#top-level-browsing-context">top-level browsing
               context</a>.
               </li>
               <li>
-                <a data-cite="!whatwg-html#navigate">Navigate</a>
+                <a data-cite="!HTML#navigate">Navigate</a>
                 <var>newContext</var> to <var>url</var>, with exceptions
                 enabled and replacement enabled.
               </li>
@@ -1932,7 +1914,7 @@ window.addEventListener("message", function(e) {
             with a different one.
             </li>
             <li>Rejecting the Promise that was created by <a data-cite=
-            "!PAYMENT-REQUEST-API#show-method">PaymentRequest.show()</a>.
+            "!payment-request#show-method">PaymentRequest.show()</a>.
             </li>
           </ul>
         </section>
@@ -1944,7 +1926,7 @@ window.addEventListener("message", function(e) {
         <p>
           If the Promise is successfully resolved, the user agent MUST run the
           <a>user accepts the payment request algorithm</a> as defined in
-          [[!PAYMENT-REQUEST-API]], replacing steps 6 and 7 with these steps or
+          [[!payment-request]], replacing steps 6 and 7 with these steps or
           their equivalent:
         </p>
         <ol>
@@ -1992,7 +1974,7 @@ window.addEventListener("message", function(e) {
       });
           </pre>
         <p class="note">
-          [[!PAYMENT-REQUEST-API]] defines an <a>ID</a> that parties in the
+          [[!payment-request]] defines an <a>ID</a> that parties in the
           ecosystem (including payment app providers and payees) may use for
           reconciliation after network or other failures.
         </p>
