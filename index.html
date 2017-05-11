@@ -11,7 +11,7 @@
     <script class='remove'>
         var respecConfig = {
             shortName:  "payment-handler",
-            edDraftURI:   "https://w3c.github.io/webpayments-payment-handler/",
+            edDraftURI:   "https://w3c.github.io/payment-handler/",
             specStatus: "ED",
             editors: [
                 {   name:       "Adrian Hope-Bailie",
@@ -49,8 +49,8 @@
 
             wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/83744/status",
 
-            issueBase:    "https://github.com/w3c/webpayments-payment-handler/issues/",
-            githubAPI:    "https://api.github.com/repos/w3c/webpayments-payment-handler",
+            issueBase:    "https://github.com/w3c/payment-handler/issues/",
+            githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
         };
     </script>
     <style>
@@ -77,10 +77,10 @@
     <section id='sotd'>
       <p>
         The Web Payments Working Group maintains <a href=
-        "https://github.com/w3c/webpayments-payment-apps-api/issues">a list of
-        all bug reports that the group has not yet addressed</a>. This draft
-        highlights some of the pending issues that are still to be discussed in
-        the working group. No decision has been taken on the outcome of these
+        "https://github.com/w3c/payment-handler/issues">a list of all bug
+        reports that the group has not yet addressed</a>. This draft highlights
+        some of the pending issues that are still to be discussed in the
+        working group. No decision has been taken on the outcome of these
         issues including whether they are valid. Pull requests with proposed
         specification text for outstanding issues are strongly encouraged.
       </p>
@@ -119,6 +119,10 @@
         This specification does not address how software built with
         operating-system specific mechanisms (e.g., "native mobile apps")
         handle payment requests.
+      </p>
+      <p class="issue" title="Permission" data-number="151">
+        The term "payment app" may be useful as a shorthand for "Web app that
+        can handle payments with Payment Request API."
       </p>
     </section>
     <section id='conformance'>
@@ -954,8 +958,9 @@
           </ol>
           <p class="issue" title="Clear()">
             See <a href=
-            "https://github.com/w3c/webpayments-payment-handler/issues/129">issue
-            129</a>.
+            "https://github.com/w3c/payment-handler/issues/129">issue 129</a>
+            and <a href="https://github.com/w3c/payment-handler/issues">issue
+            153</a>.
           </p>
         </section>
       </section>
@@ -1185,8 +1190,7 @@
           </li>
         </ul>
         <p class="issue" title="Display">
-          In <a href=
-          "https://github.com/w3c/webpayments-payment-handler/issues/98">issue
+          In <a href="https://github.com/w3c/payment-handler/issues/98">issue
           98</a> there has been push-back to always requiring display of
           instruments (e.g., on a mobile devices). User agents can
           incrementally show instruments. Or user agents can return an empty
@@ -1238,14 +1242,13 @@
         </p>
         <p class="issue" title="selection">
           Again related to <a href=
-          "https://github.com/w3c/webpayments-payment-handler/issues/98">issue
-          98</a>: Should we require that, if displayed, individual instruments
-          must be selectable? Or should we allow flexibility that instruments
-          may be displayed, but selecting any one invokes all registered
-          payment handlers? One idea that has been suggested: the user agent
-          (e.g., on a mobile device) could first display the app-level
-          icon/logo. Upon selection, the user agent could display the
-          Instruments in a submenu.
+          "https://github.com/w3c/payment-handler/issues/98">issue 98</a>:
+          Should we require that, if displayed, individual instruments must be
+          selectable? Or should we allow flexibility that instruments may be
+          displayed, but selecting any one invokes all registered payment
+          handlers? One idea that has been suggested: the user agent (e.g., on
+          a mobile device) could first display the app-level icon/logo. Upon
+          selection, the user agent could display the Instruments in a submenu.
         </p>
       </section>
     </section>
