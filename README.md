@@ -1,4 +1,4 @@
 
-# Specification 'webpayments-payment-apps-api'
+# Payment Handler API
 
-Repository for the Payment Handler specification of the Web Payments Working Group. [View the specification](https://w3c.github.io/webpayments-payment-handler/).
+Repository for the Payment Handler specification of the Web Payments Working Group. [View the specification](https://w3c.github.io/payment-handler/).
