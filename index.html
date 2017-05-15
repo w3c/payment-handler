@@ -171,8 +171,8 @@
           Payment Request API
         </dt>
         <dd>
-          The terms <dfn data-cite="!payment-request#payment-method">payment
-          method</dfn>, <dfn data-cite=
+          The terms <dfn data-lt="payment method" data-cite="!payment-request#payment-methods">payment
+          methods</dfn>, <dfn data-cite=
           "!payment-request#dom-paymentrequest">PaymentRequest</dfn>,
           <dfn data-cite=
           "!payment-request#dom-paymentresponse">PaymentResponse</dfn>,
@@ -225,10 +225,10 @@
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!payment-request#method-id">basic-card</dfn>, <dfn data-cite=
-          "!payment-request#supportedNetworks">supportedNetworks</dfn>, and
-          <dfn data-cite="!payment-request#supportedTypes">supportedTypes</dfn>
-          are defined in [[!PAYMENT-METHOD-BASIC-CARD]].
+          "!payment-method-basic-card#method-id">basic-card</dfn>, <dfn data-cite=
+          "!payment-method-basic-card#supportedNetworks">supportedNetworks</dfn>, and
+          <dfn data-cite="!payment-method-basic-card#supportedTypes">supportedTypes</dfn>
+          are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
           HTML5
@@ -771,7 +771,7 @@
           </dt>
           <dd>
             The <a>enabledMethods</a> member is a list of one or more
-            <a>payment method identifiers</a> of the <a>payment method</a>s
+            <a>payment method identifiers</a> of the <a>payment methods</a>
             supported by this instrument.
           </dd>
           <dt>
@@ -1366,7 +1366,7 @@
           <p>
             This attribute contains <a>PaymentMethodData</a> dictionaries
             containing the <a>payment method identifiers</a> for the <a>payment
-            method</a>(s) that the web site accepts and any associated
+            methods</a> that the web site accepts and any associated
             <a>payment method</a> specific data. It is populated from the
             <a>PaymentRequest</a> using the <a>MethodData Population
             Algorithm</a> defined below.
@@ -1760,7 +1760,7 @@
               </li>
               <li>Let <var>client</var> be the result of running the
               <a data-cite=
-              "!SERVICE-WORKERS#capture-windowclient-algorithm">capture window
+              "!SERVICE-WORKERS#create-windowclient-algorithm">create window
               client</a> algorithm with <var>newContext</var> as the argument.
               </li>
               <li>If <var>event</var>.<a>[[\windowClient]]</a> is not null,
