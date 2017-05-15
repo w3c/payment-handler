@@ -171,7 +171,7 @@
           Payment Request API
         </dt>
         <dd>
-          The terms <dfn data-cite="!payment-request#payment-method">payment
+          The terms <dfn data-cite="!payment-request#payment-methods">payment
           method</dfn>, <dfn data-cite=
           "!payment-request#dom-paymentrequest">PaymentRequest</dfn>,
           <dfn data-cite=
@@ -225,10 +225,10 @@
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!payment-request#method-id">basic-card</dfn>, <dfn data-cite=
-          "!payment-request#supportedNetworks">supportedNetworks</dfn>, and
-          <dfn data-cite="!payment-request#supportedTypes">supportedTypes</dfn>
-          are defined in [[!PAYMENT-METHOD-BASIC-CARD]].
+          "!payment-method-basic-card#method-id">basic-card</dfn>, <dfn data-cite=
+          "!payment-method-basic-card#supportedNetworks">supportedNetworks</dfn>, and
+          <dfn data-cite="!payment-method-basic-card#supportedTypes">supportedTypes</dfn>
+          are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
           HTML5
@@ -1760,7 +1760,7 @@
               </li>
               <li>Let <var>client</var> be the result of running the
               <a data-cite=
-              "!SERVICE-WORKERS#capture-windowclient-algorithm">capture window
+              "!SERVICE-WORKERS#create-windowclient-algorithm">create window
               client</a> algorithm with <var>newContext</var> as the argument.
               </li>
               <li>If <var>event</var>.<a>[[\windowClient]]</a> is not null,
