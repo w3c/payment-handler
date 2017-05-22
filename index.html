@@ -1305,7 +1305,7 @@
           <a>PaymentRequest</a>.
         </p>
         <pre class="idl">
-        [Exposed=ServiceWorker]
+        [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
           readonly attribute DOMString topLevelOrigin;
           readonly attribute DOMString paymentRequestOrigin;
@@ -1316,6 +1316,16 @@
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient&gt; openWindow(USVString url);
           void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
+        };
+
+        dictionary PaymentRequestEventInit : ExtendableEventInit {
+          DOMString topLevelOrigin;
+          DOMString paymentRequestOrigin;
+          DOMString paymentRequestId;
+          sequence&lt;PaymentMethodData&gt; methodData;
+          PaymentItem total;
+          sequence&lt;PaymentDetailsModifier&gt; modifiers;
+          DOMString instrumentKey;
         };
       </pre>
         <section>
