@@ -1304,11 +1304,21 @@
           The <a>PaymentRequestEvent</a> represents a received
           <a>PaymentRequest</a>.
         </p>
-        <pre class="idl">
+        <pre class="idl no-link-warnings">
+        dictionary PaymentRequestEventInit : ExtendableEventInit {
+          USVString topLevelOrigin;
+          USVString paymentRequestOrigin;
+          DOMString paymentRequestId;
+          sequence&lt;PaymentMethodData&gt; methodData;
+          PaymentItem total;
+          sequence&lt;PaymentDetailsModifier&gt; modifiers;
+          DOMString instrumentKey;
+        };
+
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
-          readonly attribute DOMString topLevelOrigin;
-          readonly attribute DOMString paymentRequestOrigin;
+          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute PaymentItem total;
@@ -1316,16 +1326,6 @@
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient&gt; openWindow(USVString url);
           void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
-        };
-
-        dictionary PaymentRequestEventInit : ExtendableEventInit {
-          DOMString topLevelOrigin;
-          DOMString paymentRequestOrigin;
-          DOMString paymentRequestId;
-          sequence&lt;PaymentMethodData&gt; methodData;
-          PaymentItem total;
-          sequence&lt;PaymentDetailsModifier&gt; modifiers;
-          DOMString instrumentKey;
         };
       </pre>
         <section>
