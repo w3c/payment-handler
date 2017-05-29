@@ -1304,17 +1304,7 @@
           The <a>PaymentRequestEvent</a> represents a received
           <a>PaymentRequest</a>.
         </p>
-        <pre class="idl no-link-warnings">
-        dictionary PaymentRequestEventInit : ExtendableEventInit {
-          USVString topLevelOrigin;
-          USVString paymentRequestOrigin;
-          DOMString paymentRequestId;
-          sequence&lt;PaymentMethodData&gt; methodData;
-          PaymentItem total;
-          sequence&lt;PaymentDetailsModifier&gt; modifiers;
-          DOMString instrumentKey;
-        };
-
+        <pre class="idl">
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
           readonly attribute USVString topLevelOrigin;
@@ -1441,11 +1431,29 @@
           permission either at installation or when the payment app is first
           invoked.
         </p>
-        <p class="issue" title="DOM Events compatibility" data-number="119">
-          For DOM events compatibility, need to add a constructor, and the
-          members of the corresponding dictionary need to match the attributes
-          of the event.
-        </p>
+        <section data-dfn-for="PaymentRequestEventInit">
+          <h2>
+            <dfn>PaymentRequestEventInit</dfn> dictionary
+          </h2>
+          <p>
+            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            <dfn>paymentRequestId</dfn>, <dfn> methodData</dfn>,
+            <dfn>total</dfn>, <dfn> modifiers</dfn>, and
+            <dfn>instrumentKey</dfn> members share their definitions with
+            those defined for <a>PaymentRequestEvent</a>
+          </p>
+          <pre class="idl">
+            dictionary PaymentRequestEventInit : ExtendableEventInit {
+              USVString topLevelOrigin;
+              USVString paymentRequestOrigin;
+              DOMString paymentRequestId;
+              sequence&lt;PaymentMethodData&gt; methodData;
+              PaymentItem total;
+              sequence&lt;PaymentDetailsModifier&gt; modifiers;
+              DOMString instrumentKey;
+            };
+          </pre>
+        </section>
         <section>
           <h2>
             <dfn>MethodData Population Algorithm</dfn>
