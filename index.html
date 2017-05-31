@@ -1435,13 +1435,6 @@
           <h2>
             <dfn>PaymentRequestEventInit</dfn> dictionary
           </h2>
-          <p>
-            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
-            <dfn>paymentRequestId</dfn>, <dfn> methodData</dfn>,
-            <dfn>total</dfn>, <dfn> modifiers</dfn>, and
-            <dfn>instrumentKey</dfn> members share their definitions with
-            those defined for <a>PaymentRequestEvent</a>
-          </p>
           <pre class="idl">
             dictionary PaymentRequestEventInit : ExtendableEventInit {
               USVString topLevelOrigin;
@@ -1453,6 +1446,13 @@
               DOMString instrumentKey;
             };
           </pre>
+          <p>
+            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
+            <dfn>total</dfn>, <dfn>modifiers</dfn>, and
+            <dfn>instrumentKey</dfn> members share their definitions with those
+            defined for <a>PaymentRequestEvent</a>
+          </p>
         </section>
         <section>
           <h2>
