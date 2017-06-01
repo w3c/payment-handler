@@ -1305,10 +1305,10 @@
           <a>PaymentRequest</a>.
         </p>
         <pre class="idl">
-        [Exposed=ServiceWorker]
+        [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
-          readonly attribute DOMString topLevelOrigin;
-          readonly attribute DOMString paymentRequestOrigin;
+          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute PaymentItem total;
@@ -1431,11 +1431,29 @@
           permission either at installation or when the payment app is first
           invoked.
         </p>
-        <p class="issue" title="DOM Events compatibility" data-number="119">
-          For DOM events compatibility, need to add a constructor, and the
-          members of the corresponding dictionary need to match the attributes
-          of the event.
-        </p>
+        <section data-dfn-for="PaymentRequestEventInit">
+          <h2>
+            <dfn>PaymentRequestEventInit</dfn> dictionary
+          </h2>
+          <pre class="idl">
+            dictionary PaymentRequestEventInit : ExtendableEventInit {
+              USVString topLevelOrigin;
+              USVString paymentRequestOrigin;
+              DOMString paymentRequestId;
+              sequence&lt;PaymentMethodData&gt; methodData;
+              PaymentItem total;
+              sequence&lt;PaymentDetailsModifier&gt; modifiers;
+              DOMString instrumentKey;
+            };
+          </pre>
+          <p>
+            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
+            <dfn>total</dfn>, <dfn>modifiers</dfn>, and
+            <dfn>instrumentKey</dfn> members share their definitions with those
+            defined for <a>PaymentRequestEvent</a>
+          </p>
+        </section>
         <section>
           <h2>
             <dfn>MethodData Population Algorithm</dfn>
