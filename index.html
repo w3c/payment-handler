@@ -1258,7 +1258,7 @@
       <p>
         Once the user has selected an Instrument, the user agent fires a
         <a>PaymentRequestEvent</a> and uses the subsequent
-        <a>PaymentAppResponse</a> to create a PaymentReponse for
+        <a>PaymentHandlerResponse</a> to create a PaymentReponse for
         [[!payment-request]].
       </p>
       <p class="issue" title=
@@ -1315,7 +1315,7 @@
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient&gt; openWindow(USVString url);
-          void respondWith(Promise&lt;PaymentAppResponse&gt;appResponse);
+          void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponse);
         };
       </pre>
         <section>
@@ -1421,7 +1421,8 @@
           </h2>
           <p>
             This method is used by the payment handler to provide a
-            <a>PaymentAppResponse</a> when the payment successfully completes.
+            <a>PaymentHandlerResponse</a> when the payment successfully
+            completes.
           </p>
         </section>
         <p class="issue" title="Share user data with payment app?" data-number=
@@ -1668,7 +1669,7 @@
               promises</a> of <var>e</var> to resolve.
               </li>
               <li>If the <a>payment handler</a> has not provided a
-              <a>PaymentAppResponse</a>, reject the <a>Promise</a> that was
+              <a>PaymentHandlerResponse</a>, reject the <a>Promise</a> that was
               created by <a data-cite=
               "!payment-request#show-method">PaymentRequest.show()</a> with a
               <a>DOMException</a> whose value "<a>OperationError</a>".
@@ -1883,13 +1884,14 @@ window.addEventListener("message", function(e) {
       <h2>
         Response
       </h2>
-      <section data-dfn-for="PaymentAppResponse" data-link-for=
-      "PaymentAppResponse">
+      <section data-dfn-for="PaymentHandlerResponse" data-link-for=
+      "PaymentHandlerResponse">
         <h2>
-          <dfn>PaymentAppResponse</dfn> dictionary
-        </h2>The PaymentAppResponse is conveyed using the following dictionary:
+          <dfn>PaymentHandlerResponse</dfn> dictionary
+        </h2>The PaymentHandlerResponse is conveyed using the following
+        dictionary:
         <pre class="idl">
-          dictionary PaymentAppResponse {
+          dictionary PaymentHandlerResponse {
           DOMString methodName;
           object details;
           };
@@ -1918,7 +1920,7 @@ window.addEventListener("message", function(e) {
             <a data-lt="PaymentRequestEvent.respondWith">respondWith()</a>
             function of the corresponding <a>PaymentRequestEvent</a>
             dictionary. The application is expected to resolve the Promise with
-            a <a>PaymentAppResponse</a> instance containing the payment
+            a <a>PaymentHandlerResponse</a> instance containing the payment
             response. In case of user cancellation or error, the application
             may signal failure by rejecting the Promise.
           </p>
@@ -1949,29 +1951,31 @@ window.addEventListener("message", function(e) {
           their equivalent:
         </p>
         <ol>
-          <li>Set <var>appResponse</var> to the <a>PaymentAppResponse</a>
-          instance used to resolve the <a>PaymentRequestEvent</a>.<a data-lt=
+          <li>Set <var>handlerResponse</var> to the
+          <a>PaymentHandlerResponse</a> instance used to resolve the
+          <a>PaymentRequestEvent</a>.<a data-lt=
           "PaymentRequestEvent.respondWith">respondWith()</a> Promise.
           </li>
-          <li>If <var>appResponse</var>.<a data-lt=
-          "PaymentAppResponse.methodName">methodName</a> is not present or not
-          set to one of the values from
-            <a>PaymentRequestEvent</a>.<a data-lt="PaymentRequestEvent.methodData">methodData</a>,
-            run the <a>payment app failure algorithm</a> and terminate these
-            steps.
+          <li>If <var>handlerResponse</var>.<a data-lt=
+          "PaymentHandlerResponse.methodName">methodName</a> is not present or
+          not set to one of the values from
+          <a>PaymentRequestEvent</a>.<a data-lt=
+          "PaymentRequestEvent.methodData">methodData</a>, run the <a>payment
+          app failure algorithm</a> and terminate these steps.
           </li>
           <li>Create a <a>structured clone</a> of
-          <var>appResponse</var>.<a data-lt=
-          "PaymentAppResponse.methodName">methodName</a> and assign it to <var>
-            response</var>.<a data-lt=
-            "PaymentAppResponse.methodName">methodName</a>.
+          <var>handlerResponse</var>.<a data-lt=
+          "PaymentHandlerResponse.methodName">methodName</a> and assign it to
+          <var>response</var>.<a data-lt=
+          "PaymentHandlerResponse.methodName">methodName</a>.
           </li>
-          <li>If <var>appResponse</var>.<var>details</var> is not present, run
-          the <a>payment app failure algorithm</a> and terminate these steps.
+          <li>If <var>handlerResponse</var>.<var>details</var> is not present,
+          run the <a>payment app failure algorithm</a> and terminate these
+          steps.
           </li>
           <li>Create a <a>structured clone</a> of
-          <var>appResponse</var>.<var>details</var> and assign it to
-          <var>response</var>.<var>details</var>.
+          <var>handlerResponse</var>.<var>details</var> and assign it to <var>
+            response</var>.<var>details</var>.
           </li>
         </ol>
         <p>
