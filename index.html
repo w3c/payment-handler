@@ -695,10 +695,52 @@
             When called, this method executes the following steps:
           </p>
           <ol>
+            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
+            <var>details</var> is present, then:
+              <ol>
+                <li>Let <var>convertedIcons</var> be the result of running the
+                <a>convert image objects</a> algorithm passing
+                <var>details</var>.<a data-lt=
+                "PaymentInstrument.icons">icons</a> as the argument.
+                </li>
+                <li>If the <var>convertedIcons</var> is an empty
+                <a>Sequence</a>, then return a <a>Promise</a> rejected with a
+                <a>TypeError</a>.
+                </li>
+                <li>Set <var>details</var>.<a data-lt=
+                "PaymentInstrument.icons">icons</a> to
+                <var>convertedIcons</var>.
+                </li>
+              </ol>
+            </li>
             <li>Let <var>p</var> be a new promise.
             </li>
             <li>Run the following steps in parallel:
               <ol>
+                <li>If the <a data-lt="PaymentInstrument.icons">icons</a>
+                member of <var>details</var> is present, then for each
+                <var>icon</var> in <var>details</var>.<a data-lt=
+                "PaymentInstrument.icons">icons</a>:
+                  <ol>
+                    <li>If the user agent wants to display the <var>icon</var>,
+                    then:
+                      <ol>
+                        <li>Let <var>fetchedImage</var> be the result of
+                        running the <a data-cite=
+                        "!appmanifest#fetching-image-objects">fetching image
+                        object</a> passing <var>icon</var> as the argument.
+                        </li>
+                        <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
+                        <var>fetchedImage</var>.
+                        </li>
+                      </ol>
+                    </li>
+                    <li>Otherwise, if no images are fetched, the user agent may
+                    set <var>icon</var>.<a>[[\fetchedImage]]</a> to fallback
+                    image.
+                    </li>
+                  </ol>
+                </li>
                 <li>If the collection contains a <a>PaymentInstrument</a> with
                 a matching <var>instrumentKey</var>, replace it with the
                 <a>PaymentInstrument</a> in <var>details</var>.
@@ -746,7 +788,7 @@
         <pre class="idl">
       dictionary PaymentInstrument {
         required DOMString name;
-        sequence&lt;ImageObjects&gt; icons;
+        sequence&lt;ImageObject&gt; icons;
         sequence&lt;DOMString&gt; enabledMethods;
         object capabilities;
       };
@@ -788,11 +830,6 @@
             <a>supportedTypes</a>.
           </dd>
         </dl>
-        <p class="issue" title="ImageObjects not Defined" data-number="125">
-          ImageObjects comes from the Web App Manifest specification. Should we
-          reference the definition normatively, or make use of a simpler
-          structure here?
-        </p>
       </section>
       <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
         <h2>
@@ -918,10 +955,50 @@
             When called, this method executes the following steps:
           </p>
           <ol>
+            <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
+            <var>details</var> is present, then:
+              <ol>
+                <li>Let <var>convertedIcons</var> be the result of running the
+                <a>convert image objects</a> algorithm passing
+                <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>
+                as the argument.
+                </li>
+                <li>If the <var>convertedIcons</var> is an empty
+                <a>Sequence</a>, then return a <a>Promise</a> rejected with a
+                <a>TypeError</a>.
+                </li>
+                <li>Set <var>details</var>.<a data-lt=
+                "PaymentWallet.icons">icons</a> to <var>convertedIcons</var>.
+                </li>
+              </ol>
+            </li>
             <li>Let <var>p</var> be a new promise.
             </li>
             <li>Run the following steps in parallel:
               <ol>
+                <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
+                <var>details</var> is present, then for each <var>icon</var> in
+                <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>:
+                  <ol>
+                    <li>If the user agent wants to display the <var>icon</var>,
+                    then:
+                      <ol>
+                        <li>Let <var>fetchedImage</var> be the result of
+                        running the <a data-cite=
+                        "!appmanifest#fetching-image-objects">fetching image
+                        object</a> passing <var>icon</var> as the argument.
+                        </li>
+                        <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
+                        <var>fetchedImage</var>.
+                        </li>
+                      </ol>
+                    </li>
+                    <li>Otherwise, if no images are fetched, the user agent may
+                    set <var>icon</var>.<a>[[\fetchedImage]]</a> to fallback
+                    image.
+                    </li>
+                  </ol>
+                </li>
                 <li>If the collection contains a <a>PaymentWallet</a> with a
                 matching <var>walletKey</var>, replace it with the
                 <a>PaymentWallet</a> in <var>details</var>.
@@ -1007,6 +1084,109 @@
             from appearing in more than one <a>Wallet</a>.
           </dd>
         </dl>
+      </section>
+      <section data-dfn-for="ImageObject" data-link-for="ImageObject">
+        <h2>
+          <dfn>ImageObject</dfn> dictionary
+        </h2>
+        <pre class="idl">
+      dictionary ImageObject {
+          required USVString src;
+          DOMString sizes;
+          DOMString type;
+      };
+      </pre>
+        <dl>
+          <dt>
+            <dfn>src</dfn> member
+          </dt>
+          <dd>
+            The <a>src</a> member is used to specify the <a>ImageObject</a>'s
+            source. It is a URL from which the user agent can fetch the image’s
+            data.
+          </dd>
+          <dt>
+            <dfn>sizes</dfn> member
+          </dt>
+          <dd>
+            The <a>sizes</a> member is used to specify the <a>ImageObject</a>'s
+            sizes. It follows the spec of sizes member in <a data-cite=
+            "!HTML#the-link-element">HTML link element</a>, which is a string
+            consisting of an <a data-cite=
+            "!HTML#unordered-set-of-unique-space-separated-tokens">unordered
+            set of unique space-separated tokens</a> which are <a data-cite=
+            "!HTML#ascii-case-insensitive">ASCII case-insensitive</a> that
+            represents the dimensions of an image. Each keyword is either an
+            <a data-cite="!HTML#ascii-case-insensitive">ASCII
+            case-insensitive</a> match for the string "any", or a value that
+            consists of two valid non-negative integers that do not have a
+            leading U+0030 DIGIT ZERO (0) character and that are separated by a
+            single U+0078 LATIN SMALL LETTER X or U+0058 LATIN CAPITAL LETTER X
+            character. The keywords represent icon sizes in raw pixels (as
+            opposed to CSS pixels). When multiple image objects are available,
+            a user agent MAY use the value to decide which icon is most
+            suitable for a display context (and ignore any that are
+            inappropriate). The parsing steps for the <a>sizes</a> member MUST
+            follow <a data-cite="!HTML#attr-link-sizes">the parsing steps for
+            HTML link element sizes attribute</a>.
+          </dd>
+          <dt>
+            <dfn>type</dfn> member
+          </dt>
+          <dd>
+            The <a>type</a> member is used to specify the <a>ImageObject</a>'s
+            MIME type. It is a hint as to the media type of the image. The
+            purpose of this member is to allow a user agent to ignore images of
+            media types it does not support.
+          </dd>
+        </dl>
+      </section>
+      <section>
+        <h2>
+          <dfn>Convert image objects</dfn>
+        </h2>
+        <p>
+          When this algorithm with <var>inputImages</var> parameter is invoked,
+          the user agent must runs the following steps:
+        </p>
+        <ol class="algorithm">
+          <li>Let <var>outputImages</var> be an empty <a>Sequence</a> of
+          <a>ImageObject</a>.
+          </li>
+          <li>For each <var>image</var> in <var>inputImages</var>:
+            <ol>
+              <li>If <var>image</var>.<a data-lt="ImageObject.type">type</a> is
+              not a <a data-cite="#valid-mime-type">valid MIME type</a> or the
+              value of type is not a supported media format, then return an
+              empty <a>Sequence</a> of <a>ImageObject</a>.
+              </li>
+              <li>If <var>image</var>.<a data-lt="ImageObject.sizes">sizes</a>
+              is not a <a data-lt="ImageObject.sizes">valid value</a>, then
+              return an empty <a>Sequence</a> of <a>ImageObject</a>.
+              </li>
+              <li>Let <var>url</var> be the result of parsing
+              <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
+              <a data-cite="!HTML#context-object">context object</a>'s
+              <a data-cite="!HTML#relevant-settings-object">relevant settings
+              object</a>'s <a data-cite="!HTML#api-base-url">API base URL</a>.
+              </li>
+              <li>If <var>url</var> is failure, then return an empty
+              <a>Sequence</a> of <a>ImageObject</a>.
+              </li>
+              <li>If <var>url</var>'s <a data-cite="!HTML#concept-url-scheme">
+                scheme</a> is not one of "http" and "https", then return an
+                empty <a>Sequence</a> of <a>ImageObject</a>.
+              </li>
+              <li>Set <var>image</var>.<a data-lt="ImageObject.src">src</a> to
+              <var>url</var>.
+              </li>
+              <li>Append <var>image</var> to <var>outputImages</var>
+              </li>
+            </ol>
+          </li>
+          <li>Return <var>outputImages</var>.
+          </li>
+        </ol>
       </section>
       <section id="register-example" class="informative">
         <h2>
@@ -1599,6 +1779,19 @@
               The currently active <dfn>WindowClient</dfn>. This is set if a
               payment handler is currently showing a window to the user.
               Otherwise, it is null.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <dfn>[[\fetchedImage]]</dfn>
+            </td>
+            <td>
+              undefined
+            </td>
+            <td>
+              This value is a result of <a data-cite=
+              "!appmanifest#fetching-image-objects">fetching image object</a>
+              or a fallback image provided by the user agent.
             </td>
           </tr>
         </table>
