@@ -1882,7 +1882,7 @@ window.addEventListener("message", function(e) {
       basicCardResponse[field] = form.elements[field].value;
     });
 
-    /* See https://w3c.github.io/webpayments-payment-apps-api/#sec-app-response */
+    /* See https://w3c.github.io/payment-handler/#paymenthandlerresponse-dictionary */
     var paymentAppResponse = {
       methodName: "basic-card",
       details: details
@@ -2073,7 +2073,7 @@ window.addEventListener("message", function(e) {
         <p class="note">
           The Web Payments Working Group is also discussing Payment App
           authenticity; see the (draft) <a href=
-          "https://w3c.github.io/webpayments/proposals/Payment-Manifest-Proposal.html">
+          "https://w3c.github.io/payment-method-manifest/">
           Payment Method Manifest</a>.
         </p>
       </section>
