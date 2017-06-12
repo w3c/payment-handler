@@ -1314,7 +1314,7 @@
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          readonly attribute PaymentItem total;
+          readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient&gt; openWindow(USVString url);
@@ -1380,9 +1380,11 @@
           </h2>
           <p>
             This attribute indicates the total amount being requested for
-            payment. It is initialized with a <a>structured clone</a> of the
-            <a>total</a> field of the <a>PaymentDetailsInit</a> provided when
-            the corresponding <a>PaymentRequest</a> object was instantiated.
+            payment. It is of type <a>PaymentItem</a> dictionary as defined in
+            [[payment-request]], and initialized with a <a>structured clone</a>
+            of the <a>total</a> field of the <a>PaymentDetailsInit</a> provided
+            when the corresponding <a>PaymentRequest</a> object was
+            instantiated.
           </p>
         </section>
         <section>
