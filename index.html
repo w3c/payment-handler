@@ -1314,7 +1314,7 @@
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          readonly attribute any total;
+          readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient&gt; openWindow(USVString url);
