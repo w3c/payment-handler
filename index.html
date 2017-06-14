@@ -1190,13 +1190,14 @@
         <p>
           According to the step 2.3, it is also possible to use the relative
           url for <var>image</var>.<a data-lt="ImageObject.src">src</a>. The
-          following examples show how to resolve the relative url in each
-          execution context.
+          following examples illustrate how relative URL resolution works in
+          different execution contexts.
         </p>
         <pre class="example html" title=
         "Resolving the relative URL of image.src in execution context of window object.">
 
-&lt;-- This example is located in https://www.example.com/bobpay/index.html --&gt;
+
+&lt;-- In this example, code is located in https://www.example.com/bobpay/index.html --&gt;
 &lt;script&gt;
 
 const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
@@ -1223,7 +1224,8 @@ const { storedInstrument } =
         <pre class="example js" title=
         "Resolving the relative URL of image.src in execution context of service worker.">
 
-// This example is located in https://www.example.com/register/sw.js
+
+// In this example, code is located in https://www.example.com/register/sw.js
 
 const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
 await self.registration.paymentManager.paymentInstruments.set({
