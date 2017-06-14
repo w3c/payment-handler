@@ -1187,6 +1187,62 @@
           <li>Return <var>outputImages</var>.
           </li>
         </ol>
+        <p>
+          According to the step 2.3, it is also possible to use the relative
+          url for <var>image</var>.<a data-lt="ImageObject.src">src</a>. The
+          following examples show how to resolve the relative url in each
+          execution context.
+        </p>
+        <pre class="example html" title=
+        "Resolving the relative URL of image.src in execution context of window object.">
+
+&lt;-- This example is located in https://www.example.com/bobpay/index.html --&gt;
+&lt;script&gt;
+
+const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
+const { registration } = await navigator.serviceWorker.register("/register/sw.js");
+await registration.paymentManager.paymentInstruments.set({
+  instrumentKey,
+  {
+    name: "My Bob Pay Account: john@example.com",
+    enabledMethods: ["https://bobpay.com/"],
+    icons: [{
+      src: "icon/lowres.webp",
+      sizes: "48x48",
+      type: "image/webp"
+    }]
+  });
+
+const { storedInstrument } =
+  await registration.paymentManager.paymentInstruments.get(instrumentKey);
+
+// storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
+
+&lt;/script&gt;
+      </pre>
+        <pre class="example js" title=
+        "Resolving the relative URL of image.src in execution context of service worker.">
+
+// This example is located in https://www.example.com/register/sw.js
+
+const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
+await self.registration.paymentManager.paymentInstruments.set({
+  instrumentKey,
+  {
+    name: "My Bob Pay Account: john@example.com",
+    enabledMethods: ["https://bobpay.com/"],
+    icons: [{
+      src: "../bobpay/icon/lowres.webp",
+      sizes: "48x48",
+      type: "image/webp"
+    }]
+  });
+
+const { storedInstrument } =
+  await registration.paymentManager.paymentInstruments.get(instrumentKey);
+
+// storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
+      </pre>
       </section>
       <section id="register-example" class="informative">
         <h2>
