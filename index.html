@@ -735,10 +735,6 @@
                         </li>
                       </ol>
                     </li>
-                    <li>Otherwise, if no images are fetched, the user agent may
-                    set <var>icon</var>.<a>[[\fetchedImage]]</a> to fallback
-                    image.
-                    </li>
                   </ol>
                 </li>
                 <li>If the collection contains a <a>PaymentInstrument</a> with
@@ -993,10 +989,6 @@
                         </li>
                       </ol>
                     </li>
-                    <li>Otherwise, if no images are fetched, the user agent may
-                    set <var>icon</var>.<a>[[\fetchedImage]]</a> to fallback
-                    image.
-                    </li>
                   </ol>
                 </li>
                 <li>If the collection contains a <a>PaymentWallet</a> with a
@@ -1147,7 +1139,7 @@
         </h2>
         <p>
           When this algorithm with <var>inputImages</var> parameter is invoked,
-          the user agent must runs the following steps:
+          the user agent must run the following steps:
         </p>
         <ol class="algorithm">
           <li>Let <var>outputImages</var> be an empty <a>Sequence</a> of
@@ -1174,8 +1166,8 @@
               <a>Sequence</a> of <a>ImageObject</a>.
               </li>
               <li>If <var>url</var>'s <a data-cite="!HTML#concept-url-scheme">
-                scheme</a> is not one of "http" and "https", then return an
-                empty <a>Sequence</a> of <a>ImageObject</a>.
+                scheme</a> is not "https", then return an empty <a>Sequence</a>
+                of <a>ImageObject</a>.
               </li>
               <li>Set <var>image</var>.<a data-lt="ImageObject.src">src</a> to
               <var>url</var>.
@@ -1195,6 +1187,7 @@
         </p>
         <pre class="example html" title=
         "Resolving the relative URL of image.src in execution context of window object.">
+
 
 
 &lt;-- In this example, code is located in https://www.example.com/bobpay/index.html --&gt;
@@ -1223,6 +1216,7 @@ const { storedInstrument } =
       </pre>
         <pre class="example js" title=
         "Resolving the relative URL of image.src in execution context of service worker.">
+
 
 
 // In this example, code is located in https://www.example.com/register/sw.js
