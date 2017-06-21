@@ -275,6 +275,9 @@
             "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#notallowederror">NotAllowedError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
             "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
@@ -983,7 +986,7 @@
             <li>Let <var>permission</var> be the result of running
               <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
               the permission state algorithm</a> of the permission associated
-              with <a>payment handler</a>.
+              with <a>payment handler</a>'s <a>origin</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
             <a>Promise</a> rejected with a <a>NotAllowedError</a>.
