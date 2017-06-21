@@ -517,7 +517,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [SameObject] readonly attribute PaymentWallets wallets;
-        [Exposed=Window] static Promise&lt;PermisionState&gt; requestPermission();
+        [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
       };
       </pre>
         <p>
@@ -573,7 +573,7 @@
                 <li>Let <var>permission</var> be the result of running
                 <a data-cite="!permissions#dfn-retrieve-the-permission-state">
                   retrieve the permission state algorithm</a> of the permission
-                  associated with <a>payment handler</a>.
+                  associated with <a>payment handler</a>'s <a>origin</a>.
                 </li>
                 <li>If <var>permission</var> is "prompt", ask the user whether
                 allowing adding new payment instruments for the <a data-cite=
@@ -717,12 +717,12 @@
           </p>
           <ol>
             <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
-              the permission state algorithm</a> of the permission associated
-              with <a>payment handler</a>.
+              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieving
+              the permission state</a> of the permission associated with
+              <a>payment handler</a>'s <a>origin</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>SecurityError</a>.
+            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -986,7 +986,7 @@
               with <a>payment handler</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>SecurityError</a>.
+            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
             </li>
             <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
             <var>details</var> is present, then:
