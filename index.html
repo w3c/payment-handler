@@ -590,24 +590,21 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>Let <var>permission</var> be the result of running
-                <a data-cite="!permissions#dfn-retrieve-the-permission-state">
-                  retrieve the permission state algorithm</a> of the permission
-                  associated with <a>payment handler</a>'s <a>origin</a>.
-                </li>
-                <li>If <var>permission</var> is "prompt", ask the user whether
-                allowing adding new payment instruments for the <a data-cite=
-                "!HTML#current-settings-object">current settings object</a>'s
-                origin is acceptable. If it is, set <var>permission</var> to
-                "granted", and "denied" otherwise.
-                </li>
-                <li>Resolve <var>p</var> with <var>permission</var>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>Let <var>permission</var> be the result of running
+              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
+              the permission state algorithm</a> of the permission associated
+              with <a>payment handler</a>'s <a>origin</a>.
+            </li>
+            <li>If <var>permission</var> is "prompt", ask the user whether
+            allowing adding new payment instruments for the <a data-cite=
+            "!HTML#current-settings-object">current settings object</a>'s
+            origin is acceptable. If it is, set <var>permission</var> to
+            "granted", and "denied" otherwise.
+            </li>
+            <li>Resolve <var>p</var> with <var>permission</var>.
             </li>
           </ol>
         </section>
@@ -644,17 +641,14 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentInstrument</a> with
-                a matching <var>instrumentKey</var>, remove it from the
-                collection and resolve <var>p</var> with <b>true</b>.
-                </li>
-                <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            matching <var>instrumentKey</var>, remove it from the collection
+            and resolve <var>p</var> with <b>true</b>.
+            </li>
+            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -668,18 +662,15 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentInstrument</a> with
-                a matching <var>instrumentKey</var>, resolve <var>p</var> with
-                that <a>PaymentInstrument</a>.
-                </li>
-                <li>Otherwise, reject <var>p</var> with a <a>DOMException</a>
-                whose value is "<a>NotFoundError</a>".
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            matching <var>instrumentKey</var>, resolve <var>p</var> with that
+            <a>PaymentInstrument</a>.
+            </li>
+            <li>Otherwise, reject <var>p</var> with a <a>DOMException</a> whose
+            value is "<a>NotFoundError</a>".
             </li>
           </ol>
         </section>
@@ -693,16 +684,12 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that
-                contains all the <var>instrumentKey</var>s for the
-                <a>PaymentInstrument</a>s contained in the collection, in
-                original insertion order.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains
+            all the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
+            contained in the collection, in original insertion order.
             </li>
           </ol>
         </section>
@@ -716,17 +703,14 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentInstrument</a> with
-                a matching <var>instrumentKey</var>, resolve <var>p</var> with
-                <b>true</b>.
-                </li>
-                <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            matching <var>instrumentKey</var>, resolve <var>p</var> with
+            <b>true</b>.
+            </li>
+            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -766,41 +750,37 @@
             </li>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
+            </li>
+            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
+            <var>details</var> is present, then for each <var>icon</var> in
+            <var>details</var>.<a data-lt="PaymentInstrument.icons">icons</a>:
               <ol>
-                <li>If the <a data-lt="PaymentInstrument.icons">icons</a>
-                member of <var>details</var> is present, then for each
-                <var>icon</var> in <var>details</var>.<a data-lt=
-                "PaymentInstrument.icons">icons</a>:
+                <li>If the user agent wants to display the <var>icon</var>,
+                then:
                   <ol>
-                    <li>If the user agent wants to display the <var>icon</var>,
-                    then:
-                      <ol>
-                        <li>Let <var>fetchedImage</var> be the result of
-                        running the <a data-cite=
-                        "!appmanifest#fetching-image-objects">fetching image
-                        object</a> passing <var>icon</var> as the argument.
-                        </li>
-                        <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
-                        <var>fetchedImage</var>.
-                        </li>
-                      </ol>
+                    <li>Let <var>fetchedImage</var> be the result of running
+                    the <a data-cite=
+                    "!appmanifest#fetching-image-objects">fetching image
+                    object</a> passing <var>icon</var> as the argument.
+                    </li>
+                    <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
+                    <var>fetchedImage</var>.
                     </li>
                   </ol>
                 </li>
-                <li>If the collection contains a <a>PaymentInstrument</a> with
-                a matching <var>instrumentKey</var>, replace it with the
-                <a>PaymentInstrument</a> in <var>details</var>.
-                </li>
-                <li>Otherwise, insert the <a>PaymentInstrument</a> in
-                <var>details</var> as a new member of the collection and
-                associate it with the key <var>instrumentKey</var>.
-                </li>
-                <li>Resolve <var>p</var>.
-                </li>
               </ol>
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            matching <var>instrumentKey</var>, replace it with the
+            <a>PaymentInstrument</a> in <var>details</var>.
+            </li>
+            <li>Otherwise, insert the <a>PaymentInstrument</a> in
+            <var>details</var> as a new member of the collection and associate
+            it with the key <var>instrumentKey</var>.
+            </li>
+            <li>Resolve <var>p</var>.
             </li>
           </ol>
         </section>
@@ -814,14 +794,11 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>Remove all <a>PaymentInstrument</a>s from the collection
-                and resolve <var>p</var>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>Remove all <a>PaymentInstrument</a>s from the collection and
+            resolve <var>p</var>.
             </li>
           </ol>
           <p class="issue" title="Clear()" data-number="129"></p>
@@ -909,17 +886,14 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentWallet</a> with a
-                matching <var>walletKey</var>, remove it from the collection
-                and resolve <var>p</var> with <b>true</b>.
-                </li>
-                <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentWallet</a> with a
+            matching <var>walletKey</var>, remove it from the collection and
+            resolve <var>p</var> with <b>true</b>.
+            </li>
+            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -933,18 +907,15 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentWallet</a> with a
-                matching <var>walletKey</var>, resolve <var>p</var> with that
-                <a>PaymentWallet</a>.
-                </li>
-                <li>Otherwise, reject <var>p</var> with a <a>DOMException</a>
-                whose value is "<a>NotFoundError</a>".
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentWallet</a> with a
+            matching <var>walletKey</var>, resolve <var>p</var> with that
+            <a>PaymentWallet</a>.
+            </li>
+            <li>Otherwise, reject <var>p</var> with a <a>DOMException</a> whose
+            value is "<a>NotFoundError</a>".
             </li>
           </ol>
         </section>
@@ -958,15 +929,12 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>Resolve <var>p</var> with a sequence that contains all the
-                <var>walletKey</var>s for the <a>PaymentWallet</a>s contained
-                in the collection, in original insertion order.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>Resolve <var>p</var> with a sequence that contains all the
+            <var>walletKey</var>s for the <a>PaymentWallet</a>s contained in
+            the collection, in original insertion order.
             </li>
           </ol>
         </section>
@@ -980,17 +948,14 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>If the collection contains a <a>PaymentWallet</a> with a
-                matching <var>walletKey</var>, resolve <var>p</var> with
-                <b>true</b>.
-                </li>
-                <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentWallet</a> with a
+            matching <var>walletKey</var>, resolve <var>p</var> with
+            <b>true</b>.
+            </li>
+            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -1029,40 +994,37 @@
             </li>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
+            </li>
+            <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
+            <var>details</var> is present, then for each <var>icon</var> in
+            <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>:
               <ol>
-                <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
-                <var>details</var> is present, then for each <var>icon</var> in
-                <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>:
+                <li>If the user agent wants to display the <var>icon</var>,
+                then:
                   <ol>
-                    <li>If the user agent wants to display the <var>icon</var>,
-                    then:
-                      <ol>
-                        <li>Let <var>fetchedImage</var> be the result of
-                        running the <a data-cite=
-                        "!appmanifest#fetching-image-objects">fetching image
-                        object</a> passing <var>icon</var> as the argument.
-                        </li>
-                        <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
-                        <var>fetchedImage</var>.
-                        </li>
-                      </ol>
+                    <li>Let <var>fetchedImage</var> be the result of running
+                    the <a data-cite=
+                    "!appmanifest#fetching-image-objects">fetching image
+                    object</a> passing <var>icon</var> as the argument.
+                    </li>
+                    <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
+                    <var>fetchedImage</var>.
                     </li>
                   </ol>
                 </li>
-                <li>If the collection contains a <a>PaymentWallet</a> with a
-                matching <var>walletKey</var>, replace it with the
-                <a>PaymentWallet</a> in <var>details</var>.
-                </li>
-                <li>Otherwise, insert the <a>PaymentWallet</a> in
-                <var>details</var> as a new member of the collection and
-                associate it with the key <var>walletKey</var>.
-                </li>
-                <li>Resolve <var>p</var>.
-                </li>
               </ol>
             </li>
-            <li>Return <var>p</var>
+            <li>If the collection contains a <a>PaymentWallet</a> with a
+            matching <var>walletKey</var>, replace it with the
+            <a>PaymentWallet</a> in <var>details</var>.
+            </li>
+            <li>Otherwise, insert the <a>PaymentWallet</a> in
+            <var>details</var> as a new member of the collection and associate
+            it with the key <var>walletKey</var>.
+            </li>
+            <li>Resolve <var>p</var>.
             </li>
           </ol>
         </section>
@@ -1076,14 +1038,11 @@
           <ol>
             <li>Let <var>p</var> be a new promise.
             </li>
-            <li>Run the following steps in parallel:
-              <ol>
-                <li>Remove all <a>PaymentWallets</a> from the collection and
-                resolve <var>p</var>.
-                </li>
-              </ol>
+            <li>Return <var>p</var> and perform the remaining steps in
+            parallel:
             </li>
-            <li>Return <var>p</var>
+            <li>Remove all <a>PaymentWallets</a> from the collection and
+            resolve <var>p</var>.
             </li>
           </ol>
           <p class="issue" title="Clear()">
@@ -2055,55 +2014,49 @@
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
-          <li>Run these steps <a data-cite="!HTML#in-parallel">in parallel</a>:
+          <li>Return <var>promise</var> and perform the remaining steps in
+          parallel:
+          </li>
+          <li>If <var>event</var>.<a>[[\windowClient]]</a> is not null, then:
             <ol>
-              <li>If <var>event</var>.<a>[[\windowClient]]</a> is not null,
-              then:
-                <ol>
-                  <li>If
-                    <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite="!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
-                    is not "unloaded", reject <var>promise</var> with a
-                    <a>DOMException</a> whose name is
-                    "<a>InvalidStateError</a>" and abort these steps.
-                  </li>
-                </ol>
-              </li>
-              <li>Let <var>newContext</var> be a new <a data-cite=
-              "!HTML#top-level-browsing-context">top-level browsing
-              context</a>.
-              </li>
-              <li>
-                <a data-cite="!HTML#navigate">Navigate</a>
-                <var>newContext</var> to <var>url</var>, with exceptions
-                enabled and replacement enabled.
-              </li>
-              <li>If the navigation throws an exception, reject
-              <var>promise</var> with that exception and abort these steps.
-              </li>
-              <li>If the origin of <var>newContext</var> is not the same as the
-              <a>service worker client</a> origin associated with the payment
-              handler, then:
-                <ol>
-                  <li>Reject <var>promise</var> with a <a>DOMException</a>
-                  whose name is "<a>SecurityError</a>".
-                  </li>
-                  <li>Abort these steps.
-                  </li>
-                </ol>
-              </li>
-              <li>Let <var>client</var> be the result of running the
-              <a data-cite=
-              "!SERVICE-WORKERS#create-windowclient-algorithm">create window
-              client</a> algorithm with <var>newContext</var> as the argument.
-              </li>
-              <li>Set <var>event</var>.<a>[[\windowClient]]</a> to
-              <var>client</var>.
-              </li>
-              <li>Resolve <var>promise</var> with <var>client</var>.
+              <li>If <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite=
+              "!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
+              is not "unloaded", reject <var>promise</var> with a
+              <a>DOMException</a> whose name is "<a>InvalidStateError</a>" and
+              abort these steps.
               </li>
             </ol>
           </li>
-          <li>Return <var>promise</var>.
+          <li>Let <var>newContext</var> be a new <a data-cite=
+          "!HTML#top-level-browsing-context">top-level browsing context</a>.
+          </li>
+          <li>
+            <a data-cite="!HTML#navigate">Navigate</a> <var>newContext</var> to
+            <var>url</var>, with exceptions enabled and replacement enabled.
+          </li>
+          <li>If the navigation throws an exception, reject <var>promise</var>
+          with that exception and abort these steps.
+          </li>
+          <li>If the origin of <var>newContext</var> is not the same as the <a>
+            service worker client</a> origin associated with the payment
+            handler, then:
+            <ol>
+              <li>Reject <var>promise</var> with a <a>DOMException</a> whose
+              name is "<a>SecurityError</a>".
+              </li>
+              <li>Abort these steps.
+              </li>
+            </ol>
+          </li>
+          <li>Let <var>client</var> be the result of running the
+            <a data-cite="!SERVICE-WORKERS#create-windowclient-algorithm">create
+            window client</a> algorithm with <var>newContext</var> as the
+            argument.
+          </li>
+          <li>Set <var>event</var>.<a>[[\windowClient]]</a> to
+          <var>client</var>.
+          </li>
+          <li>Resolve <var>promise</var> with <var>client</var>.
           </li>
         </ol>
       </section>
