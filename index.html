@@ -290,6 +290,9 @@
             "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
+            "!WEBIDL-LS#notallowederror">NotAllowedError</dfn></code>"
+            </li>
+            <li>"<code><dfn data-cite=
             "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
@@ -528,10 +531,11 @@
           <dfn>PaymentManager</dfn> interface
         </h2>
         <pre class="idl">
+      [SecureContext]
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [SameObject] readonly attribute PaymentWallets wallets;
-                              Promise&lt;boolean&gt;   requestPermission();
+        [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
       };
       </pre>
         <p>
@@ -576,14 +580,36 @@
           <h2>
             <dfn>requestPermission()</dfn> method
           </h2>
-          <p class="issue" title="Permission" data-number="94">
-            The means for code requesting permission to handle payments is not
-            yet defined.
-          </p>
-          <p>
+          <p class="note">
             The user agent is NOT REQUIRED to prompt the user to grant
             permission to the origin for each new supported payment method.
           </p>
+          <p>
+            When called, this method executes the following steps:
+          </p>
+          <ol>
+            <li>Let <var>p</var> be a new promise.
+            </li>
+            <li>Run the following steps in parallel:
+              <ol>
+                <li>Let <var>permission</var> be the result of running
+                <a data-cite="!permissions#dfn-retrieve-the-permission-state">
+                  retrieve the permission state algorithm</a> of the permission
+                  associated with <a>payment handler</a>'s <a>origin</a>.
+                </li>
+                <li>If <var>permission</var> is "prompt", ask the user whether
+                allowing adding new payment instruments for the <a data-cite=
+                "!HTML#current-settings-object">current settings object</a>'s
+                origin is acceptable. If it is, set <var>permission</var> to
+                "granted", and "denied" otherwise.
+                </li>
+                <li>Resolve <var>p</var> with <var>permission</var>.
+                </li>
+              </ol>
+            </li>
+            <li>Return <var>p</var>
+            </li>
+          </ol>
         </section>
       </section>
       <section data-dfn-for="PaymentInstruments" data-link-for=
@@ -712,6 +738,14 @@
             When called, this method executes the following steps:
           </p>
           <ol>
+            <li>Let <var>permission</var> be the result of running
+              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieving
+              the permission state</a> of the permission associated with
+              <a>payment handler</a>'s <a>origin</a>.
+            </li>
+            <li>If <var>permission</var> is not "granted", then return a
+            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
+            </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
               <ol>
@@ -968,6 +1002,14 @@
             When called, this method executes the following steps:
           </p>
           <ol>
+            <li>Let <var>permission</var> be the result of running
+              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
+              the permission state algorithm</a> of the permission associated
+              with <a>payment handler</a>'s <a>origin</a>.
+            </li>
+            <li>If <var>permission</var> is not "granted", then return a
+            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
+            </li>
             <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
             <var>details</var> is present, then:
               <ol>
@@ -1262,34 +1304,27 @@ const { storedInstrument } =
         <p>
           The following example shows how to register a payment handler:
         </p>
-        <p class="issue" title="Permission to Handle Payments" data-member=
-        "94">
-          <a data-lt=
-          "PaymentManager.requestPermission()">requestPermission()</a> is not
-          yet defined. The code below is based on one potential model, but this
-          is likely to change.
-        </p>
         <pre class="example js" title="Payment Handler Registration">
-        window.addEventListerner("DOMContentLoaded", async() =&gt; {
-          const { registration } =
-            await navigator.serviceWorker.register('/sw.js');
-          if (!paymentManager) {
-            return; // not supported, so bail out.
-          }
-          const state =
+        button.addEventListener("click", async() =&gt; {
+          const permission =
             await navigator.permissions.query({ name: "paymenthandler" });
-
-          switch (state) {
+          switch (permission) {
             case "denied":
               return;
             case "prompt":
-              // Note -- it's not clear how this should work yet; see Issue 94.
               const result = await registration.paymentManager.requestPermission();
-              if (result === "denied") {
+              if (result !== "granted") {
                 return;
               }
               break;
           }
+
+          const { registration } =
+            await navigator.serviceWorker.register('/sw.js');
+          if (!registration.paymentManager) {
+            return; // not supported, so bail out.
+          }
+
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
         }, { once: true });
