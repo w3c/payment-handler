@@ -1245,56 +1245,52 @@
           different execution contexts.
         </p>
         <pre class="example html" title=
-        "Resolving the relative URL of image.src in execution context of window object.">
+        "Resolving the relative URL of image.src in window context.">
+        &lt;-- In this example, code is located in https://www.example.com/bobpay/index.html --&gt;
+        &lt;script&gt;
 
+        const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
+        const { registration } = await navigator.serviceWorker.register("/register/sw.js");
+        await registration.paymentManager.paymentInstruments.set({
+          instrumentKey,
+          {
+            name: "My Bob Pay Account: john@example.com",
+            enabledMethods: ["https://bobpay.com/"],
+            icons: [{
+              src: "icon/lowres.webp",
+              sizes: "48x48",
+              type: "image/webp"
+            }]
+          });
 
-&lt;-- In this example, code is located in https://www.example.com/bobpay/index.html --&gt;
-&lt;script&gt;
+        const { storedInstrument } =
+          await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
-const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-const { registration } = await navigator.serviceWorker.register("/register/sw.js");
-await registration.paymentManager.paymentInstruments.set({
-  instrumentKey,
-  {
-    name: "My Bob Pay Account: john@example.com",
-    enabledMethods: ["https://bobpay.com/"],
-    icons: [{
-      src: "icon/lowres.webp",
-      sizes: "48x48",
-      type: "image/webp"
-    }]
-  });
+        // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
 
-const { storedInstrument } =
-  await registration.paymentManager.paymentInstruments.get(instrumentKey);
-
-// storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
-
-&lt;/script&gt;
+        &lt;/script&gt;
       </pre>
         <pre class="example js" title=
-        "Resolving the relative URL of image.src in execution context of service worker.">
+        "Resolving the relative URL of image.src in service worker context.">
+        // In this example, code is located in https://www.example.com/register/sw.js
 
+        const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
+        await self.registration.paymentManager.paymentInstruments.set({
+          instrumentKey,
+          {
+            name: "My Bob Pay Account: john@example.com",
+            enabledMethods: ["https://bobpay.com/"],
+            icons: [{
+              src: "../bobpay/icon/lowres.webp",
+              sizes: "48x48",
+              type: "image/webp"
+            }]
+          });
 
-// In this example, code is located in https://www.example.com/register/sw.js
+        const { storedInstrument } =
+          await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
-const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-await self.registration.paymentManager.paymentInstruments.set({
-  instrumentKey,
-  {
-    name: "My Bob Pay Account: john@example.com",
-    enabledMethods: ["https://bobpay.com/"],
-    icons: [{
-      src: "../bobpay/icon/lowres.webp",
-      sizes: "48x48",
-      type: "image/webp"
-    }]
-  });
-
-const { storedInstrument } =
-  await registration.paymentManager.paymentInstruments.get(instrumentKey);
-
-// storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
+        // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
       </pre>
       </section>
       <section id="register-example" class="informative">
