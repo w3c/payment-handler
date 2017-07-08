@@ -191,13 +191,13 @@
           <dfn data-cite=
           "!payment-request#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
           <dfn data-cite=
+          "!payment-request#paymentcurrencyamount-dictionary">PaymentCurrencyAmount</dfn>,
+          <dfn data-cite=
           "!payment-request#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
           <dfn data-cite=
           "!payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
-          <dfn data-cite=
-          "!payment-request#paymentitem-dictionary">PaymentItem</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
           <dfn data-cite="!payment-request#show-method">show()</dfn>, and
           <dfn data-cite=
@@ -1617,7 +1617,7 @@
           </h2>
           <p>
             This attribute indicates the total amount being requested for
-            payment. It is of type <a>PaymentItem</a> dictionary as defined in
+            payment. It is of type <a>PaymentCurrencyAmount</a> dictionary as defined in
             [[payment-request]], and initialized with a <a>structured clone</a>
             of the <a>total</a> field of the <a>PaymentDetailsInit</a> provided
             when the corresponding <a>PaymentRequest</a> object was
@@ -1684,7 +1684,7 @@
               USVString paymentRequestOrigin;
               DOMString paymentRequestId;
               sequence&lt;PaymentMethodData&gt; methodData;
-              PaymentItem total;
+              PaymentCurrencyAmount total;
               sequence&lt;PaymentDetailsModifier&gt; modifiers;
               DOMString instrumentKey;
             };
