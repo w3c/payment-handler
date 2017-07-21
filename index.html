@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta name="generator" content=
+    "HTML Tidy for HTML5 for Mac OS X version 5.4.0">
     <title>
       Payment Handler API
     </title>
@@ -345,11 +347,7 @@
         visiting a retail or bank site may be prompted to register a payment
         handler from that origin. The origin establishes the scope of the
         permission but the origin's capabilities may evolve without requiring
-        additional user consent. Although from a permissions perspective there
-        is a single Web app per origin, this specification provides mechanisms
-        to origins for flexible structuring and display of <a data-lt=
-        "PaymentManager.instruments">instruments</a> and <a data-lt=
-        "PaymentManager.wallets">wallets</a>.
+        additional user consent.
         </li>
         <li>
           <a>Payment handler</a>s are defined in <a>service worker</a> code.
@@ -365,9 +363,8 @@
             "PaymentInstrument.capabilities">capabilities</a> play a role in
             matching computations.
             </li>
-            <li>Information for organizing the display and grouping of
-            <a data-lt="PaymentManager.instruments">instruments</a> and
-            <a data-lt="PaymentManager.wallets">wallets</a> supported by the
+            <li>Information for organizing the display of <a data-lt=
+            "PaymentManager.instruments">instruments</a> supported by the
             payment handler.
             </li>
           </ul>
@@ -383,9 +380,9 @@
         </li>
         <li>The user agent displays a set of choices to the user: the
         registered <a data-lt="PaymentManager.instruments">instruments</a> of
-        the candidate payment handlers. The user agent displays and groups
-        these choices according to information (labels and icons) provided at
-        registration or otherwise available from the Web app.
+        the candidate payment handlers. The user agent displays these choices
+        according using information (labels and icons) provided at registration
+        or otherwise available from the Web app.
         </li>
         <li>When the user (the <dfn>payer</dfn>) selects an <a data-lt=
         "PaymentManager.instruments">instrument</a>, the user agent
@@ -480,10 +477,7 @@
             A Web payment app is associated with an origin. Payment handlers
             respond to PaymentRequestEvents. PaymentManagers manage the
             definition, display, and user selection of PaymentInstruments. A
-            PaymentInstrument supports one or more payment methods. A
-            PaymentWallet contains one or more PaymentInstruments and may be
-            used to enhance the user experience (e.g., business wallet and
-            personal wallet).
+            PaymentInstrument supports one or more payment methods.
           </figcaption>
         </figure>
       </section>
@@ -534,13 +528,12 @@
       [SecureContext]
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
-        [SameObject] readonly attribute PaymentWallets wallets;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
       };
       </pre>
         <p>
           The <a>PaymentManager</a> is used by <a>payment app</a>s to manage
-          their associated wallets, instruments and supported payment methods.
+          their associated instruments and supported payment methods.
         </p>
         <section>
           <h2>
@@ -557,32 +550,12 @@
         </section>
         <section>
           <h2>
-            <dfn>wallets</dfn> attribute
-          </h2>
-          <p>
-            This attribute is used to group payment instruments (e.g., to group
-            together "business account" payment instruments separately from
-            "personal account" payment instruments). Developers can provide a
-            name and icon for such a group. The use of this grouping mechanism
-            by payment handlers is completely optional. If payment handlers use
-            this grouping mechanism, then matching payment instruments that do
-            not appear in any groups should still be presented to users by the
-            user agent for selection.
-          </p>
-          <p class="issue" title=
-          "Support grouped display of payment instruments?" data-number="98">
-            Should the API support providing grouping information ("wallets")
-            to the user agent? What should requirements be on user agents to
-            display or provide for user interaction with this information?
-          </p>
-        </section>
-        <section>
-          <h2>
             <dfn>requestPermission()</dfn> method
           </h2>
           <p class="note">
             The user agent is NOT REQUIRED to prompt the user to grant
-            permission to the origin for each new supported payment method.
+            permission to the origin for each new supported payment method or
+            new payment instrument.
           </p>
           <p>
             When called, this method executes the following steps:
@@ -855,246 +828,6 @@
           </dd>
         </dl>
       </section>
-      <section data-dfn-for="PaymentWallets" data-link-for="PaymentWallets">
-        <h2>
-          <dfn>PaymentWallets</dfn> interface
-        </h2>
-        <pre class="idl">
-      interface PaymentWallets {
-          Promise&lt;boolean&gt;       delete(DOMString walletKey);
-          Promise&lt;PaymentWallet&gt; get(DOMString walletKey);
-          Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;       has(DOMString walletKey);
-          Promise&lt;void&gt;          set(DOMString walletKey, PaymentWallet details);
-          Promise&lt;void&gt;           clear();
-      };
-      </pre>
-        <p>
-          Wallets are collections of payment instruments.
-        </p>
-        <p>
-          Where it appears, the <dfn>walletKey</dfn> argument is a unique
-          identifier for the wallet.
-        </p>
-        <section>
-          <h2>
-            <dfn>delete()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>If the collection contains a <a>PaymentWallet</a> with a
-            matching <var>walletKey</var>, remove it from the collection and
-            resolve <var>p</var> with <b>true</b>.
-            </li>
-            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>get()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>If the collection contains a <a>PaymentWallet</a> with a
-            matching <var>walletKey</var>, resolve <var>p</var> with that
-            <a>PaymentWallet</a>.
-            </li>
-            <li>Otherwise, reject <var>p</var> with a <a>DOMException</a> whose
-            value is "<a>NotFoundError</a>".
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>keys()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>Resolve <var>p</var> with a sequence that contains all the
-            <var>walletKey</var>s for the <a>PaymentWallet</a>s contained in
-            the collection, in original insertion order.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>has()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>If the collection contains a <a>PaymentWallet</a> with a
-            matching <var>walletKey</var>, resolve <var>p</var> with
-            <b>true</b>.
-            </li>
-            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>set()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
-              the permission state algorithm</a> of the permission associated
-              with <a>payment handler</a>'s <a>origin</a>.
-            </li>
-            <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
-            </li>
-            <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
-            <var>details</var> is present, then:
-              <ol>
-                <li>Let <var>convertedIcons</var> be the result of running the
-                <a>convert image objects</a> algorithm passing
-                <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>
-                as the argument.
-                </li>
-                <li>If the <var>convertedIcons</var> is an empty
-                <a>Sequence</a>, then return a <a>Promise</a> rejected with a
-                <a>TypeError</a>.
-                </li>
-                <li>Set <var>details</var>.<a data-lt=
-                "PaymentWallet.icons">icons</a> to <var>convertedIcons</var>.
-                </li>
-              </ol>
-            </li>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>If the <a data-lt="PaymentWallet.icons">icons</a> member of
-            <var>details</var> is present, then for each <var>icon</var> in
-            <var>details</var>.<a data-lt="PaymentWallet.icons">icons</a>:
-              <ol>
-                <li>If the user agent wants to display the <var>icon</var>,
-                then:
-                  <ol>
-                    <li>Let <var>fetchedImage</var> be the result of running
-                    the <a data-cite=
-                    "!appmanifest#fetching-image-objects">fetching image
-                    object</a> passing <var>icon</var> as the argument.
-                    </li>
-                    <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
-                    <var>fetchedImage</var>.
-                    </li>
-                  </ol>
-                </li>
-              </ol>
-            </li>
-            <li>If the collection contains a <a>PaymentWallet</a> with a
-            matching <var>walletKey</var>, replace it with the
-            <a>PaymentWallet</a> in <var>details</var>.
-            </li>
-            <li>Otherwise, insert the <a>PaymentWallet</a> in
-            <var>details</var> as a new member of the collection and associate
-            it with the key <var>walletKey</var>.
-            </li>
-            <li>Resolve <var>p</var>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>clear()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>Remove all <a>PaymentWallets</a> from the collection and
-            resolve <var>p</var>.
-            </li>
-          </ol>
-          <p class="issue" title="Clear()">
-            See <a href=
-            "https://github.com/w3c/payment-handler/issues/129">issue 129</a>
-            and <a href="https://github.com/w3c/payment-handler/issues">issue
-            153</a>.
-          </p>
-        </section>
-      </section>
-      <section data-dfn-for="PaymentWallet" data-link-for="PaymentWallet">
-        <h2>
-          <dfn>PaymentWallet</dfn> dictionary
-        </h2>
-        <pre class="idl">
-      dictionary PaymentWallet {
-          required DOMString name;
-          sequence&lt;ImageObject&gt; icons;
-          required sequence&lt;DOMString&gt; instrumentKeys;
-      };
-      </pre>
-        <dl>
-          <dt>
-            <dfn>name</dfn> member
-          </dt>
-          <dd>
-            The <a>name</a> member is a string that represents the label for
-            this wallet as it is usually displayed to the user.
-          </dd>
-          <dt>
-            <dfn>icons</dfn> member
-          </dt>
-          <dd>
-            The <a>icons</a> member is an array of image objects that can serve
-            as iconic representations of the wallet when presented to the user
-            for selection.
-          </dd>
-          <dt>
-            <dfn>instrumentKeys</dfn> member
-          </dt>
-          <dd>
-            The <a>instrumentKeys</a> member is a list of one or more
-            <a>instrumentKey</a>s from <a data-lt=
-            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-            indicating which <a>PaymentInstrument</a> objects are associated
-            with this <a>Wallet</a>, and should be displayed as being
-            "contained in" the wallet. While it is not generally good practice,
-            there is no restriction that prevents a <a>PaymentInstrument</a>
-            from appearing in more than one <a>Wallet</a>.
-          </dd>
-        </dl>
-      </section>
       <section data-dfn-for="ImageObject" data-link-for="ImageObject">
         <h2>
           <dfn>ImageObject</dfn> dictionary
@@ -1231,6 +964,7 @@
       </pre>
         <pre class="example js" title=
         "Resolving the relative URL of image.src in service worker context.">
+
         // In this example, code is located in https://www.example.com/register/sw.js
 
         const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
@@ -1285,7 +1019,7 @@
         }, { once: true });
 
         function addInstruments(registration) {
-          const instrumentPromises = [
+          return Promise.all([
             registration.paymentManager.instruments.set(
               "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
               {
@@ -1315,29 +1049,7 @@
                   supportedTypes: ['credit','debit','prepaid']
                 }
               }),
-            ];
-
-            return Promise.all(instrumentPromises).then(() =&gt; {
-              registration.paymentManager.wallets.set(
-                "12a1b7e5-16c0-4c09-a312-9b191d08517b",
-                {
-                  name: "Acme Bank Personal Accounts",
-                  icons: [
-                           { src: "icon/lowres.webp",
-                             sizes: "48x48",
-                             type: "image/webp"
-                           },
-                           { src: "icon/lowres",
-                             sizes: "48x48"
-                           }
-                         ],
-                  instrumentKeys: [
-                      "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
-                      "c8126178-3bba-4d09-8f00-0771bcfd3b11",
-                      "new-card"
-                    ]
-                });
-             });
+            ]);
           };
      </pre>
       </section>
@@ -1457,8 +1169,17 @@
           </li>
         </ul>
         <p>
-          A <dfn>Wallet</dfn> is a grouping of instruments for display
-          purposes.
+          These use cases are best supported using sub-domains of the primary
+          origin.
+        </p>
+        <p class="issue" title="Grouping Payment Instruments" data-member=
+        "153">
+          An earlier version of this specification included a feature for
+          grouping payment instruments in to wallets within a single origin.
+          The WG resolved to remove this and postpone implementation of such a
+          feature until a later version of this specification, and pending
+          market feedback that reinforces the need for it in place of other
+          mechanisms such as sub-domains.
         </p>
         <p>
           To enable developers to build payment apps in a variety of ways, we
@@ -1479,7 +1200,7 @@
           eliminating an extra click (first open the payment app then select
           the Instrument).
         </p>
-        <p class="issue" title="selection">
+        <p class="issue" title="selection" data-member="98">
           Again related to <a href=
           "https://github.com/w3c/payment-handler/issues/98">issue 98</a>:
           Should we require that, if displayed, individual instruments must be
@@ -1617,11 +1338,11 @@
           </h2>
           <p>
             This attribute indicates the total amount being requested for
-            payment. It is of type <a>PaymentCurrencyAmount</a> dictionary as defined in
-            [[payment-request]], and initialized with a <a>structured clone</a>
-            of the <a>total</a> field of the <a>PaymentDetailsInit</a> provided
-            when the corresponding <a>PaymentRequest</a> object was
-            instantiated.
+            payment. It is of type <a>PaymentCurrencyAmount</a> dictionary as
+            defined in [[payment-request]], and initialized with a
+            <a>structured clone</a> of the <a>total</a> field of the
+            <a>PaymentDetailsInit</a> provided when the corresponding
+            <a>PaymentRequest</a> object was instantiated.
           </p>
         </section>
         <section>
