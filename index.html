@@ -46,6 +46,7 @@
                     w3cid:      2175
                 },
                 {   name:       "Rouslan Solomakhin",
+                    url:        "https://github.com/rsolomakhin",
                     company:    "Google",
                     companyURL: "https://www.google.com/",
                     w3cid:      83784
@@ -1694,12 +1695,6 @@
           </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a> that
           triggered this <a>PaymentRequestEvent</a>.
-          </li>
-          <li>If <var>request</var>.<a data-cite=
-          "!payment-request#dfn-state-1">[[\state]]</a> is not "<a data-cite=
-          "!payment-request#dfn-interactive">interactive</a>", then return a
-          <a>Promise</a> rejected with a <a>DOMException</a> whose name is
-          "<a>InvalidStateError</a>".
           </li>
           <li>Let <var>url</var> be the result of <a data-cite=
           "!URL#concept-url-parser">parsing</a> the <var>url</var> argument.
