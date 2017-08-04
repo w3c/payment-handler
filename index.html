@@ -525,7 +525,7 @@
           <dfn>PaymentManager</dfn> interface
         </h2>
         <pre class="idl">
-      [SecureContext]
+      [SecureContext, Exposed=(Window,Worker)]
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
@@ -1001,7 +1001,7 @@
             case "denied":
               return;
             case "prompt":
-              const result = await registration.paymentManager.requestPermission();
+              const result = await PaymentManager.requestPermission();
               if (result !== "granted") {
                 return;
               }
