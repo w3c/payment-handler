@@ -1262,7 +1262,7 @@
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
-          Promise&lt;WindowClient&gt; openWindow(USVString url);
+          Promise&lt;WindowClient?&gt; openWindow(USVString url);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponse);
         };
       </pre>
