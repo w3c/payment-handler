@@ -63,6 +63,20 @@
             wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/83744/status",
             issueBase:    "https://github.com/w3c/payment-handler/issues/",
             githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
+            localBiblio: {
+                "payment-method-manifest": {
+                    "href": "https://w3c.github.io/payment-method-manifest/",
+                    "title": "Payment Method Manifest",
+                    "publisher": "W3C",
+                    "status": "LD",
+                    "authors": [
+                        "Dapeng Liu",
+                        "Domenic Denicola",
+                        "Zach Koch"
+                    ],
+                    "rawDate": "2017-05-30"
+                }
+            },
         };
     </script>
     <style>
@@ -231,9 +245,30 @@
           Payment Method Identifiers
         </dt>
         <dd>
-          The terms <dfn data-lt="payment method identifiers">payment method
-          identifier</dfn> is defined by the Payment Method Identifier
-          specification [[!payment-method-id]].
+          The terms <dfn data-cite=
+          "!payment-method-id#dfn-payment-method-identifier" data-lt=
+          "payment method identifiers">payment method identifier</dfn>,
+          <dfn data-cite=
+          "!payment-method-id#dfn-validate-a-standardized-payment-method-identifier">
+          validate a standardized payment method identifier</dfn>, and
+          <dfn data-cite=
+          "!payment-method-id#dfn-validate-a-url-based-payment-method-identifier">
+          validate a URL-based payment method identifier</dfn> are defined by
+          the Payment Method Identifiers specification [[!payment-method-id]].
+        </dd>
+        <dt>
+          Payment Method Manifest
+        </dt>
+        <dd>
+          The terms <dfn data-cite=
+          "!payment-method-manifest#payment-method-manifest" data-lt=
+          "payment method manifests">payment method manifest</dfn>,
+          <dfn data-cite=
+          "!payment-method-manifest#parsed-payment-method-manifest-supported-origins">
+          supported origins</dfn>, and <dfn data-cite=
+          "!payment-method-manifest#ingest-payment-method-manifests">ingest
+          payment method manifests</dfn> are defined by the Payment Method
+          Manifest specification [[!payment-method-manifest]].
         </dd>
         <dt>
           Basic Card Payment
@@ -265,14 +300,15 @@
           RFC6454
         </dt>
         <dd>
-          The term <dfn>origin</dfn> is defined in [[!RFC6454]].
+          The term <dfn data-cite="!RFC6454">origin</dfn> is defined in
+          [[!RFC6454]].
         </dd>
         <dt>
           DOM
         </dt>
         <dd>
-          The term <dfn data-cite="!DOM4#firing-events">fires</dfn> (an event)
-          is defined in [[!DOM4]].
+          The term <dfn data-cite="!DOM4#firing-events" data-lt=
+          "firing">fires</dfn> (an event) is defined in [[!DOM4]].
         </dd>
         <dt>
           Web IDL
@@ -330,6 +366,17 @@
           promises</dfn>, and <dfn data-cite=
           "!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
           [[!SERVICE-WORKERS]].
+        </dd>
+        <dt>
+          Infra Standard
+        </dt>
+        <dd>
+          The terms <dfn data-cite="!INFRA#list-iterate">for each</dfn>,
+          <dfn data-cite="!INFRA#iteration-continue">continue</dfn>,
+          <dfn data-cite="!INFRA#ordered-set">ordered set</dfn>,
+          <dfn data-cite="!INFRA#list-contain">contains</dfn>, <dfn data-cite=
+          "!INFRA#set-append">append to set</dfn>, and <dfn data-cite=
+          "!INFRA#string">string</dfn> are defined in [[!INFRA]].
         </dd>
       </dl>
     </section>
@@ -1407,6 +1454,82 @@
         </section>
         <section>
           <h2>
+            <dfn>Validate Methods Algorithm</dfn>
+          </h2>
+          <p>
+            This algorithm filters <a>payment method identifiers</a> based on
+            their validity and according to the corresponding <a>payment method
+            manifests</a>.
+          </p>
+          <ol class="algorithm">
+            <li>Let <var>serviceWorkerOrigin</var> be the <a>origin</a> of the
+            <a>scope URL</a> of the current <a>ServiceWorkerRegistration</a>.
+            </li>
+            <li>Let <var>inputMethods</var> be the input set of <a>payment
+            method identifiers</a>.
+            </li>
+            <li>Set <var>outputMethods</var> to an empty set.
+            </li>
+            <li>
+              <a>For each</a> <var>inputMethod</var> of
+              <var>inputMethods</var>:
+              <ol>
+                <li>Run the <a>validate a standardized payment method
+                identifier</a> algorithm on the <var>inputMethod</var>.
+                </li>
+                <li>If the previous step returns true, then <a data-lt=
+                "append to set">append</a> <var>inputMethod</var> to
+                <var>outputMethods</var> and <a>continue</a>.
+                </li>
+                <li>Let <var>urlInputMethod</var> be the result of
+                  <a data-cite="!URL#concept-basic-url-parser">basic URL
+                  parsing</a> of <var>inputMethod</var>.
+                </li>
+                <li>If the result is failure, <a>continue</a>.
+                </li>
+                <li>Run the <a>validate a URL-based payment method
+                identifier</a> algorithm on the <var>urlInputMethod</var>.
+                </li>
+                <li>If the result is false, <a>continue</a>.
+                </li>
+                <li>If the <a>origin</a> of the <var>urlInputMethod</var>
+                equals to the <var>serviceWorkerOrigin</var>, <a data-lt=
+                "append to set">append</a> <var>inputMethod</var> to
+                <var>outputMethods</var> and <a>continue</a>.
+                </li>
+                <li>If the user agent does not implement the
+                [[!payment-method-manifest]] specification, <a>continue</a>.
+                </li>
+                <li>Let <var>supportedOrigins</var> be the <a>supported
+                origins</a> returned by running the <a>ingest payment method
+                manifests</a> algorithm on <var>inputMethod</var>.
+                </li>
+                <li>If the previous step fails, e.g., in fetching or parsing
+                step, <a>continue</a>.
+                </li>
+                <li>If <var>supportedOrigins</var> is the <a>string</a> <code>
+                  "*"</code>, then <a data-lt="append to set">append</a>
+                  <var>inputMethod</var> to <var>outputMethods</var> and
+                  <a>continue</a>.
+                </li>
+                <li>If <var>supportedOrigins</var> is an <a>ordered set</a>
+                that <a>contains</a> the <var>serviceWorkerOrigin</var>, then
+                <a data-lt="append to set">append</a> <var>inputMethod</var> to
+                <var>outputMethods</var>.
+                </li>
+              </ol>
+            </li>
+            <li>Return the <var>outputMethods</var>.
+            </li>
+          </ol>
+          <p class="note">
+            The user agent MAY use a caching mechanism to increase tolerance of
+            intermittent network failures when fetching <a>payment method
+            manifests</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
             <dfn>MethodData Population Algorithm</dfn>
           </h2>
           <p>
@@ -1435,7 +1558,8 @@
                 </li>
                 <li>Set <var>commonMethods</var> to the set intersection of
                 <var>inData</var>.<a>supportedMethods</a> and
-                <var>registeredMethods</var>.
+                <var>registeredMethods</var> after filtering through the
+                <a>Validate Methods Algorithm</a>.
                 </li>
                 <li>If <var>commonMethods</var> is empty, skip the remaining
                 substeps and move on to the next item (if any).
@@ -1490,7 +1614,8 @@
                 </li>
                 <li>Set <var>commonMethods</var> to the set intersection of
                 <var>inModifier</var>.<a>supportedMethods</a> and
-                <var>registeredMethods</var>.
+                <var>registeredMethods</var> after filtering through the
+                <a>Validate Methods Algorithm</a>.
                 </li>
                 <li>If <var>commonMethods</var> is empty, skip the remaining
                 substeps and move on to the next item (if any).
@@ -2013,12 +2138,13 @@ window.addEventListener("message", function(e) {
         <h2>
           Payment App Authenticity
         </h2>
-        <p class="note">
-          The Web Payments Working Group is also discussing Payment App
-          authenticity; see the (draft) <a href=
-          "https://w3c.github.io/payment-method-manifest/">Payment Method
-          Manifest</a>.
-        </p>
+        <ul>
+          <li>User agents must use <a>Validate Methods Algorithm</a> to discard
+          invalid <a>payment method identifiers</a> in <a data-lt=
+          "PaymentInstrument.enabledMethods">enabledMethods</a> before
+          <a>firing</a> a <a>PaymentRequestEvent</a>.
+          </li>
+        </ul>
       </section>
       <section>
         <h2>
