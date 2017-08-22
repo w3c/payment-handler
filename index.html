@@ -995,24 +995,17 @@
           </p>
           <pre class="example js" title="Payment Handler Registration">
         button.addEventListener("click", async() =&gt; {
-          const permission =
-            await navigator.permissions.query({ name: "paymenthandler" });
-          switch (permission) {
-            case "denied":
-              return;
-            case "prompt":
-              const result = await PaymentManager.requestPermission();
-              if (result !== "granted") {
-                return;
-              }
-              break;
+          if (!window.PaymentManager) {
+            return; // not supported, so bail out.
+          }
+
+          const result = await PaymentManager.requestPermission();
+          if (result !== "granted") {
+            return;
           }
 
           const { registration } =
             await navigator.serviceWorker.register('/sw.js');
-          if (!registration.paymentManager) {
-            return; // not supported, so bail out.
-          }
 
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
