@@ -601,7 +601,7 @@
           payment instruments, each uniquely identified by an
           <dfn>instrumentKey</dfn>. The <var>instrumentKey</var> identifier
           will be passed to the payment handler to indicate the
-          <a>PaymentInstrument</a> selected by the user.
+          <a>PaymentInstrument</a> selected by the user, if any.
         </p>
         <section>
           <h2>
@@ -1352,7 +1352,9 @@
             This attribute indicates the <a>PaymentInstrument</a> selected by
             the user. It corresponds to the <a data-lt=
             "instrumentKey">instrumentKey</a> provided to the
-            <a>PaymentManager.instruments</a> interface during registration.
+            <a>PaymentManager.instruments</a> interface during registration. An
+            empty string means that the user did not choose a specific
+            <a>PaymentInstrument</a>.
           </p>
         </section>
         <section>
@@ -1623,7 +1625,7 @@
               <li>Set the <a data-lt=
               "PaymentRequestEvent.instrumentKey">instrumentKey</a> attribute
               of <var>e</var> to the <a>instrumentKey</a> of the selected
-              <a>PaymentInstrument</a>.
+              <a>PaymentInstrument</a>, or an empty string if none was selected.
               </li>
               <li>Dispatch <var>e</var> to <var>global</var>.
               </li>
