@@ -200,7 +200,8 @@
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
-          <dfn data-cite="!payment-request#show-method">show()</dfn>, and
+          <dfn data-cite="!payment-request#show-method">show()</dfn>,
+          <dfn data-cite="!payment-request#abort-method">abort()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
           accepts the payment request algorithm</dfn> are defined by the
@@ -399,6 +400,14 @@
         <a>payee</a>. If interaction with the user is necessary, the <a>payment
         handler</a> can open a window for that purpose.
         </li>
+        <li>The <a>payee</a> may choose to limit the time window of the
+        availability of their offer by calling [[payment-request]] method
+        <a>abort()</a>, which is forwarded to the <a>payment handler</a> as <a>
+          AbortPaymentEvent</a>. The <a>payment handler</a> can respond with a
+          boolean that indicates whether the payment was successfully aborted.
+          No expectation of transaction rollback or refunds is placed on the
+          <a>payment handler</a>.
+        </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
         PaymentResponse (of [[!payment-request]]).
@@ -518,7 +527,11 @@
         partial interface ServiceWorkerRegistration {
           readonly attribute PaymentManager paymentManager;
         };
-      </pre>
+        </pre>
+        <p>
+          The <a>paymentManager</a> attribute exposes payment handler
+          functionality in the service worker.
+        </p>
       </section>
       <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
         <h2>
@@ -1202,15 +1215,6 @@
         <a>PaymentHandlerResponse</a> to create a PaymentReponse for
         [[!payment-request]].
       </p>
-      <p class="issue" title=
-      "Support for Abort() being delegated to Payment Handler" data-number=
-      "117">
-        Payment Request API supports delegation of responsibility to manage an
-        abort to a payment app. There is a proposal to add a
-        paymentRequestAborted event to the Payment Handler interface. The event
-        will have a respondWith method that takes a boolean parameter
-        indicating if the paymentRequest has been successfully aborted.
-      </p>
       <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
       "ServiceWorkerGlobalScope">
         <h2>
@@ -1351,7 +1355,7 @@
         </section>
         <section>
           <h2>
-            <dfn>openWindow</dfn>() method
+            <dfn>openWindow()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to show a window to the
@@ -1360,7 +1364,7 @@
         </section>
         <section>
           <h2>
-            <dfn>respondWith</dfn>() method
+            <dfn>respondWith()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to provide a
@@ -1633,6 +1637,137 @@
             </ol>
           </li>
         </ol>
+      </section>
+    </section>
+    <section id="abort">
+      <h2>
+        Aborting an invocation
+      </h2>
+      <p>
+        If the <a>payee</a> uses [[!payment-request]] method <a>abort()</a>,
+        the <a>user agent</a> fires <a>AbortPaymentEvent</a> in the <a>payment
+        handler</a> that is currently handling <a>PaymentRequestEvent</a>.
+        There is no expectation that the <a>payment handler</a> would roll back
+        a transaction or issue a refund. (This is out of scope.) The <a>payment
+        handler</a> should respond with a boolean that indicates whether the
+        abort was successful.
+      </p>
+      <p>
+        Implementations may impose a timeout for developers to respond to the
+        <a>AbortPaymentEvent</a>. If the timeout expires, then the
+        implementation will behave as if <a data-lt=
+        "AbortPaymentEvent.respondWith()">respondWith()</a> was called with
+        "false".
+      </p>
+      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
+      "ServiceWorkerGlobalScope">
+        <h2>
+          Extension to <a>ServiceWorkerGlobalScope</a>
+        </h2>
+        <p>
+          This specification extends the <a>ServiceWorkerGlobalScope</a>
+          interface.
+        </p>
+        <pre class="idl">
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler onabortpayment;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>onabortpayment</dfn> attribute
+          </h2>
+          <p>
+            The <a>onabortpayment</a> attribute is an <a>event handler</a>
+            whose corresponding <a>event handler event type</a> is
+            abortpayment.
+          </p>
+        </section>
+      </section>
+      <section data-dfn-for="AbortPaymentEvent" data-link-for=
+      "AbortPaymentEvent">
+        <h2>
+          The <dfn>AbortPaymentEvent</dfn>
+        </h2>
+        <p>
+          The <a>AbortPaymentEvent</a> is used to attempt to abort a payment
+          request in progress.
+        </p>
+        <pre class="idl">
+        [Constructor(DOMString type, ExtendableEventInit eventInitDict), Exposed=ServiceWorker]
+        interface AbortPaymentEvent : ExtendableEvent {
+          void respondWith(Promise&lt;boolean&gt;paymentAbortedResponse);
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>respondWith()</dfn> method
+          </h2>
+          <p>
+            This method is used by the payment handler to indicate whether it
+            was able to abort the payment.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h2>
+          Handling an AbortPaymentEvent
+        </h2>
+        <p>
+          Upon <a data-cite=
+          "!payment-request#abort-method">PaymentRequest.abort()</a>, the
+          <a>user agent</a> MUST run the following steps:
+        </p>
+        <ol>
+          <li>Let <var>registration</var> be the
+          <a>ServiceWorkerRegistration</a> corresponding to the
+          <a>PaymentRequestEvent</a> that is being processed.
+          </li>
+          <li>If <var>registration</var> is not found, reject the
+          <a>Promise</a> that was created by <a data-cite=
+          "!payment-request#abort-method">PaymentRequest.abort()</a> with false
+          and terminate these steps.
+          </li>
+          <li>Invoke the <a>handle functional event</a> algorithm with a
+          <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
+            callbackSteps</var> set to the following steps:
+            <ol>
+              <li>Set <var>global</var> to the global object that was provided
+              as an argument.
+              </li>
+              <li>Create a <a>trusted event</a>, <var>e</var>, that uses the
+              <a>AbortPaymentEvent</a> interface, which does not bubble, cannot
+              be canceled, and has no default action.
+              </li>
+              <li>Dispatch <var>e</var> to <var>global</var>.
+              </li>
+              <li>Wait for all of the promises in the <a>extend lifetime
+              promises</a> of <var>e</var> to resolve.
+              </li>
+              <li>If the <a>payment handler</a> has not provided a boolean
+              response, reject the <a>Promise</a> that was created by
+              <a data-cite=
+              "!payment-request#abort-method">PaymentRequest.abort()</a> with a
+              <a>DOMException</a> whose value "<a>OperationError</a>".
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+      <section id="abort-example" class="informative">
+        <h2>
+          Example of handling the <a>AbortPaymentEvent</a>
+        </h2>
+        <p>
+          This example shows how to write a service worker that listens to the
+          <a>AbortPaymentEvent</a>. When an <a>AbortPaymentEvent</a> is
+          received, this service worker always returns true.
+        </p>
+        <pre class="example js" title="Handling the AbortPaymentEvent">
+          self.addEventListener('abortpayment', function(e) {
+            e.respondWith(true);
+          });
+        </pre>
       </section>
     </section>
     <section>
