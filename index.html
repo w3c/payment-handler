@@ -368,7 +368,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
-        DOMString userHint;     
+        attribute DOMString userHint;     
       };
       </pre>
         <p>
