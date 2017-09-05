@@ -368,6 +368,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
+        attribute DOMString userHint;     
       };
       </pre>
         <p>
@@ -419,6 +420,19 @@
             <li>Resolve <var>p</var> with <var>permission</var>.
             </li>
           </ol>
+        </section>
+        <section>
+          <h2>
+            <dfn>userHint</dfn> attribute
+          </h2>
+          <p>
+            When displaying payment handler name and icon, the user agent may
+            use this string to improve the user experience. For example, a user
+            hint of "**** 1234" can remind the user that a particular card is
+            available through this payment handler. When a agent displays all
+            payment instruments available through a payment handler, it may 
+            cause confusion to display the additional hint.
+          </p>
         </section>
       </section>
       <section data-dfn-for="PaymentInstruments" data-link-for=
