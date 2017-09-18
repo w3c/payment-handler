@@ -441,6 +441,7 @@
           <dfn>PaymentInstruments</dfn> interface
         </h2>
         <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
       interface PaymentInstruments {
           Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
           Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
