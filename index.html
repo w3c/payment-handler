@@ -430,7 +430,7 @@
             use this string to improve the user experience. For example, a user
             hint of "**** 1234" can remind the user that a particular card is
             available through this payment handler. When a agent displays all
-            payment instruments available through a payment handler, it may 
+            payment instruments available through a payment handler, it may
             cause confusion to display the additional hint.
           </p>
         </section>
@@ -1432,7 +1432,8 @@
               <li>Set the <a data-lt=
               "PaymentRequestEvent.instrumentKey">instrumentKey</a> attribute
               of <var>e</var> to the <a>instrumentKey</a> of the selected
-              <a>PaymentInstrument</a>, or an empty string if none was selected.
+              <a>PaymentInstrument</a>, or the empty string if none was
+              selected.
               </li>
               <li>Dispatch <var>e</var> to <var>global</var>.
               </li>
@@ -1821,6 +1822,14 @@ window.addEventListener("message", function(e) {
         <h2>
           Payment App Authenticity
         </h2>
+        <ul>
+          <li>The user agent is not required to make available payment handlers
+          that pose security issues. When a payment handler is unavailable for
+          security reasons, the user agent should provide rationale to the
+          payment handler developers (e.g., through console messages) and may
+          also inform the user to help avoid confusion.
+          </li>
+        </ul>
         <p class="note">
           The Web Payments Working Group is also discussing Payment App
           authenticity; see the (draft) <a href=
