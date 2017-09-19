@@ -441,6 +441,7 @@
           <dfn>PaymentInstruments</dfn> interface
         </h2>
         <pre class="idl">
+      [SecureContext, Exposed=(Window,Worker)]
       interface PaymentInstruments {
           Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
           Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
@@ -989,47 +990,6 @@
         <p class="issue" title="Display" data-number="173">
           The Working Group is discussing how default payment instrument
           display could further streamline the user experience.
-        </p>
-      </section>
-      <section>
-        <h2>
-          Grouping of Instruments
-        </h2>
-        <p>
-          At times, a provider publishing payment handlers may wish to group
-          instruments with greater flexibility and granularity than having them
-          all listed together under a single origin. These use cases include:
-        </p>
-        <ul>
-          <li>White label wallets - one provider provides wallet services for
-          multiple vendors
-          </li>
-          <li>Multiple user profiles with a single provider (e.g., business
-          wallet vs personal wallet)
-          </li>
-          <li>Multiple instruments held with a single provider
-          </li>
-        </ul>
-        <p>
-          These use cases are best supported by the provider publishing these
-          payment handlers using different sub-domains and therefor under
-          different origins.
-        </p>
-        <p class="issue" title="Grouping Payment Instruments" data-number=
-        "153">
-          An earlier version of this specification included a feature for
-          grouping payment instruments in to wallets within a single origin.
-          The WG resolved to remove this and postpone implementation of such a
-          feature until a later version of this specification, and pending
-          market feedback that reinforces the need for it in place of other
-          mechanisms such as sub-domains.
-        </p>
-        <p>
-          To enable developers to build payment apps in a variety of ways, we
-          decouple the registration (and subsequent display) of instruments
-          from how payment handlers respond to a <a>PaymentRequestEvent</a>.
-          However, the user agent is responsible for communicating the user's
-          selection in the event.
         </p>
       </section>
       <section>
