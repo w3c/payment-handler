@@ -1824,8 +1824,10 @@ window.addEventListener("message", function(e) {
         </h2>
         <ul>
           <li>The user agent is not required to make available payment handlers
-          that pose security issues and should inform the user when a payment
-          handler is unavailable for security reasons.
+          that pose security issues. When a payment handler is unavailable for
+          security reasons, the user agent should provide rationale to the
+          payment handler developers (e.g., through console messages) and may
+          also inform the user to help avoid confusion.
           </li>
         </ul>
         <p class="note">
