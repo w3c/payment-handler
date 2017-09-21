@@ -1069,7 +1069,7 @@
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
-          void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponse);
+          void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
       </pre>
         <section>
@@ -1175,12 +1175,15 @@
         </section>
         <section>
           <h2>
-            <dfn>respondWith</dfn>() method
+            <dfn data-lt=
+            "respondWith(handlerResponsePromise)">respondWith()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to provide a
             <a>PaymentHandlerResponse</a> when the payment successfully
-            completes.
+            completes. When called, it runs the <a>Respond to PaymentRequest
+            Algorithm</a> with <var>event</var> and
+            <var>handlerResponsePromise</var> as arguments.
           </p>
         </section>
         <p class="issue" title="Share user data with payment app?" data-number=
@@ -1367,6 +1370,17 @@
               This value is a result of <a data-cite=
               "!appmanifest#fetching-image-objects">fetching image object</a>
               or a fallback image provided by the user agent.
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <dfn>[[\respondWithCalled]]</dfn>
+            </td>
+            <td>
+              false
+            </td>
+            <td>
+              YAHO
             </td>
           </tr>
         </table>
@@ -1686,9 +1700,9 @@ window.addEventListener("message", function(e) {
             The user agent receives a successful response from the payment
             handler through resolution of the Promise provided to the
             <a data-lt="PaymentRequestEvent.respondWith">respondWith()</a>
-            function of the corresponding <a>PaymentRequestEvent</a>
-            dictionary. The application is expected to resolve the Promise with
-            a <a>PaymentHandlerResponse</a> instance containing the payment
+            function of the corresponding <a>PaymentRequestEvent</a> interface.
+            The application is expected to resolve the Promise with a
+            <a>PaymentHandlerResponse</a> instance containing the payment
             response. In case of user cancellation or error, the application
             may signal failure by rejecting the Promise.
           </p>
@@ -1710,40 +1724,124 @@ window.addEventListener("message", function(e) {
       </section>
       <section>
         <h2>
-          Extention to User Accepts the Payment Request Algorithm
+          <dfn>Respond to PaymentRequest Algorithm</dfn>
         </h2>
         <p>
-          If the Promise is successfully resolved, the user agent MUST run the
-          <a>user accepts the payment request algorithm</a> as defined in
-          [[!payment-request]], replacing steps 6 and 7 with these steps or
-          their equivalent:
+          When this algorithm is invoked with <var>event</var> and
+          <var>handlerResponsePromise</var> parameters, the user agent MUST run
+          the following steps:
         </p>
-        <ol>
-          <li>Set <var>handlerResponse</var> to the
-          <a>PaymentHandlerResponse</a> instance used to resolve the
-          <a>PaymentRequestEvent</a>.<a data-lt=
-          "PaymentRequestEvent.respondWith">respondWith()</a> Promise.
+        <ol class="algorithm">
+          <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
+          <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a> and
+          abort these steps.
           </li>
-          <li>If <var>handlerResponse</var>.<a data-lt=
-          "PaymentHandlerResponse.methodName">methodName</a> is not present or
-          not set to one of the values from
-          <a>PaymentRequestEvent</a>.<a data-lt=
-          "PaymentRequestEvent.methodData">methodData</a>, run the <a>payment
-          app failure algorithm</a> and terminate these steps.
-          </li>
-          <li>Create a <a>structured clone</a> of
-          <var>handlerResponse</var>.<a data-lt=
-          "PaymentHandlerResponse.methodName">methodName</a> and assign it to
-          <var>response</var>.<a data-lt=
-          "PaymentHandlerResponse.methodName">methodName</a>.
-          </li>
-          <li>If <var>handlerResponse</var>.<var>details</var> is not present,
-          run the <a>payment app failure algorithm</a> and terminate these
+          <li>If <var>event</var>.<a>[[\respondWithCalled]]</a> is true, throw
+          an "<a>InvalidStateError</a>" <a>DOMException</a> and abort these
           steps.
           </li>
-          <li>Create a <a>structured clone</a> of
-          <var>handlerResponse</var>.<var>details</var> and assign it to <var>
-            response</var>.<var>details</var>.
+          <li>Set <var>event</var>.<a>[[\respondWithCalled]]</a> to true.
+          </li>
+          <li>Set the <var>event</var>'s <a>stop propagation flag</a> and <var>
+            event</var>'s <a>stop immediate propagation flag</a>.
+          </li>
+          <li>Add <var>handlerResponsePromise</var> to the <var>event</var>'s
+          <a>extend lifetime promises</a>
+          </li>
+          <li>Increment the <var>event</var>'s <a>pending promises count</a> by
+          one.
+          </li>
+          <li>Upon <a>rejection</a> of <var>handlerResponsePromise</var>:
+            <ol>
+              <li>Run the <a>payment app failure algorithm</a> and terminate
+              these steps.
+              </li>
+            </ol>
+          </li>
+          <li>Upon <a>fulfillment</a> of <var>handlerResponsePromise</var>:
+            <ol>
+              <li>Let <var>handlerResponse</var> be the result of
+              <a>converting</a> value to a <a>PaymentHandlerResponse</a>
+              dictionary. If this <a>throws</a> an exception, run the
+              <a>payment app failure algorithm</a> and terminate these steps.
+              </li>
+              <li>If <var>handlerResponse</var>.<a data-lt=
+              "PaymentHandlerResponse.methodName">methodName</a> is not present
+              or not set to one of the values from
+                <var>event</var>.<a data-lt="PaymentRequestEvent.methodData">methodData</a>,
+                run the <a>payment app failure algorithm</a> and terminate
+                these steps.
+              </li>
+              <li>If <var>handlerResponse</var>.<a data-lt=
+              "PaymentHandlerResponse.details">details</a> is not present or
+              not <a>JSON-serializable</a>, run the <a>payment app failure
+              algorithm</a> and terminate these steps.
+              </li>
+              <li>Let <var>serializeMethodName</var> be the result of
+              <a data-cite="!HTML#structuredserialize">StructuredSerialize</a>
+              with <var>handlerResponse</var>.<a data-lt=
+              "PaymentHandlerResponse.methodName">methodName</a>. Rethrow any
+              exceptions.
+              </li>
+              <li>Let <var>serializeDetails</var> be the result of
+                <a data-cite="!HTML#structuredserialize">StructuredSerialize</a>
+                with <var>handlerResponse</var>.<a data-lt=
+                "PaymentHandlerResponse.details">details</a>. Rethrow any
+                exceptions.
+              </li>
+              <li>The user agent MUST run the <a>user accepts the payment
+              request algorithm</a> as defined in [[!payment-request]],
+              replacing steps 7 and 8 with these steps or their equivalent.
+                <ol>
+                  <li>Let <var>methodName</var> be the result of
+                    <a data-cite="!HTML#structureddeserialize">StructuredDeserialize</a>
+                    with <var>serializeMethodName</var>. Rethrow any
+                    exceptions.
+                  </li>
+                  <li>Let <var>details</var> be the result of <a data-cite=
+                  "!HTML#structureddeserialize">StructuredDeserialize</a> with
+                  <var>serializeDetails</var>. Rethrow any exceptions.
+                  </li>
+                  <li>If any exception occurs in any of the above steps, then
+                  run the <a>payment app failure algorithm</a> and terminate
+                  these steps.
+                  </li>
+                  <li>Assign <var>methodName</var> to associated
+                  PaymentRequest's <a data-lt=
+                  "PaymentResponse"><var>response</var></a>.<a data-cite=
+                  "!payment-request#dom-paymentresponse-methodname">methodName</a>.
+                  </li>
+                  <li>Assign <var>details</var> to associated PaymentReqeust's
+                  <a data-lt=
+                  "PaymentResponse"><var>response</var></a>.<a data-cite=
+                  "!payment-request#dom-paymentresponse-details">details</a>.
+                  </li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li>Upon <a>fulfillment</a> or <a>rejection</a> of
+          <var>handlerResponsePromise</var>, <a data-cite=
+          "!HTML#queue-a-microtask">queue a microtask</a> to perform the
+          following steps:
+            <ol>
+              <li>Decrement the <var>event</var>'s <a>pending promises
+              count</a> by one.
+              </li>
+              <li>Let <var>registration</var> be the <a data-cite=
+              "!HTML#context-object">context object</a>'s <a data-cite=
+              "!HTML#relevant-settings-object">relevant global object</a>'s
+              associated <a>service worker</a>'s <a>containing service worker
+              registration</a>.
+              </li>
+              <li>If <var>registration</var>’s <a>uninstalling flag</a> is set,
+              invoke <a>Try Clear Registration</a> with
+              <var>registration</var>.
+              </li>
+              <li>If <var>registration</var> is not null, invoke <a>Try
+              Activate</a> with <var>registration</var>.
+              </li>
+            </ol>
           </li>
         </ol>
         <p>
@@ -1973,16 +2071,43 @@ window.addEventListener("message", function(e) {
           The term <dfn>origin</dfn> is defined in [[!RFC6454]].
         </dd>
         <dt>
+          Writing Promise-Using Specifications
+        </dt>
+        <dd>
+          The terms upon <dfn data-cite=
+          "!PROMISES-GUIDE#upon-fulfillment">fulfillment</dfn> and upon
+          <dfn data-cite="!PROMISES-GUIDE#upon-rejection">rejection</dfn> are
+          defined by [[!PROMISES-GUIDE]].
+        </dd>
+        <dt>
           DOM
         </dt>
         <dd>
-          The term <dfn data-cite="!DOM4#firing-events">fires</dfn> (an event)
-          is defined in [[!DOM4]].
+          The term <dfn data-cite="!DOM4#firing-events">fires</dfn> (an event),
+          <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
+          <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
+          flag</dfn>, and <dfn data-cite=
+          "!DOM#stop-immediate-propagation-flag">stop immediate propagation
+          flag</dfn> are defined in [[!DOM4]].
         </dd>
         <dt>
           Web IDL
         </dt>
         <dd>
+          <p>
+            When this specification says to <dfn data-cite="!WEBIDL#dfn-throw"
+            data-lt="throws">throw</dfn> an error, the <a>user agent</a> must
+            throw an error as described in [[!WEBIDL]]. When this occurs in a
+            sub-algorithm, this results in termination of execution of the
+            sub-algorithm and all ancestor algorithms until one is reached that
+            explicitly describes procedures for catching exceptions.
+          </p>
+          <p>
+            The algorithm for <dfn data-cite=
+            "!WEBIDL#dfn-convert-idl-to-ecmascript-value" data-lt=
+            "converting">converting an ECMAScript value to a dictionary</dfn>
+            is defined by [[!WEBIDL]].
+          </p>
           <p>
             <dfn data-cite="!WEBIDL-LS#dfn-DOMException">DOMException</dfn> and
             the following <a>DOMException</a> types from [[!WEBIDL-LS]] are
@@ -2032,9 +2157,18 @@ window.addEventListener("message", function(e) {
           "!SERVICE-WORKERS#handle-functional-event-algorithm">handle
           functional event</dfn>, <dfn data-cite=
           "!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
-          promises</dfn>, and <dfn data-cite=
-          "!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are defined in
-          [[!SERVICE-WORKERS]].
+          promises</dfn>,<dfn data-cite=
+          "!SERVICE-WORKERS#dfn-pending-promises-count">pending promises
+          count</dfn>, <dfn data-cite=
+          "!SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
+          service worker registration</dfn>, <dfn data-cite=
+          "!SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
+          <dfn data-cite=
+          "!SERVICE-WORKERS#try-clear-registration-algorithm">Try Clear
+          Registration</dfn>, <dfn data-cite=
+          "!SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>, and
+          <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are
+          defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
     </section>
