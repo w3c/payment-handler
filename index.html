@@ -1045,7 +1045,7 @@
           <p>
             The <a>onpaymentrequest</a> attribute is an <a>event handler</a>
             whose corresponding <a>event handler event type</a> is
-            <a>paymentrequest</a>.
+            <a>PaymentRequestEvent</a>.
           </p>
         </section>
       </section>
@@ -1055,8 +1055,10 @@
           The <dfn>PaymentRequestEvent</dfn>
         </h2>
         <p>
-          The <a>PaymentRequestEvent</a> represents a received
-          <a>PaymentRequest</a>.
+          The PaymentRequestEvent represents the data and methods available to
+          a Payment Handler after selection by the user. The user agent
+          communicates a subset of data available from the
+          <a>PaymentRequest</a> to the Payment Handler.
         </p>
         <pre class="idl">
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
