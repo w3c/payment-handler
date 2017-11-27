@@ -2009,8 +2009,10 @@ window.addEventListener("message", function(e) {
           <dfn data-cite="!payment-request#show-method">show()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn> are defined by the
-          Payment Request API specification [[!payment-request]].
+          accepts the payment request algorithm</dfn> <dfn data-cite=
+          "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
+          defined by the Payment Request API specification
+          [[!payment-request]].
         </dd>
         <dt>
           ECMAScript
@@ -2020,18 +2022,10 @@ window.addEventListener("message", function(e) {
           "!ECMASCRIPT#sec-promise-objects">Promise</dfn>, <dfn data-cite=
           "!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
           slot</dfn>, <code><dfn data-cite=
-          "!ECMASCRIPT#sec-native-error-types-used-in-this-standard-typeerror">
-          TypeError</dfn></code>, and <code><dfn data-cite=
+          "!ECMASCRIPT#sec-native-error-types-used-in-this-standard-typeerror">TypeError</dfn></code>,
+          and <code><dfn data-cite=
           "!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
           defined by [[!ECMASCRIPT]].
-          <p>
-            The term <dfn data-lt=
-            "JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
-            a given object means to run the algorithm specified by the original
-            value of the <a>JSON.stringify</a> function on the supplied object,
-            passing the supplied object as the sole argument, and return the
-            resulting string. This can throw an exception.
-          </p>
         </dd>
         <dt>
           Payment Method Identifiers
@@ -2113,8 +2107,7 @@ window.addEventListener("message", function(e) {
           </p>
           <p>
             <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn> and
-            the following <a>DOMException</a> types from [[!WEBIDL]] are
-            used:
+            the following <a>DOMException</a> types from [[!WEBIDL]] are used:
           </p>
           <ul>
             <li>"<code><dfn data-cite=
