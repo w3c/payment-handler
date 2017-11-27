@@ -104,39 +104,27 @@
         Introduction
       </h2>
       <p>
-        The Web Payments Working Group seeks to streamline payments on the Web
-        to help reduce "shopping cart abandonment" and make it easier to deploy
-        new payment methods on the Web. It has published the Payment Request
-        API [[!payment-request]] as a standard way to initiate payment requests
-        from E-Commerce Web sites and applications.
-      </p>
-      <p>
-        A <dfn>payment app</dfn> is a Web application that can handle payment
-        requests on behalf of the user. This specification defines a number of
-        new Web platform features to handle payment requests:
+        This specification defines a number of new features to allow web
+        applications to handle requests for payments on behalf of users:
       </p>
       <ul>
         <li>An origin-based permission to handle payment request events.
         </li>
-        <li>A payment request event type (<a>PaymentRequestEvent</a>). A <dfn>
-          payment handler</dfn> is an event handler for the
-          <a>PaymentRequestEvent</a>.
+        <li>A payment request event type (<a>PaymentRequestEvent</a>). A
+        <a>payment handler</a> is an event handler for the
+        <a>PaymentRequestEvent</a>.
         </li>
         <li>An extension to the service worker registration interface
         (<a>PaymentManager</a>) to manage the definition, display, and user
         selection of <a>PaymentInstrument</a>s.
         </li>
-        <li>A mechanism to respond to the PaymentRequestEvent.
+        <li>A mechanism to respond to the <a>PaymentRequestEvent</a>.
         </li>
       </ul>
-      <p>
+      <p class="note">
         This specification does not address how software built with
-        operating-system specific mechanisms (e.g., "native mobile apps")
-        handle payment requests.
-      </p>
-      <p class="issue" title="Permission" data-number="151">
-        The term "payment app" may be useful as a shorthand for "Web app that
-        can handle payments with Payment Request API."
+        operating-system specific mechanisms (i.e., "native apps") handle
+        payment requests.
       </p>
     </section>
     <section id='conformance'>
@@ -259,6 +247,10 @@
           Handling a Payment Request
         </h2>
         <p>
+          A <dfn>payment handler</dfn> is a Web application that can handle a
+          request for payment on behalf of the user.
+        </p>
+        <p>
           The logic of a payment handler is driven by the payment methods that
           it supports. Some payment methods, such as <a>basic-card</a> expect
           little to no processing by the payment handler which simply returns
@@ -373,8 +365,8 @@
       };
       </pre>
         <p>
-          The <a>PaymentManager</a> is used by <a>payment app</a>s to manage
-          their associated instruments and supported payment methods.
+          The <a>PaymentManager</a> is used by <a>payment handler</a>s to
+          manage their associated instruments and supported payment methods.
         </p>
         <section>
           <h2>
