@@ -126,40 +126,6 @@
         can handle payments with Payment Request API."
       </p>
     </section>
-    <section id='conformance'>
-      <p>
-        This specification defines one class of products:
-      </p>
-      <dl>
-        <dt>
-          <dfn>Conforming user agent</dfn>
-        </dt>
-        <dd>
-          <p>
-            A <a>user agent</a> MUST behave as described in this specification
-            to be considered conformant. In this specification, <dfn>user
-            agent</dfn> means a <em>Web browser or other interactive user
-            agent</em> as defined in [[!HTML]].
-          </p>
-          <p>
-            User agents MAY implement algorithms given in this specification in
-            any way desired, so long as the end result is indistinguishable
-            from the result that would be obtained by the specification's
-            algorithms.
-          </p>
-          <p>
-            A conforming Payment Handler API user agent MUST also be a
-            <em>conforming implementation</em> of the IDL fragments of this
-            specification, as described in the “Web IDL” specification.
-            [[!WEBIDL]]
-          </p>
-          <aside class="note">
-            This specification uses both the terms "conforming user agent(s)"
-            and "user agent(s)" to refer to this product class.
-          </aside>
-        </dd>
-      </dl>
-    </section>
     <section id="model">
       <h2>
         Overview of Handling Payment Requests
@@ -2146,6 +2112,12 @@ window.addEventListener("message", function(e) {
           defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
+    </section>
+    <section id='conformance'>
+      <p>
+        Only one class of product can claim conformance to this specification:
+        a <dfn data-lt="user agents">user agent</dfn>.
+      </p>
     </section>
     <section class="appendix" id="idl-index"></section>
   </body>
