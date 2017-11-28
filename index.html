@@ -400,13 +400,13 @@
         <a>payee</a>. If interaction with the user is necessary, the <a>payment
         handler</a> can open a window for that purpose.
         </li>
-        <li>The <a>payee</a> may choose to limit the time window of the
-        availability of their offer by calling [[payment-request]] method
-        <a>abort()</a>, which is forwarded to the <a>payment handler</a> as <a>
-          AbortPaymentEvent</a>. The <a>payment handler</a> can respond with a
-          boolean that indicates whether the payment was successfully aborted.
-          No expectation of transaction rollback or refunds is placed on the
-          <a>payment handler</a>.
+        <li>The <a>payee</a> can limit the time window of the
+          availability of their offer by calling
+          <a>PaymentRequest</a>.<a>abort()</a> method, which is forwarded to
+          the <a>payment handler</a> as <a>AbortPaymentEvent</a>. The <a>payment
+          handler</a> can respond with a boolean that indicates whether the payment
+          was successfully aborted. No expectation of transaction rollback or refunds
+          is placed on the<a>payment handler</a>.
         </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
