@@ -2115,8 +2115,23 @@ window.addEventListener("message", function(e) {
     </section>
     <section id='conformance'>
       <p>
-        Only one class of product can claim conformance to this specification:
-        a <dfn data-lt="user agents">user agent</dfn>.
+        There is only one class of product that can claim conformance to this
+        specification: a <dfn data-lt="user agents">user agent</dfn>.
+      </p>
+      <p>
+        User agents MAY implement algorithms given in this specification in any
+        way desired, so long as the end result is indistinguishable from the
+        result that would be obtained by the specification's algorithms.
+      </p>
+      <p>
+        User agents MAY impose implementation-specific limits on otherwise
+        unconstrained inputs, e.g., to prevent denial of service attacks, to
+        guard against running out of memory, or to work around
+        platform-specific limitations. When an input exceeds
+        implementation-specific limit, the user agent MUST throw, or, in the
+        context of a promise, reject with, a <a>TypeError</a> optionally
+        informing the developer of how a particular input exceeded an
+        implementation-specific limit.
       </p>
     </section>
     <section class="appendix" id="idl-index"></section>
