@@ -67,14 +67,6 @@
             githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
         };
     </script>
-    <style>
-        dt { margin-top: 0.75em; }
-        table { margin-top: 0.75em; border-collapse:collapse; border-style:hidden hidden none hidden }
-        table thead { border-bottom:solid }
-        table tbody th:first-child { border-left:solid }
-        table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
-        li { margin-top: 0.5em; margin-bottom: 0.5em;}
-    </style>
   </head>
   <body>
     <section id='abstract'>
@@ -147,7 +139,7 @@
             A <a>user agent</a> MUST behave as described in this specification
             to be considered conformant. In this specification, <dfn>user
             agent</dfn> means a <em>Web browser or other interactive user
-            agent</em> as defined in [[!HTML5]].
+            agent</em> as defined in [[!HTML]].
           </p>
           <p>
             User agents MAY implement algorithms given in this specification in
@@ -159,7 +151,7 @@
             A conforming Payment Handler API user agent MUST also be a
             <em>conforming implementation</em> of the IDL fragments of this
             specification, as described in the “Web IDL” specification.
-            [[!WEBIDL-LS]]
+            [[!WEBIDL]]
           </p>
           <aside class="note">
             This specification uses both the terms "conforming user agent(s)"
@@ -1076,7 +1068,7 @@
           </h2>
           <p>
             This attribute is a string that indicates the <a data-cite=
-            "!HTML5#origin">origin</a> of the top level <a>payee</a> web page.
+            "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
             The string MUST be formatted according to the "<a data-cite=
             "!RFC6454#section-6.1">Unicode Serialization of an Origin</a>"
             algorithm defined in section 6.1 of [[!RFC6454]].
@@ -1088,7 +1080,7 @@
           </h2>
           <p>
             This attribute is a string that indicates the <a data-cite=
-            "!HTML5#origin">origin</a> where a <a>PaymentRequest</a> was
+            "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
             <a>topLevelOrigin</a>, the attributes have the same value,
             otherwise the attributes have different values. For example, when a
@@ -1164,7 +1156,7 @@
         </section>
         <section>
           <h2>
-            <dfn>openWindow</dfn>() method
+            <dfn>openWindow()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to show a window to the
@@ -1862,7 +1854,7 @@ window.addEventListener("message", function(e) {
           </pre>
         <p class="note">
           [[!payment-request]] defines an <a>ID</a> that parties in the
-          ecosystem (including payment app providers and payees) may use for
+          ecosystem (including payment app providers and payees) can use for
           reconciliation after network or other failures.
         </p>
       </section>
@@ -2004,29 +1996,23 @@ window.addEventListener("message", function(e) {
           <dfn data-cite="!payment-request#show-method">show()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn> are defined by the
-          Payment Request API specification [[!payment-request]].
+          accepts the payment request algorithm</dfn> <dfn data-cite=
+          "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
+          defined by the Payment Request API specification
+          [[!payment-request]].
         </dd>
         <dt>
-          ECMA-262 6th Edition, The ECMAScript 2015 Language Specification
+          ECMAScript
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!ECMA-262-2015#sec-promise-objects">Promise</dfn>, <dfn data-cite=
-          "!ECMA-262-2015#sec-object-internal-methods-and-internal-slots">internal
+          "!ECMASCRIPT#sec-promise-objects">Promise</dfn>, <dfn data-cite=
+          "!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
           slot</dfn>, <code><dfn data-cite=
-          "!ECMA-262-2015#sec-native-error-types-used-in-this-standard-typeerror">
-          TypeError</dfn></code>, and <code><dfn data-cite=
-          "!ECMA-262-2015#sec-json.stringify">JSON.stringify</dfn></code> are
-          defined by [[!ECMA-262-2015]].
-          <p>
-            The term <dfn data-lt=
-            "JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
-            a given object means to run the algorithm specified by the original
-            value of the <a>JSON.stringify</a> function on the supplied object,
-            passing the supplied object as the sole argument, and return the
-            resulting string. This can throw an exception.
-          </p>
+          "!ECMASCRIPT#sec-native-error-types-used-in-this-standard-typeerror">TypeError</dfn></code>,
+          and <code><dfn data-cite=
+          "!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
+          defined by [[!ECMASCRIPT]].
         </dd>
         <dt>
           Payment Method Identifiers
@@ -2049,18 +2035,18 @@ window.addEventListener("message", function(e) {
           are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
-          HTML5
+          HTML
         </dt>
         <dd>
-          The terms <dfn data-cite="!HTML5#global-object">global object</dfn>,
-          <dfn data-cite="!HTML5#top-level-browsing-context">top-level browsing
-          context</dfn>, <dfn data-cite="!HTML5#structured-clone">structured
-          clone</dfn>, <dfn data-cite="!HTML5#event-handlers">event
-          handler</dfn>, <dfn data-cite="!HTML5#event-handler-event-type">event
+          The terms <dfn data-cite="!HTML#global-object">global object</dfn>,
+          <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
+          context</dfn>, <dfn data-cite="!HTML#structured-clone">structured
+          clone</dfn>, <dfn data-cite="!HTML#event-handlers">event
+          handler</dfn>, <dfn data-cite="!HTML#event-handler-event-type">event
           handler event type</dfn>, <dfn data-cite=
-          "!HTML5#concept-events-trusted">trusted event</dfn>, and
-          <dfn data-cite="!HTML5#user-interaction-task-source">user interaction
-          task source</dfn> are defined by [[!HTML5]].
+          "!HTML#concept-events-trusted">trusted event</dfn>, and
+          <dfn data-cite="!HTML#user-interaction-task-source">user interaction
+          task source</dfn> are defined by [[!HTML]].
         </dd>
         <dt>
           RFC6454
@@ -2081,12 +2067,12 @@ window.addEventListener("message", function(e) {
           DOM
         </dt>
         <dd>
-          The term <dfn data-cite="!DOM4#firing-events">fires</dfn> (an event),
+          The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
           <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
           <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
           flag</dfn>, and <dfn data-cite=
           "!DOM#stop-immediate-propagation-flag">stop immediate propagation
-          flag</dfn> are defined in [[!DOM4]].
+          flag</dfn> are defined in [[!DOM]].
         </dd>
         <dt>
           Web IDL
@@ -2107,38 +2093,29 @@ window.addEventListener("message", function(e) {
             is defined by [[!WEBIDL]].
           </p>
           <p>
-            <dfn data-cite="!WEBIDL-LS#dfn-DOMException">DOMException</dfn> and
-            the following <a>DOMException</a> types from [[!WEBIDL-LS]] are
-            used:
+            <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn> and
+            the following <a>DOMException</a> types from [[!WEBIDL]] are used:
           </p>
           <ul>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#invalidaccesserror">InvalidAccessError</dfn></code>"
+            "!WEBIDL#invalidaccesserror">InvalidAccessError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
+            "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#notallowederror">NotAllowedError</dfn></code>"
+            "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
+            "!WEBIDL#notfounderror">NotFoundError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#operationerror">OperationError</dfn></code>"
+            "!WEBIDL#operationerror">OperationError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#securityerror">SecurityError</dfn></code>"
+            "!WEBIDL#securityerror">SecurityError</dfn></code>"
             </li>
           </ul>
-        </dd>
-        <dt>
-          Secure Contexts
-        </dt>
-        <dd>
-          The term <dfn data-cite="!SECURE-CONTEXTS#secure-context">secure
-          context</dfn> is defined by the Secure Contexts specification
-          [[!SECURE-CONTEXTS]].
         </dd>
         <dt>
           Service Workers
