@@ -432,7 +432,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface PaymentInstruments {
           Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
-          Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
+          Promise&lt;any&gt; get(DOMString instrumentKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
           Promise&lt;boolean&gt;           has(DOMString instrumentKey);
           Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
@@ -484,8 +484,7 @@
             matching <var>instrumentKey</var>, resolve <var>p</var> with that
             <a>PaymentInstrument</a>.
             </li>
-            <li>Otherwise, reject <var>p</var> with a <a>DOMException</a> whose
-            value is "<a>NotFoundError</a>".
+            <li>Otherwise, resolve <var>p</var> with <code>undefined</code>.
             </li>
           </ol>
         </section>
