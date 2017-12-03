@@ -126,40 +126,6 @@
         can handle payments with Payment Request API."
       </p>
     </section>
-    <section id='conformance'>
-      <p>
-        This specification defines one class of products:
-      </p>
-      <dl>
-        <dt>
-          <dfn>Conforming user agent</dfn>
-        </dt>
-        <dd>
-          <p>
-            A <a>user agent</a> MUST behave as described in this specification
-            to be considered conformant. In this specification, <dfn>user
-            agent</dfn> means a <em>Web browser or other interactive user
-            agent</em> as defined in [[!HTML]].
-          </p>
-          <p>
-            User agents MAY implement algorithms given in this specification in
-            any way desired, so long as the end result is indistinguishable
-            from the result that would be obtained by the specification's
-            algorithms.
-          </p>
-          <p>
-            A conforming Payment Handler API user agent MUST also be a
-            <em>conforming implementation</em> of the IDL fragments of this
-            specification, as described in the “Web IDL” specification.
-            [[!WEBIDL]]
-          </p>
-          <aside class="note">
-            This specification uses both the terms "conforming user agent(s)"
-            and "user agent(s)" to refer to this product class.
-          </aside>
-        </dd>
-      </dl>
-    </section>
     <section id="model">
       <h2>
         Overview of Handling Payment Requests
@@ -2145,6 +2111,27 @@ window.addEventListener("message", function(e) {
           defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
+    </section>
+    <section id='conformance'>
+      <p>
+        There is only one class of product that can claim conformance to this
+        specification: a <dfn data-lt="user agents">user agent</dfn>.
+      </p>
+      <p>
+        User agents MAY implement algorithms given in this specification in any
+        way desired, so long as the end result is indistinguishable from the
+        result that would be obtained by the specification's algorithms.
+      </p>
+      <p>
+        User agents MAY impose implementation-specific limits on otherwise
+        unconstrained inputs, e.g., to prevent denial of service attacks, to
+        guard against running out of memory, or to work around
+        platform-specific limitations. When an input exceeds
+        implementation-specific limit, the user agent MUST throw, or, in the
+        context of a promise, reject with, a <a>TypeError</a> optionally
+        informing the developer of how a particular input exceeded an
+        implementation-specific limit.
+      </p>
     </section>
     <section class="appendix" id="idl-index"></section>
   </body>
