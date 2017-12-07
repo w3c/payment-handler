@@ -314,7 +314,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
-        attribute DOMString userHint;     
+        attribute DOMString userHint;
       };
       </pre>
         <p>
@@ -845,109 +845,6 @@
           };
      </pre>
         </section>
-      </section>
-    </section>
-    <section id="instrument-display-ordering">
-      <h2>
-        Origin and Instrument Display for Selection
-      </h2>
-      <p>
-        After applying the matching algorithm defined in Payment Request API,
-        the user agent displays a list of instruments from matching payment
-        apps for the user to make a selection. This specification includes a
-        limited number of display requirements; most user experience details
-        are left to implementers.
-      </p>
-      <section>
-        <h2>
-          Ordering of Payment Handlers
-        </h2>
-        <ul>
-          <li>The user agent <span class='rfc2119'>MUST</span> favor user-side
-          order preferences (based on user configuration or behavior) over
-          payee-side order preferences.
-          </li>
-          <li>The user agent <span class='rfc2119'>MUST</span> display matching
-          payment handlers in an order that corresponds to the order of
-          supported payment methods provided by the payee, except where
-          overridden by user-side order preferences.
-          </li>
-          <li>The user agent <span class='rfc2119'>SHOULD</span> allow the user
-          to configure the display of matching payment handlers to control the
-          ordering and define preselected defaults.
-          </li>
-        </ul>
-        <p class="issue" title=
-        "PR API payment method ordering and relation to this spec."
-        data-number="116">
-          The second bullet above may be amended to remove explicit mention of
-          ordering defined by the payee.
-        </p>
-        <p>
-          The following are examples of payment handler ordering:
-        </p>
-        <ul>
-          <li>For a given Web site, display payment handlers in an order that
-          reflects usage patterns for the site (e.g., a frequently used payment
-          handler at the top, or the most recently used payment handler at the
-          top).
-          </li>
-          <li>Enable the user to set a preferred order for a given site or for
-          all sites.
-          </li>
-          <li>If the origin of the site being visited by the user matches the
-          origin of a payment handler, show the payment handler at the top of
-          the list.
-          </li>
-        </ul>
-        <p class="issue" title="Merchant Preferences" data-number="74">
-          The Working Group has discussed two types of merchant preferences
-          related to payment apps: (1) highlighting merchant-preferred payment
-          apps already registered by the user and (2) recommending payment apps
-          not yet registered by the user. The current draft of the
-          specification does not address either point, and the Working Group is
-          seeking feedback on the importance of these use cases. Note that for
-          the second capability, merchants can recommend payment apps through
-          other mechanisms such as links from their web sites.
-        </p>
-      </section>
-      <section>
-        <h2>
-          Display of Instruments
-        </h2>
-        <p>
-          The user agent <span class='rfc2119'>MUST</span> enable the user to
-          select any displayed instrument.
-        </p>
-        <ul>
-          <li>At a minimum, we expect user agents to display an icon and label
-          for each matching origin to help the user make a selection.
-          </li>
-          <li>In some contexts (e.g., a desktop browser), it may be possible to
-          improve the user experience by offering additional detail to the
-          user. For example, if the user's "bank.com" origin knows about two
-          credit cards (thus, two potential responses to the same payment
-          method "basic-card"), the user agent could display each credit card's
-          brand and the last four digits of the card to remind the user which
-          cards the origin knows about.
-          </li>
-        </ul>
-        <p class="issue" title="Display" data-number="173">
-          The Working Group is discussing how default payment instrument
-          display could further streamline the user experience.
-        </p>
-      </section>
-      <section>
-        <h2>
-          Selection of Instruments
-        </h2>
-        <p>
-          Users agents may wish to enable the user to select individual
-          displayed Instruments. The payment handler would receive information
-          about the selected Instrument and could take action, potentially
-          eliminating an extra click (first open the payment app then select
-          the Instrument).
-        </p>
       </section>
     </section>
     <section id="invocation">
@@ -1818,7 +1715,7 @@ window.addEventListener("message", function(e) {
     </section>
     <section id="security">
       <h2>
-        Security and Privacy Considerations
+        Security, Privacy, and User Experience Considerations
       </h2>
       <section>
         <h2>
@@ -1919,6 +1816,110 @@ window.addEventListener("message", function(e) {
           instrument details.
           </li>
         </ul>
+      </section>
+      <section>
+        <h2>
+          Ordering of Payment Handlers
+        </h2>
+
+        <p>After applying the matching algorithm defined in the Payment Request
+          API, the user agent displays a list of instruments from matching
+          payment apps for the user to make a selection. The Working Group
+          explored the topic of ordering payment handlers which resulted in
+          the following non-normative expectations for implementers:
+        </p>
+
+        <ul>
+          <li>The user agent favors user-side order preferences (based on
+          user configuration or behavior) over payee-side order preferences.
+          </li>
+          <li>The user agent displays matching payment handlers in an order
+          that corresponds to the order of supported payment methods provided
+          by the payee, except where overridden by user-side order preferences.
+          </li>
+          <li>The user agent allows the user to configure the display of
+          matching payment handlers to control the ordering and define
+          preselected defaults.
+          </li>
+        </ul>
+        <p class="issue" title=
+        "PR API payment method ordering and relation to this spec."
+        data-number="116">
+          The second bullet above may be amended to remove explicit mention of
+          ordering defined by the payee.
+        </p>
+        <p>
+          The following are examples of payment handler ordering:
+        </p>
+        <ul>
+          <li>For a given Web site, display payment handlers in an order that
+          reflects usage patterns for the site (e.g., a frequently used payment
+          handler at the top, or the most recently used payment handler at the
+          top).
+          </li>
+          <li>Enable the user to set a preferred order for a given site or for
+          all sites.
+          </li>
+          <li>If the origin of the site being visited by the user matches the
+          origin of a payment handler, show the payment handler at the top of
+          the list.
+          </li>
+        </ul>
+        <p class="issue" title="Merchant Preferences" data-number="74">
+          The Working Group has discussed two types of merchant preferences
+          related to payment apps: (1) highlighting merchant-preferred payment
+          apps already registered by the user and (2) recommending payment apps
+          not yet registered by the user. The current draft of the
+          specification does not address either point, and the Working Group is
+          seeking feedback on the importance of these use cases. Note that for
+          the second capability, merchants can recommend payment apps through
+          other mechanisms such as links from their web sites.
+        </p>
+      </section>
+      <section>
+        <h2>
+          Display of Payment Instruments
+        </h2>
+
+        <p>After applying the matching algorithm defined in the Payment Request
+          API, the user agent displays a list of instruments from matching
+          payment apps for the user to make a selection. The Working Group
+          explored the topic of displaying payment instruments which resulted
+          in the following non-normative expectations for implementers:
+        </p>
+
+        <ul>
+          <li>The user agent enables the user to select any displayed
+          instrument.
+          </li>
+          <li>At a minimum, user agents utilizing a visual display show an icon
+          and label for each matching origin to help the user make a selection.
+          </li>
+          <li>In some contexts (e.g., a desktop browser), it may be possible to
+          improve the user experience by offering additional detail to the
+          user. For example, if the user's "bank.com" origin knows about two
+          credit cards (thus, two potential responses to the same payment
+          method "basic-card"), the user agent could display each credit card's
+          brand and the last four digits of the card to remind the user which
+          cards the origin knows about.
+          </li>
+        </ul>
+        <p class="issue" title="Display" data-number="173">
+          The Working Group is discussing how default payment instrument
+          display could further streamline the user experience.
+        </p>
+      </section>
+      <section>
+        <h2>
+          Selection of Payment Instruments
+        </h2>
+        <p>
+          Users agents may wish to enable the user to select individual
+          displayed Instruments. The payment handler would receive information
+          about the selected Instrument and could take action, potentially
+          eliminating an extra click (first open the payment app then select
+          the Instrument).
+        </p>
       </section>
     </section>
     <section id="dependencies">
