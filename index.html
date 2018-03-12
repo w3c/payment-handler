@@ -25,7 +25,8 @@
                     url:        "https://github.com/tommythorsen",
                     company:    "Opera",
                     companyURL: "https://opera.com",
-                    w3cid:      90636
+                    w3cid:      90636,
+                    note: 'Former Editor'
                 },
                 {   name:       "Adam Roach",
                     url:        "https://github.com/adamroach",
@@ -66,25 +67,12 @@
             githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
         };
     </script>
-    <style>
-        dt { margin-top: 0.75em; }
-        table { margin-top: 0.75em; border-collapse:collapse; border-style:hidden hidden none hidden }
-        table thead { border-bottom:solid }
-        table tbody th:first-child { border-left:solid }
-        table td, table th { border-left:solid; border-right:solid; border-bottom:solid thin; vertical-align:top; padding:0.2em }
-        li { margin-top: 0.5em; margin-bottom: 0.5em;}
-    </style>
   </head>
   <body>
     <section id='abstract'>
       <p>
-        The <a data-cite="payment-request">Payment Request API</a> provides a
-        standard way to initiate payment requests from Web pages and
-        applications. User agents implementing that API prompt the user to
-        select a way to handle the payment request, after which the user agent
-        returns a payment response to the originating site. This specification
-        defines capabilities that enable Web applications to handle payment
-        requests.
+        This specification defines capabilities that enable Web applications to
+        handle requests for payment.
       </p>
     </section>
     <section id='sotd'>
@@ -103,74 +91,28 @@
         Introduction
       </h2>
       <p>
-        The Web Payments Working Group seeks to streamline payments on the Web
-        to help reduce "shopping cart abandonment" and make it easier to deploy
-        new payment methods on the Web. It has published the Payment Request
-        API [[!payment-request]] as a standard way to initiate payment requests
-        from E-Commerce Web sites and applications.
-      </p>
-      <p>
-        A <dfn>payment app</dfn> is a Web application that can handle payment
-        requests on behalf of the user. This specification defines a number of
-        new Web platform features to handle payment requests:
+        This specification defines a number of new features to allow web
+        applications to handle requests for payments on behalf of users:
       </p>
       <ul>
         <li>An origin-based permission to handle payment request events.
         </li>
-        <li>A payment request event type (<a>PaymentRequestEvent</a>). A <dfn>
-          payment handler</dfn> is an event handler for the
-          <a>PaymentRequestEvent</a>.
+        <li>A payment request event type (<a>PaymentRequestEvent</a>). A
+        <a>payment handler</a> is an event handler for the
+        <a>PaymentRequestEvent</a>.
         </li>
         <li>An extension to the service worker registration interface
         (<a>PaymentManager</a>) to manage the definition, display, and user
         selection of <a>PaymentInstrument</a>s.
         </li>
-        <li>A mechanism to respond to the PaymentRequestEvent.
+        <li>A mechanism to respond to the <a>PaymentRequestEvent</a>.
         </li>
       </ul>
-      <p>
+      <p class="note">
         This specification does not address how software built with
-        operating-system specific mechanisms (e.g., "native mobile apps")
-        handle payment requests.
+        operating-system specific mechanisms (i.e., "native apps") handle
+        payment requests.
       </p>
-      <p class="issue" title="Terminology" data-number="151">
-        The term "payment app" may be useful as a shorthand for "Web app that
-        can handle payments with Payment Request API."
-      </p>
-    </section>
-    <section id='conformance'>
-      <p>
-        This specification defines one class of products:
-      </p>
-      <dl>
-        <dt>
-          <dfn>Conforming user agent</dfn>
-        </dt>
-        <dd>
-          <p>
-            A <a>user agent</a> MUST behave as described in this specification
-            to be considered conformant. In this specification, <dfn>user
-            agent</dfn> means a <em>Web browser or other interactive user
-            agent</em> as defined in [[!HTML5]].
-          </p>
-          <p>
-            User agents MAY implement algorithms given in this specification in
-            any way desired, so long as the end result is indistinguishable
-            from the result that would be obtained by the specification's
-            algorithms.
-          </p>
-          <p>
-            A conforming Payment Handler API user agent MUST also be a
-            <em>conforming implementation</em> of the IDL fragments of this
-            specification, as described in the “Web IDL” specification.
-            [[!WEBIDL-LS]]
-          </p>
-          <aside class="note">
-            This specification uses both the terms "conforming user agent(s)"
-            and "user agent(s)" to refer to this product class.
-          </aside>
-        </dd>
-      </dl>
     </section>
     <section id="model">
       <h2>
@@ -258,6 +200,10 @@
         <h2>
           Handling a Payment Request
         </h2>
+        <p>
+          A <dfn>payment handler</dfn> is a Web application that can handle a
+          request for payment on behalf of the user.
+        </p>
         <p>
           The logic of a payment handler is driven by the payment methods that
           it supports. Some payment methods, such as <a>basic-card</a> expect
@@ -377,8 +323,8 @@
       };
       </pre>
         <p>
-          The <a>PaymentManager</a> is used by <a>payment app</a>s to manage
-          their associated instruments and supported payment methods.
+          The <a>PaymentManager</a> is used by <a>payment handler</a>s to
+          manage their associated instruments and supported payment methods.
         </p>
         <section>
           <h2>
@@ -449,7 +395,7 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface PaymentInstruments {
           Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
-          Promise&lt;PaymentInstrument&gt; get(DOMString instrumentKey);
+          Promise&lt;any&gt; get(DOMString instrumentKey);
           Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
           Promise&lt;boolean&gt;           has(DOMString instrumentKey);
           Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
@@ -501,8 +447,7 @@
             matching <var>instrumentKey</var>, resolve <var>p</var> with that
             <a>PaymentInstrument</a>.
             </li>
-            <li>Otherwise, reject <var>p</var> with a <a>DOMException</a> whose
-            value is "<a>NotFoundError</a>".
+            <li>Otherwise, resolve <var>p</var> with <code>undefined</code>.
             </li>
           </ol>
         </section>
@@ -1285,7 +1230,7 @@
           <p>
             The <a>onpaymentrequest</a> attribute is an <a>event handler</a>
             whose corresponding <a>event handler event type</a> is
-            <a>paymentrequest</a>.
+            <a>PaymentRequestEvent</a>.
           </p>
         </section>
       </section>
@@ -1295,8 +1240,10 @@
           The <dfn>PaymentRequestEvent</dfn>
         </h2>
         <p>
-          The <a>PaymentRequestEvent</a> represents a received
-          <a>PaymentRequest</a>.
+          The PaymentRequestEvent represents the data and methods available to
+          a Payment Handler after selection by the user. The user agent
+          communicates a subset of data available from the
+          <a>PaymentRequest</a> to the Payment Handler.
         </p>
         <pre class="idl">
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
@@ -1318,7 +1265,7 @@
           </h2>
           <p>
             This attribute is a string that indicates the <a data-cite=
-            "!HTML5#origin">origin</a> of the top level <a>payee</a> web page.
+            "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
             The string MUST be formatted according to the "<a data-cite=
             "!RFC6454#section-6.1">Unicode Serialization of an Origin</a>"
             algorithm defined in section 6.1 of [[!RFC6454]].
@@ -1330,7 +1277,7 @@
           </h2>
           <p>
             This attribute is a string that indicates the <a data-cite=
-            "!HTML5#origin">origin</a> where a <a>PaymentRequest</a> was
+            "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
             <a>topLevelOrigin</a>, the attributes have the same value,
             otherwise the attributes have different values. For example, when a
@@ -1712,7 +1659,7 @@
       <p>
         An invoked payment handler may or may not need to display information
         about itself or request user input. Some examples of potential payment
-        handler displays include:
+        handler display include:
       </p>
       <ul>
         <li>The payment handler opens a window for the user to provide an
@@ -2100,11 +2047,11 @@ window.addEventListener("message", function(e) {
             cardSecurityCode: "123"
            }
         });
-      });
+      }));
           </pre>
         <p class="note">
           [[!payment-request]] defines an <a>ID</a> that parties in the
-          ecosystem (including payment app providers and payees) may use for
+          ecosystem (including payment app providers and payees) can use for
           reconciliation after network or other failures.
         </p>
       </section>
@@ -2222,6 +2169,21 @@ window.addEventListener("message", function(e) {
         </ul>
       </section>
     </section>
+    <section id="display" class="informative">
+      <h2>
+        Payment Handler Display Considerations
+      </h2>
+      <p>
+        When ordering payment handlers and payment instruments, the user agent
+        is expected to honor user preferences over other preferences. User
+        agents are expected to permit manual configuration options, such as
+        setting a preferred payment handler or instrument display order for an
+        origin, or for all origins.
+      </p>
+      <p>
+        User experience details are left to implementers.
+      </p>
+    </section>
     <section id="dependencies">
       <h2>
         Dependencies
@@ -2256,29 +2218,23 @@ window.addEventListener("message", function(e) {
           <dfn data-cite="!payment-request#show()-method">show()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn> are defined by the
-          Payment Request API specification [[!payment-request]].
+          accepts the payment request algorithm</dfn> <dfn data-cite=
+          "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
+          defined by the Payment Request API specification
+          [[!payment-request]].
         </dd>
         <dt>
-          ECMA-262 6th Edition, The ECMAScript 2015 Language Specification
+          ECMAScript
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!ECMA-262-2015#sec-promise-objects">Promise</dfn>, <dfn data-cite=
-          "!ECMA-262-2015#sec-object-internal-methods-and-internal-slots">internal
+          "!ECMASCRIPT#sec-promise-objects">Promise</dfn>, <dfn data-cite=
+          "!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
           slot</dfn>, <code><dfn data-cite=
-          "!ECMA-262-2015#sec-native-error-types-used-in-this-standard-typeerror">
-          TypeError</dfn></code>, and <code><dfn data-cite=
-          "!ECMA-262-2015#sec-json.stringify">JSON.stringify</dfn></code> are
-          defined by [[!ECMA-262-2015]].
-          <p>
-            The term <dfn data-lt=
-            "JSON-serialized|JSON-serializable">JSON-serialize</dfn> applied to
-            a given object means to run the algorithm specified by the original
-            value of the <a>JSON.stringify</a> function on the supplied object,
-            passing the supplied object as the sole argument, and return the
-            resulting string. This can throw an exception.
-          </p>
+          "!ECMASCRIPT#sec-native-error-types-used-in-this-standard-typeerror">TypeError</dfn></code>,
+          and <code><dfn data-cite=
+          "!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
+          defined by [[!ECMASCRIPT]].
         </dd>
         <dt>
           Payment Method Identifiers
@@ -2308,18 +2264,18 @@ window.addEventListener("message", function(e) {
           are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
-          HTML5
+          HTML
         </dt>
         <dd>
-          The terms <dfn data-cite="!HTML5#global-object">global object</dfn>,
-          <dfn data-cite="!HTML5#top-level-browsing-context">top-level browsing
-          context</dfn>, <dfn data-cite="!HTML5#structured-clone">structured
-          clone</dfn>, <dfn data-cite="!HTML5#event-handlers">event
-          handler</dfn>, <dfn data-cite="!HTML5#event-handler-event-type">event
+          The terms <dfn data-cite="!HTML#global-object">global object</dfn>,
+          <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
+          context</dfn>, <dfn data-cite="!HTML#structured-clone">structured
+          clone</dfn>, <dfn data-cite="!HTML#event-handlers">event
+          handler</dfn>, <dfn data-cite="!HTML#event-handler-event-type">event
           handler event type</dfn>, <dfn data-cite=
-          "!HTML5#concept-events-trusted">trusted event</dfn>, and
-          <dfn data-cite="!HTML5#user-interaction-task-source">user interaction
-          task source</dfn> are defined by [[!HTML5]].
+          "!HTML#concept-events-trusted">trusted event</dfn>, and
+          <dfn data-cite="!HTML#user-interaction-task-source">user interaction
+          task source</dfn> are defined by [[!HTML]].
         </dd>
         <dt>
           RFC6454
@@ -2340,12 +2296,12 @@ window.addEventListener("message", function(e) {
           DOM
         </dt>
         <dd>
-          The term <dfn data-cite="!DOM4#firing-events">fires</dfn> (an event),
+          The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
           <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
           <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
           flag</dfn>, and <dfn data-cite=
           "!DOM#stop-immediate-propagation-flag">stop immediate propagation
-          flag</dfn> are defined in [[!DOM4]].
+          flag</dfn> are defined in [[!DOM]].
         </dd>
         <dt>
           Web IDL
@@ -2366,38 +2322,29 @@ window.addEventListener("message", function(e) {
             is defined by [[!WEBIDL]].
           </p>
           <p>
-            <dfn data-cite="!WEBIDL-LS#dfn-DOMException">DOMException</dfn> and
-            the following <a>DOMException</a> types from [[!WEBIDL-LS]] are
-            used:
+            <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn> and
+            the following <a>DOMException</a> types from [[!WEBIDL]] are used:
           </p>
           <ul>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#invalidaccesserror">InvalidAccessError</dfn></code>"
+            "!WEBIDL#invalidaccesserror">InvalidAccessError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#invalidstateerror">InvalidStateError</dfn></code>"
+            "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#notallowederror">NotAllowedError</dfn></code>"
+            "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#notfounderror">NotFoundError</dfn></code>"
+            "!WEBIDL#notfounderror">NotFoundError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#operationerror">OperationError</dfn></code>"
+            "!WEBIDL#operationerror">OperationError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL-LS#securityerror">SecurityError</dfn></code>"
+            "!WEBIDL#securityerror">SecurityError</dfn></code>"
             </li>
           </ul>
-        </dd>
-        <dt>
-          Secure Contexts
-        </dt>
-        <dd>
-          The term <dfn data-cite="!SECURE-CONTEXTS#secure-context">secure
-          context</dfn> is defined by the Secure Contexts specification
-          [[!SECURE-CONTEXTS]].
         </dd>
         <dt>
           Service Workers
@@ -2428,6 +2375,27 @@ window.addEventListener("message", function(e) {
           defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
+    </section>
+    <section id='conformance'>
+      <p>
+        There is only one class of product that can claim conformance to this
+        specification: a <dfn data-lt="user agents">user agent</dfn>.
+      </p>
+      <p>
+        User agents MAY implement algorithms given in this specification in any
+        way desired, so long as the end result is indistinguishable from the
+        result that would be obtained by the specification's algorithms.
+      </p>
+      <p>
+        User agents MAY impose implementation-specific limits on otherwise
+        unconstrained inputs, e.g., to prevent denial of service attacks, to
+        guard against running out of memory, or to work around
+        platform-specific limitations. When an input exceeds
+        implementation-specific limit, the user agent MUST throw, or, in the
+        context of a promise, reject with, a <a>TypeError</a> optionally
+        informing the developer of how a particular input exceeded an
+        implementation-specific limit.
+      </p>
     </section>
     <section class="appendix" id="idl-index"></section>
   </body>
