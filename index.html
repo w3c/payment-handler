@@ -882,7 +882,9 @@
           <a>PaymentMethodData</a>.
           </li>
           <li>If <var>methodName</var> is a <a>standardized payment method
-          identifier</a>, filter based on <a data-lt=
+          identifier</a> or is a <a>URL-based payment method identifier</a>
+          with <code>"supported_origins": "*"</code> in its payment method
+          manifest, filter based on <a data-lt=
           "PaymentInstrument.capabilities">capabilities</a>:
             <ol>
               <li>For each <var>key</var> in <var>methodData</var>:
@@ -901,6 +903,11 @@
           handler and return the result.
           </li>
         </ol>
+        <div class="issue" data-number="157">
+          This is the current thinking about filtering of payment instruments.
+          As we continue to experiment with implementations, we are soliciting
+          feedback on this approach.
+        </div>
         <section id="capabilities-example" class="informative">
           <h2>
             How to specify capabilities
@@ -2247,7 +2254,7 @@ window.addEventListener("message", function(e) {
           "!payment-method-id#standardized-payment-method-identifiers">standardized
           payment method identifier</dfn>, and <dfn data-lt=
           "URL-based payment method identifiers" data-cite=
-          "!payment-method-id#standardized-payment-method-identifiers">URL-based
+          "!payment-method-id#url-based-payment-method-identifiers">URL-based
           payment method identifier</dfn> are defined by the Payment Method
           Identifier specification [[!payment-method-id]].
         </dd>
