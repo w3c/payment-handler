@@ -387,23 +387,35 @@
           <dfn>PaymentInstruments</dfn> interface
         </h2>
         <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface PaymentInstruments {
-          Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
+        [SecureContext, Exposed=(Window,Worker)]
+        interface PaymentInstruments {
+          Promise&lt;boolean&gt; delete(DOMString instrumentKey);
           Promise&lt;any&gt; get(DOMString instrumentKey);
-          Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;           has(DOMString instrumentKey);
-          Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
-          Promise&lt;void&gt;           clear();
-      };
-      </pre>
+          Promise&lt;sequence&lt;DOMString&gt;&gt; keys();
+          Promise&lt;boolean&gt; has(DOMString instrumentKey);
+          Promise&lt;void&gt; set(DOMString instrumentKey, PaymentInstrument details);
+          Promise&lt;void&gt; clear();
+        };
+        </pre>
         <p>
-          The <a>PaymentInstruments</a> interface represents a collection of
-          payment instruments, each uniquely identified by an
-          <dfn>instrumentKey</dfn>. The <var>instrumentKey</var> identifier
-          will be passed to the payment handler to indicate the
-          <a>PaymentInstrument</a> selected by the user, if any.
+          The <a>PaymentInstruments</a> provides asynchronous access to
+          <a>[[\instruments]]</a>.
         </p>
+        <section>
+          <h2>
+            Internal slots
+          </h2>
+          <dl>
+            <dt>
+              <dfn>[[\instruments]]</dfn>
+            </dt>
+            <dd>
+              A persistent store of user data that is asynchronously accessed
+              as an <a>ordered map</a>. The keys are of type <a>DOMString</a>,
+              and the values are of type <a>PaymentInstrument</a>.
+            </dd>
+          </dl>
+        </section>
         <section>
           <h2>
             <dfn>delete()</dfn> method
@@ -417,9 +429,10 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, remove it from the collection
-            and resolve <var>p</var> with <b>true</b>.
+            <li>If <a>[[\instruments]]</a>[<var>instrumentKey</var>]
+            <a>exists</a>, <a>remove</a>
+            <a>[[\instruments]]</a>[<var>instrumentKey</var>] and resolve <var>
+              p</var> with <code>true</code>.
             </li>
             <li>Otherwise, resolve <var>p</var> with <b>false</b>.
             </li>
@@ -438,11 +451,8 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, resolve <var>p</var> with that
-            <a>PaymentInstrument</a>.
-            </li>
-            <li>Otherwise, resolve <var>p</var> with <code>undefined</code>.
+            <li>Resolve <var>p</var> with
+            <a>[[\instruments]]</a>[<var>instrumentKey</var>].
             </li>
           </ol>
         </section>
@@ -459,9 +469,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains
-            all the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
-            contained in the collection, in original insertion order.
+            <li>
+              <a>Get the keys</a> from <a>[[\instruments]]</a>, and resolve
+              <var>p</var> with the result.
             </li>
           </ol>
         </section>
@@ -478,11 +488,8 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, resolve <var>p</var> with
-            <b>true</b>.
-            </li>
-            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
+            <li>Resolve <var>p</var> with
+            <a>[[\instruments]]</a>[[<var>instrumentKey</var>]] <a>exists</a>.
             </li>
           </ol>
         </section>
@@ -500,23 +507,14 @@
               <a>payment handler</a>'s <a>origin</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
+            <a>Promise</a> rejected with a "<a>NotAllowedError</a>"
+            <a>DOMException</a>.
             </li>
-            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
-            <var>details</var> is present, then:
+            <li>If the <var>details</var>["<a>icons</a>"] is present, then:
               <ol>
-                <li>Let <var>convertedIcons</var> be the result of running the
-                <a>convert image objects</a> algorithm passing
-                <var>details</var>.<a data-lt=
-                "PaymentInstrument.icons">icons</a> as the argument.
-                </li>
-                <li>If the <var>convertedIcons</var> is an empty
-                <a>Sequence</a>, then return a <a>Promise</a> rejected with a
-                <a>TypeError</a>.
-                </li>
-                <li>Set <var>details</var>.<a data-lt=
-                "PaymentInstrument.icons">icons</a> to
-                <var>convertedIcons</var>.
+                <li>Set <var>details</var>["<a>icons</a>"] to the result of <a>
+                  processing <code>ImageResource</code> members</a> with
+                  <var>details</var>["<a>icons</a>"].
                 </li>
               </ol>
             </li>
@@ -525,32 +523,7 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
-            <var>details</var> is present, then for each <var>icon</var> in
-            <var>details</var>.<a data-lt="PaymentInstrument.icons">icons</a>:
-              <ol>
-                <li>If the user agent wants to display the <var>icon</var>,
-                then:
-                  <ol>
-                    <li>Let <var>fetchedImage</var> be the result of running
-                    the <a data-cite=
-                    "!appmanifest#fetching-image-objects">fetching image
-                    object</a> passing <var>icon</var> as the argument.
-                    </li>
-                    <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
-                    <var>fetchedImage</var>.
-                    </li>
-                  </ol>
-                </li>
-              </ol>
-            </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, replace it with the
-            <a>PaymentInstrument</a> in <var>details</var>.
-            </li>
-            <li>Otherwise, insert the <a>PaymentInstrument</a> in
-            <var>details</var> as a new member of the collection and associate
-            it with the key <var>instrumentKey</var>.
+            <li>set map[key] to value
             </li>
             <li>Resolve <var>p</var>.
             </li>
@@ -569,8 +542,10 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>Remove all <a>PaymentInstrument</a>s from the collection and
-            resolve <var>p</var>.
+            <li>For each <var>instrumentKey</var> in <a>[[\instruments]]</a>,
+            <a>remove</a> <a>[[\instruments]]</a>[<var>instrumentKey</var>].
+            </li>
+            <li>Resolve <var>p</var>.
             </li>
           </ol>
         </section>
