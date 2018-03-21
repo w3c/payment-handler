@@ -741,7 +741,7 @@
         &lt;script&gt;
 
         const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-        const { registration } = await navigator.serviceWorker.register("/register/sw.js");
+        const registration = await navigator.serviceWorker.register("/register/sw.js");
         await registration.paymentManager.paymentInstruments.set({
           instrumentKey,
           {
@@ -803,7 +803,7 @@
             return;
           }
 
-          const { registration } =
+          const registration =
             await navigator.serviceWorker.register('/sw.js');
 
           // Excellent, we got it! Let's now set up the user's cards.
