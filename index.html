@@ -500,7 +500,8 @@
               <a>payment handler</a>'s <a>origin</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
+            <a>Promise</a> rejected with a "<a>NotAllowedError</a>"
+            <a>DOMException</a>.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -1246,9 +1247,9 @@
           </li>
           <li>If <var>registration</var> is not found, reject the
           <a>Promise</a> that was created by <a data-cite=
-          "!payment-request#show-method">PaymentRequest.show()</a> with a
-          <a>DOMException</a> whose value is "<a>InvalidStateError</a>" and
-          terminate these steps.
+          "!payment-request#show-method">PaymentRequest.show()</a> with an
+          "<a>InvalidStateError</a>" <a>DOMException</a> and terminate these
+          steps.
           </li>
           <li>Invoke the <a>handle functional event</a> algorithm with a
           <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
@@ -1301,8 +1302,8 @@
               <li>If the <a>payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the <a>Promise</a> that was
               created by <a data-cite=
-              "!payment-request#show-method">PaymentRequest.show()</a> with a
-              <a>DOMException</a> whose value "<a>OperationError</a>".
+              "!payment-request#show-method">PaymentRequest.show()</a> with an
+              "<a>OperationError</a>" <a>DOMException</a>.
               </li>
             </ol>
           </li>
@@ -1390,9 +1391,9 @@
             <ol>
               <li>If <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite=
               "!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
-              is not "unloaded", reject <var>promise</var> with a
-              <a>DOMException</a> whose name is "<a>InvalidStateError</a>" and
-              abort these steps.
+              is not "unloaded", reject <var>promise</var> with an
+              "<a>InvalidStateError</a>" <a>DOMException</a> and abort these
+              steps.
               </li>
             </ol>
           </li>
