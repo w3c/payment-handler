@@ -1171,11 +1171,10 @@
             <dfn>topLevelOrigin</dfn> attribute
           </h2>
           <p>
-            This attribute is a string that indicates the <a data-cite=
+            Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
-            The string MUST be formatted according to the "<a data-cite=
-            "!RFC6454#section-6.1">Unicode Serialization of an Origin</a>"
-            algorithm defined in section 6.1 of [[!RFC6454]].
+            This attribute is initialized by <a>Handling a
+            PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1183,17 +1182,15 @@
             <dfn>paymentRequestOrigin</dfn> attribute
           </h2>
           <p>
-            This attribute is a string that indicates the <a data-cite=
+            Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
             <a>topLevelOrigin</a>, the attributes have the same value,
             otherwise the attributes have different values. For example, when a
             <a>PaymentRequest</a> is initialized within an iframe from an
             origin other than <a>topLevelOrigin</a>, the value of this
-            attribute is the origin of the iframe. The string MUST be formatted
-            according to the "<a data-cite="!RFC6454#section-6.1">Unicode
-            Serialization of an Origin</a>" algorithm defined in section 6.1 of
-            [[!RFC6454]].
+            attribute is the origin of the iframe. This attribute is
+            initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1481,7 +1478,7 @@
       </section>
       <section>
         <h2>
-          Handling a PaymentRequestEvent
+          <dfn>Handling a PaymentRequestEvent</dfn>
         </h2>
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
@@ -1514,12 +1511,15 @@
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a> attribute
-              of <var>e</var> to the origin of the top level payee web page.
+              of <var>e</var> to <a data-cite=
+              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
+              origin</a> of the top level payee web page.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
-              attribute of <var>e</var> to the origin of the context where
-              PaymentRequest was initialized.
+              attribute of <var>e</var> to <a data-cite=
+              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
+              origin</a> of the context where PaymentRequest was initialized.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
