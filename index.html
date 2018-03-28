@@ -150,13 +150,14 @@
           </ul>
         </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
-        [[payment-request]] method <a>show()</a> (e.g., when the user pushes a
-        button on a checkout page), the user agent computes a list of candidate
-        payment handlers, comparing the payment methods accepted by the
-        merchant with those supported by registered payment handlers. For
-        payment methods that support additional filtering, merchant and payment
-        handler capabilities are compared as part of determining whether there
-        is a match.
+        [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
+        (e.g., when the user pushes a button on a checkout page), the user
+        agent computes a list of candidate payment handlers, comparing the
+        payment methods accepted by the merchant with those supported by
+        registered payment handlers. For payment methods that support
+        additional filtering, either merchant and payment handler capabilities
+        are compared or <a>CanMakePaymentEvent</a> is used as part of
+        determining whether there is a match.
         </li>
         <li>The user agent displays a set of choices to the user: the
         registered <a data-lt="PaymentManager.instruments">instruments</a> of
@@ -303,7 +304,11 @@
         partial interface ServiceWorkerRegistration {
           readonly attribute PaymentManager paymentManager;
         };
-      </pre>
+        </pre>
+        <p>
+          The <a>paymentManager</a> attribute exposes payment handler
+          functionality in the service worker.
+        </p>
       </section>
       <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
         <h2>
@@ -314,7 +319,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
-        attribute DOMString userHint;     
+        attribute DOMString userHint;
       };
       </pre>
         <p>
@@ -845,6 +850,250 @@
             ]);
           };
      </pre>
+        </section>
+      </section>
+    </section>
+    <section id="canmakepayment">
+      <h2>
+        Can make payment
+      </h2>
+      <p>
+        If the <a>payment handler</a> supports <a>CanMakePaymentEvent</a>, the
+        <a>user agent</a> may use it to help with filtering of the available
+        payment handlers.
+      </p>
+      <p>
+        Implementations may impose a timeout for developers to respond to the
+        <a>CanMakePaymentEvent</a>. If the timeout expires, then the
+        implementation will behave as if <a data-lt=
+        "CanMakePaymentEvent.respondWith()">respondWith()</a> was called with
+        <code>false</code>.
+      </p>
+      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
+      "ServiceWorkerGlobalScope">
+        <h2>
+          Extension to <a>ServiceWorkerGlobalScope</a>
+        </h2>
+        <p>
+          This specification extends the <a>ServiceWorkerGlobalScope</a>
+          interface.
+        </p>
+        <pre class="idl">
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler oncanmakepayment;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>oncanmakepayment</dfn> attribute
+          </h2>
+          <p>
+            The <a>oncanmakepayment</a> attribute is an <a>event handler</a>
+            whose corresponding <a>event handler event type</a> is
+            canmakepayment.
+          </p>
+        </section>
+      </section>
+      <section data-dfn-for="CanMakePaymentEvent" data-link-for=
+      "CanMakePaymentEvent">
+        <h2>
+          The <dfn>CanMakePaymentEvent</dfn>
+        </h2>
+        <p>
+          The <a>CanMakePaymentEvent</a> is used to check whether the payment
+          handler is able to respond to a payment request.
+        </p>
+        <pre class="idl">
+        [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+        interface CanMakePaymentEvent : ExtendableEvent {
+          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString paymentRequestOrigin;
+          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
+        };
+        </pre>
+        <p>
+          The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+          <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
+          definitions with those defined for <a>PaymentRequestEvent</a>.
+        </p>
+        <section>
+          <h2>
+            <dfn>respondWith()</dfn> method
+          </h2>
+          <p>
+            This method is used by the payment handler to indicate whether it
+            can respond to a payment request.
+          </p>
+        </section>
+        <section data-dfn-for="CanMakePaymentEventInit">
+          <h2>
+            <dfn>CanMakePaymentEventInit</dfn> dictionary
+          </h2>
+          <pre class="idl">
+            dictionary CanMakePaymentEventInit : ExtendableEventInit {
+              USVString topLevelOrigin;
+              USVString paymentRequestOrigin;
+              sequence&lt;PaymentMethodData&gt; methodData;
+              sequence&lt;PaymentDetailsModifier&gt; modifiers;
+            };
+          </pre>
+          <p>
+            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
+            definitions with those defined for <a>PaymentRequestEvent</a>.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h2>
+          <dfn>Handling a CanMakePaymentEvent</dfn>
+        </h2>
+        <p>
+          Upon receiving a <a>PaymentRequest</a>, the <a>user agent</a> MUST
+          run the following steps:
+        </p>
+        <ol>
+          <li>If <a>user agent</a> settings prohibit usage of
+          <a>CanMakePaymentEvent</a> (e.g., in private browsing mode),
+          terminate these steps.
+          </li>
+          <li>Let <var>registration</var> be a
+          <a>ServiceWorkerRegistration</a>.
+          </li>
+          <li>If <var>registration</var> is not found, terminate these steps.
+          </li>
+          <li>Invoke the <a>handle functional event</a> algorithm with a
+          <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
+            callbackSteps</var> set to the following steps:
+            <ol>
+              <li>Set <var>global</var> to the global object that was provided
+              as an argument.
+              </li>
+              <li>Create a <a>trusted event</a>, <var>e</var>, that uses the
+              <a>CanMakePaymentEvent</a> interface, with the event type
+              canmakepayment, which does not bubble, cannot be canceled, and
+              has no default action.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a>,
+              <a data-lt=
+              "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
+              <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
+              <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+              attributes of <var>e</var> the same way as when handling
+              <a>PaymentRequestEvent</a>.
+              </li>
+              <li>Dispatch <var>e</var> to <var>global</var>.
+              </li>
+              <li>Wait for all of the promises in the <a>extend lifetime
+              promises</a> of <var>e</var> to resolve.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+      <section id="canmakepayment-example" class="informative">
+        <h2>
+          Example of handling the <a>CanMakePaymentEvent</a>
+        </h2>
+        <p>
+          This example shows how to write a service worker that listens to the
+          <a>CanMakePaymentEvent</a>. When a <a>CanMakePaymentEvent</a> is
+          received, the service worker always returns true.
+        </p>
+        <pre class="example js" title="Handling the CanMakePaymentEvent">
+          self.addEventListener('canmakepayment', function(e) {
+            e.respondWith(true);
+          });
+        </pre>
+      </section>
+      <section>
+        <h2>
+          Filtering of Payment Instruments
+        </h2>
+        <p>
+          Given a <a>PaymentMethodData</a> and a <a>PaymentInstrument</a> that
+          match on <a>payment method identifier</a>, this algorithm returns
+          <code>true</code> if this instrument can be used for payment:
+        </p>
+        <ol class="algorithm">
+          <li>Let <var>instrument</var> be the given <a>PaymentInstrument</a>.
+          </li>
+          <li>Let <var>methodName</var> be the <a>payment method identifier</a>
+          string specified in the <a>PaymentMethodData</a>.
+          </li>
+          <li>Let <var>methodData</var> be the payment method specific data of
+          <a>PaymentMethodData</a>.
+          </li>
+          <li>If <var>methodName</var> is a <a>standardized payment method
+          identifier</a> or is a <a>URL-based payment method identifier</a>
+          with <code>"supported_origins": "*"</code> in its payment method
+          manifest, filter based on <a data-lt=
+          "PaymentInstrument.capabilities">capabilities</a>:
+            <ol>
+              <li>For each <var>key</var> in <var>methodData</var>:
+                <ol>
+                  <li>If the intersection of <var>methodData[key]</var> and
+                  <var>instrument.capabilities[key]</var> is empty, return
+                  <code>false</code>.
+                  </li>
+                </ol>
+              </li>
+              <li>Otherwise, return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>Otherwise, fire the <a>CanMakePaymentEvent</a> in the payment
+          handler and return the result.
+          </li>
+        </ol>
+        <div class="issue" data-number="157">
+          This is the current thinking about filtering of payment instruments.
+          As we continue to experiment with implementations, we are soliciting
+          feedback on this approach. Also see the <a
+          href="https://github.com/w3c/payment-request-info/wiki/PaymentMethodPractice#canmakepaymentevent-implementation">
+          Wiki page</a>.
+        </div>
+        <section id="capabilities-example" class="informative">
+          <h2>
+            How to specify capabilities
+          </h2>
+          <p>
+            Example of how a payment handler should provide the list of all its
+            active cards to the browser.
+          </p>
+          <pre class="example js" title="Specifying capabilities">
+          await navigator.serviceWorker.register('/pw/app.js');
+          const registration = await navigator.serviceWorker.ready;
+          registration.paymentManager.userHint = '(Visa ****1111)';
+          await registration.paymentManager.instruments.set(
+            '12345',
+            {
+              name: "Visa ****1111",
+              icons: [{
+                src: '/pay/visa.png',
+                sizes: '32x32',
+                type: 'image/png',
+              }],
+              enabledMethods: ['basic-card'],
+              capabilities: {
+                supportedNetworks: ['visa'],
+                supportedTypes: ['credit'],
+              },
+            });
+          </pre>
+          <p>
+            In this case, <code>new PaymentRequest([{supportedMethods:
+            'basic-card'}], shoppingCart).canMakePayment()</code> should return
+            <code>true</code> because there's an active card in the payment
+            handler. Note that <code>new PaymentRequest([{supportedMethods:
+            'basic-card', data: {supportedTypes: ['debit']}}],
+            shoppingCart).canMakePayment()</code> would return
+            <code>false</code> because of mismatch in
+            <code>supportedTypes</code> in this example.
+          </p>
         </section>
       </section>
     </section>
@@ -1731,6 +1980,9 @@ window.addEventListener("message", function(e) {
           information with any payment handler until the user has selected that
           payment handler.
           </li>
+          <li>User agents should allow users to disable support for the
+          <a>CanMakePaymentEvent</a>.
+          </li>
         </ul>
       </section>
       <section>
@@ -1816,6 +2068,11 @@ window.addEventListener("message", function(e) {
           either that the user log in to the origin or re-enter payment
           instrument details.
           </li>
+          <li>The <a>CanMakePaymentEvent</a> event should not be fired in
+          private browsing mode. The user agent should behave as if
+            <a data-lt="CanMakePaymentEvent.respondWith()">respondWith()</a>
+            was called with <code>true</code>.
+          </li>
         </ul>
       </section>
     </section>
@@ -1863,7 +2120,9 @@ window.addEventListener("message", function(e) {
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
-          <dfn data-cite="!payment-request#show-method">show()</dfn>, and
+          <dfn data-cite=
+          "!payment-request#canmakepayment()-method">canMakePayment()</dfn>,
+          <dfn data-cite="!payment-request#show()-method">show()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
           accepts the payment request algorithm</dfn> <dfn data-cite=
@@ -1888,9 +2147,16 @@ window.addEventListener("message", function(e) {
           Payment Method Identifiers
         </dt>
         <dd>
-          The terms <dfn data-lt="payment method identifiers">payment method
-          identifier</dfn> is defined by the Payment Method Identifier
-          specification [[!payment-method-id]].
+          The terms <dfn data-lt="payment method identifiers" data-cite=
+          "!payment-method-id#payment-method-identifiers-(pmis)">payment method
+          identifier</dfn>, <dfn data-lt=
+          "standardized payment method identifiers" data-cite=
+          "!payment-method-id#standardized-payment-method-identifiers">standardized
+          payment method identifier</dfn>, and <dfn data-lt=
+          "URL-based payment method identifiers" data-cite=
+          "!payment-method-id#url-based-payment-method-identifiers">URL-based
+          payment method identifier</dfn> are defined by the Payment Method
+          Identifier specification [[!payment-method-id]].
         </dd>
         <dt>
           Basic Card Payment
@@ -1899,9 +2165,9 @@ window.addEventListener("message", function(e) {
           The terms <dfn data-cite=
           "!payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportednetworks">supportedNetworks</dfn>,
+          "!payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
           and <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportedtypes">supportedTypes</dfn>
+          "!payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
           are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
