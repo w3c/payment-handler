@@ -133,19 +133,24 @@
           <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
         <li>During service worker registration, the <a>PaymentManager</a> is
-        used to set:
+        used to set a list of <a data-lt="PaymentInstrument.PaymentInstrument">
+          payment instruments</a>. Each <a data-lt=
+          "PaymentInstrument.PaymentInstrument">payment instrument</a> provides
+          data to the user agent to improve the user experience of selecting
+          payment credentials:
           <ul>
-            <li>A list of <a data-lt="PaymentInstrument.method">enabled payment
-            methods</a>.
+            <li>The <a data-lt="PaymentInstrument.method">method</a> and
+            optional <a data-lt=
+            "PaymentInstrument.capabilities">capabilities</a> inform the user
+            agent decision whether to display this instrument as a candidate
+            for payment.
             </li>
-            <li>[Optionally] the conditions under which the handler supports a
-            given payment method; these <a data-lt=
-            "PaymentInstrument.capabilities">capabilities</a> play a role in
-            matching computations.
-            </li>
-            <li>Information used in the display of <a data-lt=
-            "PaymentManager.instruments">instruments</a> supported by the
-            payment handler.
+            <li>When the instrument matches what the payee accepts, the user
+            agent may display the <a data-lt="PaymentInstrument.name">Name</a>
+            and <a data-lt="PaymentInstrument.icon">icon</a>. These provide
+            hints about payment credentials that the user agent will return in
+            the <a>PaymentHandlerResponse</a> if the user selects this
+            instrument.
             </li>
           </ul>
         </li>
