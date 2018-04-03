@@ -132,20 +132,24 @@
         <li>
           <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
-        <li>During service worker registration, the <a>PaymentManager</a> is
-        used to set:
+        <li>The <a>PaymentManager</a> is used to set a list of <a data-lt=
+        "PaymentManager.instruments">payment instruments</a>. Each
+          <a data-lt="PaymentInstrument">payment instrument</a> provides data
+          to the user agent to improve the user experience of selecting payment
+          credentials:
           <ul>
-            <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled
-            payment methods</a>.
+            <li>The <a data-lt="PaymentInstrument.method">method</a> and
+            optional <a data-lt=
+            "PaymentInstrument.capabilities">capabilities</a> inform the user
+            agent decision whether to display this instrument as a candidate
+            for payment.
             </li>
-            <li>[Optionally] the conditions under which the handler supports a
-            given payment method; these <a data-lt=
-            "PaymentInstrument.capabilities">capabilities</a> play a role in
-            matching computations.
-            </li>
-            <li>Information used in the display of <a data-lt=
-            "PaymentManager.instruments">instruments</a> supported by the
-            payment handler.
+            <li>When the instrument matches what the payee accepts, the user
+            agent may display the <a data-lt="PaymentInstrument.name">name</a>
+            and <a data-lt="PaymentInstrument.icons">icon</a>. These provide
+            hints about payment credentials that the user agent will return in
+            the <a>PaymentHandlerResponse</a> if the user selects this
+            instrument.
             </li>
           </ul>
         </li>
@@ -589,7 +593,7 @@
       dictionary PaymentInstrument {
         required DOMString name;
         sequence&lt;ImageObject&gt; icons;
-        sequence&lt;DOMString&gt; enabledMethods;
+        DOMString method;
         object capabilities;
       };
       </pre>
@@ -611,12 +615,11 @@
               presented to the user for selection.
             </dd>
             <dt>
-              <dfn>enabledMethods</dfn> member
+              <dfn>method</dfn> member
             </dt>
             <dd>
-              The <a>enabledMethods</a> member is a list of one or more
-              <a>payment method identifiers</a> of the <a>payment methods</a>
-              supported by this instrument.
+              The <a>method</a> member is the <a>payment method identifier</a>
+              of the <a>payment method</a> supported by this instrument.
             </dd>
             <dt>
               <dfn>capabilities</dfn> member
@@ -752,7 +755,7 @@
           instrumentKey,
           {
             name: "My Bob Pay Account: john@example.com",
-            enabledMethods: ["https://bobpay.com/"],
+            method: "https://bobpay.com",
             icons: [{
               src: "icon/lowres.webp",
               sizes: "48x48",
@@ -777,7 +780,7 @@
           instrumentKey,
           {
             name: "My Bob Pay Account: john@example.com",
-            enabledMethods: ["https://bobpay.com/"],
+            method: "https://bobpay.com",
             icons: [{
               src: "../bobpay/icon/lowres.webp",
               sizes: "48x48",
@@ -822,7 +825,7 @@
               "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
               {
                 name: "Visa ending ****4756",
-                enabledMethods: ["basic-card"],
+                method: "basic-card",
                 capabilities: {
                   supportedNetworks: ["visa"],
                   supportedTypes: ["credit"]
@@ -833,14 +836,14 @@
               "c8126178-3bba-4d09-8f00-0771bcfd3b11",
               {
                 name: "My Bob Pay Account: john@example.com",
-                enabledMethods: ["https://bobpay.com/"]
+                method: "https://bobpay.com"
               }),
 
             registration.paymentManager.instruments.set(
               "new-card",
               {
                 name: "Add new credit/debit card to ExampleApp",
-                enabledMethods: ["basic-card"],
+                method: "basic-card",
                 capabilities: {
                   supportedNetworks:
                     ["visa", "mastercard", "amex", "discover"],
@@ -1077,7 +1080,7 @@
                 sizes: "32x32",
                 type: "image/png",
               }],
-              enabledMethods: ["basic-card"],
+              method: "basic-card",
               capabilities: {
                 supportedNetworks: ["visa"],
                 supportedTypes: ["credit"],
@@ -1321,8 +1324,8 @@
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              add the value of <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
@@ -1375,8 +1378,8 @@
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              add the value of <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
@@ -1603,7 +1606,7 @@
           "!SERVICE-WORKERS#clients-openwindow">Open Window Algorithm</a> in
           the Service Workers specification.
         </p>
-        <p class="issue" data-number="97">
+        <p class="issue" data-number="115">
           Should we refer to the Service Workers specification instead of
           copying their steps?
         </p>
