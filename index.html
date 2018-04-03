@@ -132,12 +132,11 @@
         <li>
           <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
-        <li>During service worker registration, the <a>PaymentManager</a> is
-        used to set a list of <a data-lt="PaymentInstrument.PaymentInstrument">
-          payment instruments</a>. Each <a data-lt=
-          "PaymentInstrument.PaymentInstrument">payment instrument</a> provides
-          data to the user agent to improve the user experience of selecting
-          payment credentials:
+        <li>The <a>PaymentManager</a> is used to set a list of <a data-lt=
+        "PaymentManager.instruments">payment instruments</a>. Each
+          <a data-lt="PaymentInstrument">payment instrument</a> provides data
+          to the user agent to improve the user experience of selecting payment
+          credentials:
           <ul>
             <li>The <a data-lt="PaymentInstrument.method">method</a> and
             optional <a data-lt=
@@ -146,8 +145,8 @@
             for payment.
             </li>
             <li>When the instrument matches what the payee accepts, the user
-            agent may display the <a data-lt="PaymentInstrument.name">Name</a>
-            and <a data-lt="PaymentInstrument.icon">icon</a>. These provide
+            agent may display the <a data-lt="PaymentInstrument.name">name</a>
+            and <a data-lt="PaymentInstrument.icons">icon</a>. These provide
             hints about payment credentials that the user agent will return in
             the <a>PaymentHandlerResponse</a> if the user selects this
             instrument.
@@ -1325,8 +1324,8 @@
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              add the value of <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
