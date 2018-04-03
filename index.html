@@ -4,11 +4,11 @@
     <title>
       Payment Handler API
     </title>
-    <meta charset="utf-8">
-    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class=
-    "remove"></script>
-    <script src="utils.js" class="remove"></script>
-    <script class="remove">
+    <meta charset='utf-8'>
+    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class=
+    'remove'></script>
+    <script src='utils.js' class='remove'></script>
+    <script class='remove'>
       var respecConfig = {
             github:    "https://github.com/w3c/payment-handler/",
             shortName:  "payment-handler",
@@ -26,7 +26,7 @@
                     company:    "Opera",
                     companyURL: "https://opera.com",
                     w3cid:      90636,
-                    note: "Former Editor"
+                    note: 'Former Editor'
                 },
                 {   name:       "Adam Roach",
                     url:        "https://github.com/adamroach",
@@ -69,13 +69,13 @@
     </script>
   </head>
   <body>
-    <section id="abstract">
+    <section id='abstract'>
       <p>
         This specification defines capabilities that enable Web applications to
         handle requests for payment.
       </p>
     </section>
-    <section id="sotd">
+    <section id='sotd'>
       <p>
         The Web Payments Working Group maintains <a href=
         "https://github.com/w3c/payment-handler/issues">a list of all bug
@@ -86,7 +86,7 @@
         specification text for outstanding issues are strongly encouraged.
       </p>
     </section>
-    <section class="informative">
+    <section class='informative'>
       <h2>
         Introduction
       </h2>
@@ -809,7 +809,7 @@
           }
 
           const registration =
-            await navigator.serviceWorker.register("/sw.js");
+            await navigator.serviceWorker.register('/sw.js');
 
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
@@ -823,8 +823,8 @@
                 name: "Visa ending ****4756",
                 method: "basic-card",
                 capabilities: {
-                  supportedNetworks: ["visa"],
-                  supportedTypes: ["credit"]
+                  supportedNetworks: ['visa'],
+                  supportedTypes: ['credit']
                 }
               }),
 
@@ -842,8 +842,8 @@
                 method: "basic-card",
                 capabilities: {
                   supportedNetworks:
-                    ["visa", "mastercard", "amex", "discover"],
-                  supportedTypes: ["credit", "debit", "prepaid"]
+                    ['visa','mastercard','amex','discover'],
+                  supportedTypes: ['credit','debit','prepaid']
                 }
               }),
             ]);
@@ -1003,7 +1003,7 @@
           received, the service worker always returns true.
         </p>
         <pre class="example js" title="Handling the CanMakePaymentEvent">
-          self.addEventListener("canmakepayment", function(e) {
+          self.addEventListener('canmakepayment', function(e) {
             e.respondWith(true);
           });
         </pre>
@@ -1064,31 +1064,31 @@
             active cards to the browser.
           </p>
           <pre class="example js" title="Specifying capabilities">
-          await navigator.serviceWorker.register("/pw/app.js");
+          await navigator.serviceWorker.register('/pw/app.js');
           const registration = await navigator.serviceWorker.ready;
-          registration.paymentManager.userHint = "(Visa ****1111)";
+          registration.paymentManager.userHint = '(Visa ****1111)';
           await registration.paymentManager.instruments.set(
-            "12345",
+            '12345',
             {
               name: "Visa ****1111",
               icons: [{
-                src: "/pay/visa.png",
-                sizes: "32x32",
-                type: "image/png",
+                src: '/pay/visa.png',
+                sizes: '32x32',
+                type: 'image/png',
               }],
               method: "basic-card",
               capabilities: {
-                supportedNetworks: ["visa"],
-                supportedTypes: ["credit"],
+                supportedNetworks: ['visa'],
+                supportedTypes: ['credit'],
               },
             });
           </pre>
           <p>
             In this case, <code>new PaymentRequest([{supportedMethods:
-            "basic-card"}], shoppingCart).canMakePayment()</code> should return
+            'basic-card'}], shoppingCart).canMakePayment()</code> should return
             <code>true</code> because there's an active card in the payment
             handler. Note that <code>new PaymentRequest([{supportedMethods:
-            "basic-card", data: {supportedTypes: ["debit"]}}],
+            'basic-card', data: {supportedTypes: ['debit']}}],
             shoppingCart).canMakePayment()</code> would return
             <code>false</code> because of mismatch in
             <code>supportedTypes</code> in this example.
@@ -1321,7 +1321,7 @@
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
               add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.method">method</a> to
+              "PaymentInstrument.enabledMethods">enabledMethods</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
@@ -1688,11 +1688,11 @@
           user.
         </p>
         <pre class="example js" title="Handling the PaymentRequestEvent">
-      self.addEventListener("paymentrequest", function(e) {
+      self.addEventListener('paymentrequest', function(e) {
         e.respondWith(new Promise(function(resolve, reject) {
-          self.addEventListener("message", listener = function(e) {
-            self.removeEventListener("message", listener);
-            if (e.data.hasOwnProperty("name")) {
+          self.addEventListener('message', listener = function(e) {
+            self.removeEventListener('message', listener);
+            if (e.data.hasOwnProperty('name')) {
               reject(e.data);
             } else {
               resolve(e.data);
@@ -2282,7 +2282,7 @@ window.addEventListener("message", function(e) {
         </dd>
       </dl>
     </section>
-    <section id="conformance">
+    <section id='conformance'>
       <p>
         There is only one class of product that can claim conformance to this
         specification: a <dfn data-lt="user agents">user agent</dfn>.
