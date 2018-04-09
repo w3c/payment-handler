@@ -426,6 +426,10 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
+            </li>
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, remove it from the collection
             and resolve <var>p</var> with <b>true</b>.
@@ -447,6 +451,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, resolve <var>p</var> with that
             <a>PaymentInstrument</a>.
@@ -468,6 +475,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
             <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains
             all the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
             contained in the collection, in original insertion order.
@@ -487,6 +497,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, resolve <var>p</var> with
             <b>true</b>.
@@ -535,6 +548,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then for each <var>icon</var> in
             <var>details</var>.<a data-lt="PaymentInstrument.icons">icons</a>:
@@ -579,6 +595,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
+            <li>If the <a>document</a> is not <a>allowed to use</a> the
+            policy-controlled-feature <code>payment</code>, reject <var>p</var>
+            with <a>SecurityError</a>.
             <li>Remove all <a>PaymentInstrument</a>s from the collection and
             resolve <var>p</var>.
             </li>
@@ -2078,6 +2097,17 @@ window.addEventListener("message", function(e) {
           </li>
         </ul>
       </section>
+      <section>
+        <h2>
+          Iframes
+        </h2>
+        <ul>
+          <li>Cross-origin iframes should not be able to register payment
+          handlers, unless allowed by [[!feature-policy]], e.g., by specifying
+          the <code>allow="payment"</code> attribute on the iframe element.
+          </li>
+        </ul>
+      </section>
     </section>
     <section id="display" class="informative">
       <h2>
@@ -2177,7 +2207,8 @@ window.addEventListener("message", function(e) {
           HTML
         </dt>
         <dd>
-          The terms <dfn data-cite="!HTML#global-object">global object</dfn>,
+          The terms <dfn data-cite="!HTML#document">document</dfn>,
+          <dfn data-cite="!HTML#global-object">global object</dfn>,
           <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
           context</dfn>, <dfn data-cite="!HTML#structured-clone">structured
           clone</dfn>, <dfn data-cite="!HTML#event-handlers">event
@@ -2283,6 +2314,15 @@ window.addEventListener("message", function(e) {
           "!SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>, and
           <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn> are
           defined in [[!SERVICE-WORKERS]].
+        </dd>
+      </dl>
+      <dl>
+        <dt>
+          Feature Policy
+        </dt>
+        <dd>
+          The term <dfn data-cite="!feature-policy#allowed-to-use">allowed to
+          use</dfn> is defined in [[!feature-policy]].
         </dd>
       </dl>
     </section>
