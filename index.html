@@ -1692,30 +1692,35 @@
           user.
         </p>
         <pre class="example js" title="Handling the PaymentRequestEvent">
-      self.addEventListener("paymentrequest", function(e) {
-        e.respondWith(new Promise(function(resolve, reject) {
-          self.addEventListener("message", listener = function(e) {
+      async function getPaymentResponseFromWindow() {
+        return new Promise((resolve, reject) =&gt; {
+          self.addEventListener("message", listener = e =&gt; {
             self.removeEventListener("message", listener);
-            if (e.data.hasOwnProperty("name")) {
-              reject(e.data);
-            } else {
-              resolve(e.data);
+            if (!e.data || !e.data.methodName) {
+              reject();
+              return;
             }
+            resolve(e.data);
+          });
+        });
+      }
+
+      self.addEventListener("paymentrequest", e =&gt; {
+        e.respondWith((async() =&gt; {
+          // Open a new window for providing payment UI to user.
+          const windowClient = await e.openWindow("payment_ui.html");
+
+          // Send data to the opened window.
+          windowClient.postMessage({
+            total: e.total,
+            modifiers: e.modifiers
           });
 
-          e.openWindow("https://www.example.com/bobpay/pay")
-          .then(function(windowClient) {
-            windowClient.postMessage(e.data);
-          })
-          .catch(function(err) {
-            reject(err);
-          });
-        }));
+          // Wait for a payment response from the opened window.
+          return await getPaymentResponseFromWindow();
+        })());
       });
       </pre>
-        <p class="issue" title="Revisit examples" data-number="128">
-          The Web Payments Working Group plans to revisit these two examples.
-        </p>
         <p>
           Using the simple scheme described above, a trivial HTML page that is
           loaded into the <a>payment handler window</a> to implement the
@@ -1734,26 +1739,26 @@
 &lt;/form&gt;
 
 &lt;script&gt;
-window.addEventListener("message", function(e) {
-  var form = document.getElementById("form");
+navigator.serviceWorker.addEventListener("message", e =&gt; {
   /* Note: message sent from payment app is available in e.data */
-  form.onsubmit = function() {
-    /* See https://w3c.github.io/webpayments-methods-card/#basiccardresponse */
-    var basicCardResponse = {};
-    [ "cardholderName", "cardNumber","expiryMonth","expiryYear","cardSecurityCode"]
-    .forEach(function(field) {
-      basicCardResponse[field] = form.elements[field].value;
-    });
+});
 
-    /* See https://w3c.github.io/payment-handler/#paymenthandlerresponse-dictionary */
-    var paymentAppResponse = {
-      methodName: "basic-card",
-      details: details
-    };
+document.getElementById("form").addEventListener("submit", e =&gt; {
+  /* See https://w3c.github.io/payment-method-basic-card/#basiccardresponse-dictionary */
+  const basicCardResponse = {};
+  ["cardholderName", "cardNumber", "expiryMonth", "expiryYear", "cardSecurityCode"]
+  .forEach(field =&gt; {
+    basicCardResponse[field] = form.elements[field].value;
+  });
 
-    e.source.postMessage(paymentAppResponse);
-    window.close();
-  }
+  /* See https://w3c.github.io/payment-handler/#paymenthandlerresponse-dictionary */
+  const paymentAppResponse = {
+    methodName: "basic-card",
+    details: basicCardResponse
+  };
+
+  navigator.serviceWorker.controller.postMessage(paymentAppResponse);
+  window.close();
 });
 &lt;/script&gt;
       </pre>
