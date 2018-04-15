@@ -1632,7 +1632,7 @@
           <li>If this algorithm is not <a data-cite=
           "!HTML#triggered-by-user-activation">triggered by user
           activation</a>, return a <a>Promise</a> rejected with a
-          <a>InvalidAccessError</a>.
+          "<a>NotAllowedError</a>" <a>DOMException</a>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
@@ -2237,22 +2237,13 @@ window.addEventListener("message", function(e) {
           </p>
           <ul>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#invalidaccesserror">InvalidAccessError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
             "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#notfounderror">NotFoundError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#operationerror">OperationError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#securityerror">SecurityError</dfn></code>"
             </li>
           </ul>
         </dd>
