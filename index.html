@@ -923,12 +923,80 @@
         </p>
         <section>
           <h2>
-            <dfn>respondWith()</dfn> method
+            <dfn data-lt=
+            "respondWith(canMakePaymentPromise)">respondWith()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to indicate whether it
-            can respond to a payment request.
+            can respond to a payment request. The
+            <a>respondWith(canMakePaymentPromise)</a> method MUST act as
+            follows:
           </p>
+          <ol class="algorithm">
+            <li>Let <var>event</var> be this <a>CanMakePaymentEvent</a>
+            instance.
+            </li>
+            <li>If <var>event</var>'s <a>isTrusted</a> attribute is false, then
+            <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a>.
+            </li>
+            <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
+            <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a>.
+            </li>
+            <li>If <var>event</var>.<a>[[\resultPromise]]</a> is not null, <a>
+              throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a>.
+            </li>
+            <li>Set <var>event</var>.<a>[[\resultPromise]]</a> to
+            <a>PaymentRequest</a>'s <var>canMakePaymentPromise</var>.
+            </li>
+            <li>Set the <var>event</var>'s <a>stop propagation flag</a> and
+            <var>event</var>'s <a>stop immediate propagation flag</a>.
+            </li>
+            <li>Add <var>canMakePaymentPromise</var> to the <var>event</var>'s
+            <a>extend lifetime promises</a>.
+            </li>
+            <li>Increment the <var>event</var>'s <a>pending promises count</a>
+            by one.
+            </li>
+            <li>Upon <a>fulfillment</a> or <a>rejection</a> of
+            <var>canMakePaymentPromise</var>, <a data-cite=
+            "!HTML#queue-a-microtask">queue a microtask</a> to perform the
+            following steps:
+              <ol>
+                <li>Decrement the <var>event</var>'s <a>pending promises
+                count</a> by one.
+                </li>
+                <li>Let <var>registration</var> be the <a data-cite=
+                "!HTML#context-object">context object</a>'s <a data-cite=
+                "!HTML#relevant-settings-object">relevant global object</a>'s
+                associated <a>service worker</a>'s <a>containing service worker
+                registration</a>.
+                </li>
+                <li>If <var>registration</var>’s <a>uninstalling flag</a> is
+                set, invoke <a>Try Clear Registration</a> with
+                <var>registration</var>.
+                </li>
+                <li>If <var>registration</var> is not null, invoke <a>Try
+                Activate</a> with <var>registration</var>.
+                </li>
+              </ol>
+            </li>
+            <li>Upon <a>fulfillment</a> of <var>canMakePaymentPromise</var>
+            with value <var>value</var>,
+              <ol>
+                <li>Resolve the pending promise
+                <var>event</var>.<a>[[\resultPromise]]</a> with
+                <var>value</var>.
+                </li>
+              </ol>
+            </li>
+            <li>Upon <a>rejection</a> of <var>canMakePaymentPromise</var>,
+              <ol>
+                <li>Resolve the pending promise
+                <var>event</var>.<a>[[\resultPromise]]</a> with false.
+                </li>
+              </ol>
+            </li>
+          </ol>
         </section>
         <section data-dfn-for="CanMakePaymentEventInit">
           <h2>
@@ -989,6 +1057,16 @@
               <a>PaymentRequestEvent</a>.
               </li>
               <li>Dispatch <var>e</var> to <var>global</var>.
+              </li>
+              <li>If <var>e</var>.<a>[[\resultPromise]]</a> is null, then:
+                <ol>
+                  <li>Set <var>e</var>.<a>[[\resultPromise]]</a> to
+                  <a>PaymentRequest</a>'s <var>canMakePaymentPromise</var>.
+                  </li>
+                  <li>Resolve <var>e</var>.<a>[[\resultPromise]]</a> with
+                  false.
+                  </li>
+                </ol>
               </li>
               <li>Wait for all of the promises in the <a>extend lifetime
               promises</a> of <var>e</var> to resolve.
@@ -1424,6 +1502,35 @@
         <h2>
           Internal Slots
         </h2>
+        <p>
+          Instances of <a>CanMakePaymentEvent</a> are created with the internal
+          slots in the following table:
+        </p>
+        <table>
+          <tr>
+            <th>
+              Internal Slot
+            </th>
+            <th>
+              Default Value
+            </th>
+            <th>
+              Description (<em>non-normative</em>)
+            </th>
+          </tr>
+          <tr>
+            <td>
+              <dfn>[[\resultPromise]]</dfn>
+            </td>
+            <td>
+              null
+            </td>
+            <td>
+              This value is set to the pending promise to get back the result
+              when event is triggered from the associated PaymentRequest.
+            </td>
+          </tr>
+        </table>
         <p>
           Instances of <a>PaymentRequestEvent</a> are created with the internal
           slots in the following table:
@@ -2270,10 +2377,10 @@ window.addEventListener("message", function(e) {
           <dfn data-cite=
           "!SERVICE-WORKERS#handle-functional-event-algorithm">handle
           functional event</dfn>, <dfn data-cite=
-          "!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
-          promises</dfn>,<dfn data-cite=
-          "!SERVICE-WORKERS#dfn-pending-promises-count">pending promises
-          count</dfn>, <dfn data-cite=
+          "!SERVICE-WORKERS#extendableevent-extend-lifetime-promises">extend
+          lifetime promises</dfn>,<dfn data-cite=
+          "!SERVICE-WORKERS#extendableevent-pending-promises-count">pending
+          promises count</dfn>, <dfn data-cite=
           "!SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
           service worker registration</dfn>, <dfn data-cite=
           "!SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
