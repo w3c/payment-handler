@@ -1613,6 +1613,10 @@
         <ol class="algorithm">
           <li>Let <var>event</var> be this <a>PaymentRequestEvent</a>.
           </li>
+          <li>If <var>event</var>'s <a>isTrusted</a> attribute is false, return
+          a <a>Promise</a> rejected with a "<a>InvalidStateError</a>"
+          <a>DOMException</a>.
+          </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a> that
           triggered this <a>PaymentRequestEvent</a>.
           </li>
@@ -1829,6 +1833,10 @@ window.addEventListener("message", function(e) {
           the following steps:
         </p>
         <ol class="algorithm">
+          <li>If <var>event</var>'s <a>isTrusted</a> is false, then
+          <a>throw</a> an "InvalidStateError" <a>DOMException</a> and abort
+          these steps.
+          </li>
           <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
           <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a> and
           abort these steps.
@@ -2209,9 +2217,10 @@ window.addEventListener("message", function(e) {
           The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
           <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
           <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
-          flag</dfn>, and <dfn data-cite=
-          "!DOM#stop-immediate-propagation-flag">stop immediate propagation
-          flag</dfn> are defined in [[!DOM]].
+          flag</dfn>, <code><dfn data-cite=
+          "!DOM#dom-event-istrusted">isTrusted</dfn></code> attribute, and
+          <dfn data-cite="!DOM#stop-immediate-propagation-flag">stop immediate
+          propagation flag</dfn> are defined in [[!DOM]].
         </dd>
         <dt>
           Web IDL
