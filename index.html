@@ -909,7 +909,7 @@
         <pre class="idl">
         [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
         interface CanMakePaymentEvent : ExtendableEvent {
-          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
@@ -917,7 +917,7 @@
         };
         </pre>
         <p>
-          The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+          The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
           <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
           definitions with those defined for <a>PaymentRequestEvent</a>.
         </p>
@@ -936,14 +936,14 @@
           </h2>
           <pre class="idl">
             dictionary CanMakePaymentEventInit : ExtendableEventInit {
-              USVString topLevelOrigin;
+              USVString topOrigin;
               USVString paymentRequestOrigin;
               sequence&lt;PaymentMethodData&gt; methodData;
               sequence&lt;PaymentDetailsModifier&gt; modifiers;
             };
           </pre>
           <p>
-            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
             <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
             definitions with those defined for <a>PaymentRequestEvent</a>.
           </p>
@@ -980,7 +980,7 @@
               has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a>,
+              "PaymentRequestEvent.topOrigin">topOrigin</a>,
               <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
               <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
@@ -1158,7 +1158,7 @@
         <pre class="idl">
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
-          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
@@ -1171,7 +1171,7 @@
       </pre>
         <section>
           <h2>
-            <dfn>topLevelOrigin</dfn> attribute
+            <dfn>topOrigin</dfn> attribute
           </h2>
           <p>
             Returns a string that indicates the <a data-cite=
@@ -1188,10 +1188,10 @@
             Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
-            <a>topLevelOrigin</a>, the attributes have the same value,
+            <a>topOrigin</a>, the attributes have the same value,
             otherwise the attributes have different values. For example, when a
             <a>PaymentRequest</a> is initialized within an iframe from an
-            origin other than <a>topLevelOrigin</a>, the value of this
+            origin other than <a>topOrigin</a>, the value of this
             attribute is the origin of the iframe. This attribute is
             initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
@@ -1293,7 +1293,7 @@
           </h2>
           <pre class="idl">
             dictionary PaymentRequestEventInit : ExtendableEventInit {
-              USVString topLevelOrigin;
+              USVString topOrigin;
               USVString paymentRequestOrigin;
               DOMString paymentRequestId;
               sequence&lt;PaymentMethodData&gt; methodData;
@@ -1303,7 +1303,7 @@
             };
           </pre>
           <p>
-            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
             <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
             <dfn>total</dfn>, <dfn>modifiers</dfn>, and
             <dfn>instrumentKey</dfn> members share their definitions with those
@@ -1513,7 +1513,7 @@
               and has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a> attribute
+              "PaymentRequestEvent.topOrigin">topOrigin</a> attribute
               of <var>e</var> to <a data-cite=
               "!HTML#ascii-serialisation-of-an-origin">the serialization of the
               origin</a> of the top level payee web page.
