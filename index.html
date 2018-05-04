@@ -4,11 +4,11 @@
     <title>
       Payment Handler API
     </title>
-    <meta charset='utf-8'>
-    <script src='https://www.w3.org/Tools/respec/respec-w3c-common' class=
-    'remove'></script>
-    <script src='utils.js' class='remove'></script>
-    <script class='remove'>
+    <meta charset="utf-8">
+    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class=
+    "remove"></script>
+    <script src="utils.js" class="remove"></script>
+    <script class="remove">
       var respecConfig = {
             github:    "https://github.com/w3c/payment-handler/",
             shortName:  "payment-handler",
@@ -26,7 +26,7 @@
                     company:    "Opera",
                     companyURL: "https://opera.com",
                     w3cid:      90636,
-                    note: 'Former Editor'
+                    note: "Former Editor"
                 },
                 {   name:       "Adam Roach",
                     url:        "https://github.com/adamroach",
@@ -69,13 +69,13 @@
     </script>
   </head>
   <body>
-    <section id='abstract'>
+    <section id="abstract">
       <p>
         This specification defines capabilities that enable Web applications to
         handle requests for payment.
       </p>
     </section>
-    <section id='sotd'>
+    <section id="sotd">
       <p>
         The Web Payments Working Group maintains <a href=
         "https://github.com/w3c/payment-handler/issues">a list of all bug
@@ -86,7 +86,7 @@
         specification text for outstanding issues are strongly encouraged.
       </p>
     </section>
-    <section class='informative'>
+    <section class="informative">
       <h2>
         Introduction
       </h2>
@@ -132,31 +132,36 @@
         <li>
           <a>Payment handler</a>s are defined in <a>service worker</a> code.
         </li>
-        <li>During service worker registration, the <a>PaymentManager</a> is
-        used to set:
+        <li>The <a>PaymentManager</a> is used to set a list of <a data-lt=
+        "PaymentManager.instruments">payment instruments</a>. Each
+          <a data-lt="PaymentInstrument">payment instrument</a> provides data
+          to the user agent to improve the user experience of selecting payment
+          credentials:
           <ul>
-            <li>A list of <a data-lt="PaymentInstrument.enabledMethods">enabled
-            payment methods</a>.
+            <li>The <a data-lt="PaymentInstrument.method">method</a> and
+            optional <a data-lt=
+            "PaymentInstrument.capabilities">capabilities</a> inform the user
+            agent decision whether to display this instrument as a candidate
+            for payment.
             </li>
-            <li>[Optionally] the conditions under which the handler supports a
-            given payment method; these <a data-lt=
-            "PaymentInstrument.capabilities">capabilities</a> play a role in
-            matching computations.
-            </li>
-            <li>Information used in the display of <a data-lt=
-            "PaymentManager.instruments">instruments</a> supported by the
-            payment handler.
+            <li>When the instrument matches what the payee accepts, the user
+            agent may display the <a data-lt="PaymentInstrument.name">name</a>
+            and <a data-lt="PaymentInstrument.icons">icon</a>. These provide
+            hints about payment credentials that the user agent will return in
+            the <a>PaymentHandlerResponse</a> if the user selects this
+            instrument.
             </li>
           </ul>
         </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
-        [[payment-request]] method <a>show()</a> (e.g., when the user pushes a
-        button on a checkout page), the user agent computes a list of candidate
-        payment handlers, comparing the payment methods accepted by the
-        merchant with those supported by registered payment handlers. For
-        payment methods that support additional filtering, merchant and payment
-        handler capabilities are compared as part of determining whether there
-        is a match.
+        [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
+        (e.g., when the user pushes a button on a checkout page), the user
+        agent computes a list of candidate payment handlers, comparing the
+        payment methods accepted by the merchant with those supported by
+        registered payment handlers. For payment methods that support
+        additional filtering, either merchant and payment handler capabilities
+        are compared or <a>CanMakePaymentEvent</a> is used as part of
+        determining whether there is a match.
         </li>
         <li>The user agent displays a set of choices to the user: the
         registered <a data-lt="PaymentManager.instruments">instruments</a> of
@@ -301,9 +306,13 @@
         </p>
         <pre class="idl">
         partial interface ServiceWorkerRegistration {
-          readonly attribute PaymentManager paymentManager;
+          [SameObject] readonly attribute PaymentManager paymentManager;
         };
-      </pre>
+        </pre>
+        <p>
+          The <a>paymentManager</a> attribute exposes payment handler
+          functionality in the service worker.
+        </p>
       </section>
       <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
         <h2>
@@ -314,7 +323,7 @@
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
         [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
-        attribute DOMString userHint;     
+        attribute DOMString userHint;
       };
       </pre>
         <p>
@@ -500,7 +509,8 @@
               <a>payment handler</a>'s <a>origin</a>.
             </li>
             <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a <a>NotAllowedError</a>.
+            <a>Promise</a> rejected with a "<a>NotAllowedError</a>"
+            <a>DOMException</a>.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -583,7 +593,7 @@
       dictionary PaymentInstrument {
         required DOMString name;
         sequence&lt;ImageObject&gt; icons;
-        sequence&lt;DOMString&gt; enabledMethods;
+        DOMString method;
         object capabilities;
       };
       </pre>
@@ -605,12 +615,11 @@
               presented to the user for selection.
             </dd>
             <dt>
-              <dfn>enabledMethods</dfn> member
+              <dfn>method</dfn> member
             </dt>
             <dd>
-              The <a>enabledMethods</a> member is a list of one or more
-              <a>payment method identifiers</a> of the <a>payment methods</a>
-              supported by this instrument.
+              The <a>method</a> member is the <a>payment method identifier</a>
+              of the <a>payment method</a> supported by this instrument.
             </dd>
             <dt>
               <dfn>capabilities</dfn> member
@@ -741,12 +750,12 @@
         &lt;script&gt;
 
         const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-        const { registration } = await navigator.serviceWorker.register("/register/sw.js");
+        const registration = await navigator.serviceWorker.register("/register/sw.js");
         await registration.paymentManager.paymentInstruments.set({
           instrumentKey,
           {
             name: "My Bob Pay Account: john@example.com",
-            enabledMethods: ["https://bobpay.com/"],
+            method: "https://bobpay.com",
             icons: [{
               src: "icon/lowres.webp",
               sizes: "48x48",
@@ -771,7 +780,7 @@
           instrumentKey,
           {
             name: "My Bob Pay Account: john@example.com",
-            enabledMethods: ["https://bobpay.com/"],
+            method: "https://bobpay.com",
             icons: [{
               src: "../bobpay/icon/lowres.webp",
               sizes: "48x48",
@@ -803,8 +812,8 @@
             return;
           }
 
-          const { registration } =
-            await navigator.serviceWorker.register('/sw.js');
+          const registration =
+            await navigator.serviceWorker.register("/sw.js");
 
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
@@ -816,10 +825,10 @@
               "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
               {
                 name: "Visa ending ****4756",
-                enabledMethods: ["basic-card"],
+                method: "basic-card",
                 capabilities: {
-                  supportedNetworks: ['visa'],
-                  supportedTypes: ['credit']
+                  supportedNetworks: ["visa"],
+                  supportedTypes: ["credit"]
                 }
               }),
 
@@ -827,23 +836,267 @@
               "c8126178-3bba-4d09-8f00-0771bcfd3b11",
               {
                 name: "My Bob Pay Account: john@example.com",
-                enabledMethods: ["https://bobpay.com/"]
+                method: "https://bobpay.com"
               }),
 
             registration.paymentManager.instruments.set(
               "new-card",
               {
                 name: "Add new credit/debit card to ExampleApp",
-                enabledMethods: ["basic-card"],
+                method: "basic-card",
                 capabilities: {
                   supportedNetworks:
-                    ['visa','mastercard','amex','discover'],
-                  supportedTypes: ['credit','debit','prepaid']
+                    ["visa", "mastercard", "amex", "discover"],
+                  supportedTypes: ["credit", "debit", "prepaid"]
                 }
               }),
             ]);
           };
      </pre>
+        </section>
+      </section>
+    </section>
+    <section id="canmakepayment">
+      <h2>
+        Can make payment
+      </h2>
+      <p>
+        If the <a>payment handler</a> supports <a>CanMakePaymentEvent</a>, the
+        <a>user agent</a> may use it to help with filtering of the available
+        payment handlers.
+      </p>
+      <p>
+        Implementations may impose a timeout for developers to respond to the
+        <a>CanMakePaymentEvent</a>. If the timeout expires, then the
+        implementation will behave as if <a data-lt=
+        "CanMakePaymentEvent.respondWith()">respondWith()</a> was called with
+        <code>false</code>.
+      </p>
+      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
+      "ServiceWorkerGlobalScope">
+        <h2>
+          Extension to <a>ServiceWorkerGlobalScope</a>
+        </h2>
+        <p>
+          This specification extends the <a>ServiceWorkerGlobalScope</a>
+          interface.
+        </p>
+        <pre class="idl">
+        partial interface ServiceWorkerGlobalScope {
+          attribute EventHandler oncanmakepayment;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>oncanmakepayment</dfn> attribute
+          </h2>
+          <p>
+            The <a>oncanmakepayment</a> attribute is an <a>event handler</a>
+            whose corresponding <a>event handler event type</a> is
+            canmakepayment.
+          </p>
+        </section>
+      </section>
+      <section data-dfn-for="CanMakePaymentEvent" data-link-for=
+      "CanMakePaymentEvent">
+        <h2>
+          The <dfn>CanMakePaymentEvent</dfn>
+        </h2>
+        <p>
+          The <a>CanMakePaymentEvent</a> is used to check whether the payment
+          handler is able to respond to a payment request.
+        </p>
+        <pre class="idl">
+        [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+        interface CanMakePaymentEvent : ExtendableEvent {
+          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString paymentRequestOrigin;
+          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
+        };
+        </pre>
+        <p>
+          The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+          <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
+          definitions with those defined for <a>PaymentRequestEvent</a>.
+        </p>
+        <section>
+          <h2>
+            <dfn>respondWith()</dfn> method
+          </h2>
+          <p>
+            This method is used by the payment handler to indicate whether it
+            can respond to a payment request.
+          </p>
+        </section>
+        <section data-dfn-for="CanMakePaymentEventInit">
+          <h2>
+            <dfn>CanMakePaymentEventInit</dfn> dictionary
+          </h2>
+          <pre class="idl">
+            dictionary CanMakePaymentEventInit : ExtendableEventInit {
+              USVString topLevelOrigin;
+              USVString paymentRequestOrigin;
+              sequence&lt;PaymentMethodData&gt; methodData;
+              sequence&lt;PaymentDetailsModifier&gt; modifiers;
+            };
+          </pre>
+          <p>
+            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
+            definitions with those defined for <a>PaymentRequestEvent</a>.
+          </p>
+        </section>
+      </section>
+      <section>
+        <h2>
+          <dfn>Handling a CanMakePaymentEvent</dfn>
+        </h2>
+        <p>
+          Upon receiving a <a>PaymentRequest</a>, the <a>user agent</a> MUST
+          run the following steps:
+        </p>
+        <ol>
+          <li>If <a>user agent</a> settings prohibit usage of
+          <a>CanMakePaymentEvent</a> (e.g., in private browsing mode),
+          terminate these steps.
+          </li>
+          <li>Let <var>registration</var> be a
+          <a>ServiceWorkerRegistration</a>.
+          </li>
+          <li>If <var>registration</var> is not found, terminate these steps.
+          </li>
+          <li>Invoke the <a>handle functional event</a> algorithm with a
+          <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
+            callbackSteps</var> set to the following steps:
+            <ol>
+              <li>Set <var>global</var> to the global object that was provided
+              as an argument.
+              </li>
+              <li>Create a <a>trusted event</a>, <var>e</var>, that uses the
+              <a>CanMakePaymentEvent</a> interface, with the event type
+              canmakepayment, which does not bubble, cannot be canceled, and
+              has no default action.
+              </li>
+              <li>Set the <a data-lt=
+              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a>,
+              <a data-lt=
+              "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
+              <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
+              <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+              attributes of <var>e</var> the same way as when handling
+              <a>PaymentRequestEvent</a>.
+              </li>
+              <li>Dispatch <var>e</var> to <var>global</var>.
+              </li>
+              <li>Wait for all of the promises in the <a>extend lifetime
+              promises</a> of <var>e</var> to resolve.
+              </li>
+            </ol>
+          </li>
+        </ol>
+      </section>
+      <section id="canmakepayment-example" class="informative">
+        <h2>
+          Example of handling the <a>CanMakePaymentEvent</a>
+        </h2>
+        <p>
+          This example shows how to write a service worker that listens to the
+          <a>CanMakePaymentEvent</a>. When a <a>CanMakePaymentEvent</a> is
+          received, the service worker always returns true.
+        </p>
+        <pre class="example js" title="Handling the CanMakePaymentEvent">
+          self.addEventListener("canmakepayment", function(e) {
+            e.respondWith(true);
+          });
+        </pre>
+      </section>
+      <section>
+        <h2>
+          Filtering of Payment Instruments
+        </h2>
+        <p>
+          Given a <a>PaymentMethodData</a> and a <a>PaymentInstrument</a> that
+          match on <a>payment method identifier</a>, this algorithm returns
+          <code>true</code> if this instrument can be used for payment:
+        </p>
+        <ol class="algorithm">
+          <li>Let <var>instrument</var> be the given <a>PaymentInstrument</a>.
+          </li>
+          <li>Let <var>methodName</var> be the <a>payment method identifier</a>
+          string specified in the <a>PaymentMethodData</a>.
+          </li>
+          <li>Let <var>methodData</var> be the payment method specific data of
+          <a>PaymentMethodData</a>.
+          </li>
+          <li>If <var>methodName</var> is a <a>standardized payment method
+          identifier</a> or is a <a>URL-based payment method identifier</a>
+          with <code>"supported_origins": "*"</code> in its payment method
+          manifest, filter based on <a data-lt=
+          "PaymentInstrument.capabilities">capabilities</a>:
+            <ol>
+              <li>For each <var>key</var> in <var>methodData</var>:
+                <ol>
+                  <li>If the intersection of <var>methodData[key]</var> and
+                  <var>instrument.capabilities[key]</var> is empty, return
+                  <code>false</code>.
+                  </li>
+                </ol>
+              </li>
+              <li>Otherwise, return <code>true</code>.
+              </li>
+            </ol>
+          </li>
+          <li>Otherwise, fire the <a>CanMakePaymentEvent</a> in the payment
+          handler and return the result.
+          </li>
+        </ol>
+        <div class="issue" data-number="157">
+          This is the current thinking about filtering of payment instruments.
+          As we continue to experiment with implementations, we are soliciting
+          feedback on this approach. Also see the <a href=
+          "https://github.com/w3c/payment-request-info/wiki/PaymentMethodPractice#canmakepaymentevent-implementation">
+          Wiki page</a>.
+        </div>
+        <section id="capabilities-example" class="informative">
+          <h2>
+            How to specify capabilities
+          </h2>
+          <p>
+            Example of how a payment handler should provide the list of all its
+            active cards to the browser.
+          </p>
+          <pre class="example js" title="Specifying capabilities">
+          await navigator.serviceWorker.register("/pw/app.js");
+          const registration = await navigator.serviceWorker.ready;
+          registration.paymentManager.userHint = "(Visa ****1111)";
+          await registration.paymentManager.instruments.set(
+            "12345",
+            {
+              name: "Visa ****1111",
+              icons: [{
+                src: "/pay/visa.png",
+                sizes: "32x32",
+                type: "image/png",
+              }],
+              method: "basic-card",
+              capabilities: {
+                supportedNetworks: ["visa"],
+                supportedTypes: ["credit"],
+              },
+            });
+          </pre>
+          <p>
+            In this case, <code>new PaymentRequest([{supportedMethods:
+            "basic-card"}], shoppingCart).canMakePayment()</code> should return
+            <code>true</code> because there's an active card in the payment
+            handler. Note that <code>new PaymentRequest([{supportedMethods:
+            "basic-card", data: {supportedTypes: ["debit"]}}],
+            shoppingCart).canMakePayment()</code> would return
+            <code>false</code> because of mismatch in
+            <code>supportedTypes</code> in this example.
+          </p>
         </section>
       </section>
     </section>
@@ -921,11 +1174,10 @@
             <dfn>topLevelOrigin</dfn> attribute
           </h2>
           <p>
-            This attribute is a string that indicates the <a data-cite=
+            Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
-            The string MUST be formatted according to the "<a data-cite=
-            "!RFC6454#section-6.1">Unicode Serialization of an Origin</a>"
-            algorithm defined in section 6.1 of [[!RFC6454]].
+            This attribute is initialized by <a>Handling a
+            PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -933,17 +1185,15 @@
             <dfn>paymentRequestOrigin</dfn> attribute
           </h2>
           <p>
-            This attribute is a string that indicates the <a data-cite=
+            Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
             <a>topLevelOrigin</a>, the attributes have the same value,
             otherwise the attributes have different values. For example, when a
             <a>PaymentRequest</a> is initialized within an iframe from an
             origin other than <a>topLevelOrigin</a>, the value of this
-            attribute is the origin of the iframe. The string MUST be formatted
-            according to the "<a data-cite="!RFC6454#section-6.1">Unicode
-            Serialization of an Origin</a>" algorithm defined in section 6.1 of
-            [[!RFC6454]].
+            attribute is the origin of the iframe. This attribute is
+            initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1074,8 +1324,8 @@
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              add the value of <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
@@ -1128,8 +1378,8 @@
             <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
             <a>payment handler</a>'s <a data-lt=
             "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add all entries in <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.enabledMethods">enabledMethods</a> to
+              add the value of <var>instrument</var>.<a data-lt=
+              "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
             </li>
             <li>Create a new empty <a>Sequence</a>.
@@ -1231,7 +1481,7 @@
       </section>
       <section>
         <h2>
-          Handling a PaymentRequestEvent
+          <dfn>Handling a PaymentRequestEvent</dfn>
         </h2>
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
@@ -1246,9 +1496,9 @@
           </li>
           <li>If <var>registration</var> is not found, reject the
           <a>Promise</a> that was created by <a data-cite=
-          "!payment-request#show-method">PaymentRequest.show()</a> with a
-          <a>DOMException</a> whose value is "<a>InvalidStateError</a>" and
-          terminate these steps.
+          "!payment-request#show-method">PaymentRequest.show()</a> with an
+          "<a>InvalidStateError</a>" <a>DOMException</a> and terminate these
+          steps.
           </li>
           <li>Invoke the <a>handle functional event</a> algorithm with a
           <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
@@ -1264,12 +1514,15 @@
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a> attribute
-              of <var>e</var> to the origin of the top level payee web page.
+              of <var>e</var> to <a data-cite=
+              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
+              origin</a> of the top level payee web page.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
-              attribute of <var>e</var> to the origin of the context where
-              PaymentRequest was initialized.
+              attribute of <var>e</var> to <a data-cite=
+              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
+              origin</a> of the context where PaymentRequest was initialized.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
@@ -1301,8 +1554,8 @@
               <li>If the <a>payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the <a>Promise</a> that was
               created by <a data-cite=
-              "!payment-request#show-method">PaymentRequest.show()</a> with a
-              <a>DOMException</a> whose value "<a>OperationError</a>".
+              "!payment-request#show-method">PaymentRequest.show()</a> with an
+              "<a>OperationError</a>" <a>DOMException</a>.
               </li>
             </ol>
           </li>
@@ -1353,12 +1606,16 @@
           "!SERVICE-WORKERS#clients-openwindow">Open Window Algorithm</a> in
           the Service Workers specification.
         </p>
-        <p class="issue" data-number="97">
+        <p class="issue" data-number="115">
           Should we refer to the Service Workers specification instead of
           copying their steps?
         </p>
         <ol class="algorithm">
           <li>Let <var>event</var> be this <a>PaymentRequestEvent</a>.
+          </li>
+          <li>If <var>event</var>'s <a>isTrusted</a> attribute is false, return
+          a <a>Promise</a> rejected with a "<a>InvalidStateError</a>"
+          <a>DOMException</a>.
           </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a> that
           triggered this <a>PaymentRequestEvent</a>.
@@ -1379,7 +1636,7 @@
           <li>If this algorithm is not <a data-cite=
           "!HTML#triggered-by-user-activation">triggered by user
           activation</a>, return a <a>Promise</a> rejected with a
-          <a>InvalidAccessError</a>.
+          "<a>NotAllowedError</a>" <a>DOMException</a>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
@@ -1390,9 +1647,9 @@
             <ol>
               <li>If <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite=
               "!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
-              is not "unloaded", reject <var>promise</var> with a
-              <a>DOMException</a> whose name is "<a>InvalidStateError</a>" and
-              abort these steps.
+              is not "unloaded", reject <var>promise</var> with an
+              "<a>InvalidStateError</a>" <a>DOMException</a> and abort these
+              steps.
               </li>
             </ol>
           </li>
@@ -1439,11 +1696,11 @@
           user.
         </p>
         <pre class="example js" title="Handling the PaymentRequestEvent">
-      self.addEventListener('paymentrequest', function(e) {
+      self.addEventListener("paymentrequest", function(e) {
         e.respondWith(new Promise(function(resolve, reject) {
-          self.addEventListener('message', listener = function(e) {
-            self.removeEventListener('message', listener);
-            if (e.data.hasOwnProperty('name')) {
+          self.addEventListener("message", listener = function(e) {
+            self.removeEventListener("message", listener);
+            if (e.data.hasOwnProperty("name")) {
               reject(e.data);
             } else {
               resolve(e.data);
@@ -1576,6 +1833,10 @@ window.addEventListener("message", function(e) {
           the following steps:
         </p>
         <ol class="algorithm">
+          <li>If <var>event</var>'s <a>isTrusted</a> is false, then
+          <a>throw</a> an "InvalidStateError" <a>DOMException</a> and abort
+          these steps.
+          </li>
           <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
           <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a> and
           abort these steps.
@@ -1730,6 +1991,9 @@ window.addEventListener("message", function(e) {
           information with any payment handler until the user has selected that
           payment handler.
           </li>
+          <li>User agents should allow users to disable support for the
+          <a>CanMakePaymentEvent</a>.
+          </li>
         </ul>
       </section>
       <section>
@@ -1815,6 +2079,11 @@ window.addEventListener("message", function(e) {
           either that the user log in to the origin or re-enter payment
           instrument details.
           </li>
+          <li>The <a>CanMakePaymentEvent</a> event should not be fired in
+          private browsing mode. The user agent should behave as if
+            <a data-lt="CanMakePaymentEvent.respondWith()">respondWith()</a>
+            was called with <code>true</code>.
+          </li>
         </ul>
       </section>
     </section>
@@ -1862,7 +2131,9 @@ window.addEventListener("message", function(e) {
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
-          <dfn data-cite="!payment-request#show-method">show()</dfn>, and
+          <dfn data-cite=
+          "!payment-request#canmakepayment()-method">canMakePayment()</dfn>,
+          <dfn data-cite="!payment-request#show()-method">show()</dfn>, and
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
           accepts the payment request algorithm</dfn> <dfn data-cite=
@@ -1887,9 +2158,16 @@ window.addEventListener("message", function(e) {
           Payment Method Identifiers
         </dt>
         <dd>
-          The terms <dfn data-lt="payment method identifiers">payment method
-          identifier</dfn> is defined by the Payment Method Identifier
-          specification [[!payment-method-id]].
+          The terms <dfn data-lt="payment method identifiers" data-cite=
+          "!payment-method-id#payment-method-identifiers-(pmis)">payment method
+          identifier</dfn>, <dfn data-lt=
+          "standardized payment method identifiers" data-cite=
+          "!payment-method-id#standardized-payment-method-identifiers">standardized
+          payment method identifier</dfn>, and <dfn data-lt=
+          "URL-based payment method identifiers" data-cite=
+          "!payment-method-id#url-based-payment-method-identifiers">URL-based
+          payment method identifier</dfn> are defined by the Payment Method
+          Identifier specification [[!payment-method-id]].
         </dd>
         <dt>
           Basic Card Payment
@@ -1898,9 +2176,9 @@ window.addEventListener("message", function(e) {
           The terms <dfn data-cite=
           "!payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportednetworks">supportedNetworks</dfn>,
+          "!payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
           and <dfn data-cite=
-          "!payment-method-basic-card#dfn-supportedtypes">supportedTypes</dfn>
+          "!payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
           are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
@@ -1939,9 +2217,10 @@ window.addEventListener("message", function(e) {
           The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
           <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
           <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
-          flag</dfn>, and <dfn data-cite=
-          "!DOM#stop-immediate-propagation-flag">stop immediate propagation
-          flag</dfn> are defined in [[!DOM]].
+          flag</dfn>, <code><dfn data-cite=
+          "!DOM#dom-event-istrusted">isTrusted</dfn></code> attribute, and
+          <dfn data-cite="!DOM#stop-immediate-propagation-flag">stop immediate
+          propagation flag</dfn> are defined in [[!DOM]].
         </dd>
         <dt>
           Web IDL
@@ -1967,22 +2246,13 @@ window.addEventListener("message", function(e) {
           </p>
           <ul>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#invalidaccesserror">InvalidAccessError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
             "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#notfounderror">NotFoundError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#operationerror">OperationError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#securityerror">SecurityError</dfn></code>"
             </li>
           </ul>
         </dd>
@@ -2016,7 +2286,7 @@ window.addEventListener("message", function(e) {
         </dd>
       </dl>
     </section>
-    <section id='conformance'>
+    <section id="conformance">
       <p>
         There is only one class of product that can claim conformance to this
         specification: a <dfn data-lt="user agents">user agent</dfn>.
