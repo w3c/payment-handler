@@ -980,8 +980,7 @@
               has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topOrigin">topOrigin</a>,
-              <a data-lt=
+              "PaymentRequestEvent.topOrigin">topOrigin</a>, <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
               <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
               <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
@@ -1188,12 +1187,12 @@
             Returns a string that indicates the <a data-cite=
             "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
             initialized. When a <a>PaymentRequest</a> is initialized in the
-            <a>topOrigin</a>, the attributes have the same value,
-            otherwise the attributes have different values. For example, when a
+            <a>topOrigin</a>, the attributes have the same value, otherwise the
+            attributes have different values. For example, when a
             <a>PaymentRequest</a> is initialized within an iframe from an
-            origin other than <a>topOrigin</a>, the value of this
-            attribute is the origin of the iframe. This attribute is
-            initialized by <a>Handling a PaymentRequestEvent</a>.
+            origin other than <a>topOrigin</a>, the value of this attribute is
+            the origin of the iframe. This attribute is initialized by
+            <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1513,10 +1512,10 @@
               and has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topOrigin">topOrigin</a> attribute
-              of <var>e</var> to <a data-cite=
-              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
-              origin</a> of the top level payee web page.
+              "PaymentRequestEvent.topOrigin">topOrigin</a> attribute of <var>
+                e</var> to <a data-cite=
+                "!HTML#ascii-serialisation-of-an-origin">the serialization of
+                the origin</a> of the top level payee web page.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
@@ -2026,9 +2025,13 @@ window.addEventListener("message", function(e) {
       </section>
       <section>
         <h2>
-          Payment App Authenticity
+          Authorized Payment Apps
         </h2>
         <ul>
+          <li>The party responsible for a payment method authorizes payment
+          apps through a [[payment-method-manifest]]. See the <a>Handling a
+          CanMakePaymentEvent</a> algorithm for details.
+          </li>
           <li>The user agent is not required to make available payment handlers
           that pose security issues. When a payment handler is unavailable for
           security reasons, the user agent should provide rationale to the
@@ -2036,12 +2039,6 @@ window.addEventListener("message", function(e) {
           also inform the user to help avoid confusion.
           </li>
         </ul>
-        <p class="note">
-          The Web Payments Working Group is also discussing Payment App
-          authenticity; see the (draft) <a href=
-          "https://w3c.github.io/payment-method-manifest/">Payment Method
-          Manifest</a>.
-        </p>
       </section>
       <section>
         <h2>
