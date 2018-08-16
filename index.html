@@ -1047,17 +1047,20 @@
               </li>
             </ol>
           </li>
-          <li>Otherwise, fire the <a>CanMakePaymentEvent</a> in the payment
-          handler and return the result.
+          <li>Otherwise, if the <a>URL-based payment method identifier</a> and
+          payment handler share the same <a data-cite=
+          "!HTML#origin">origin</a>, fire the <a>CanMakePaymentEvent</a> in the
+          payment handler and return the result.
+          </li>
+          <li>Otherwise, if <code>"supported_origins"</code> value in the
+          payment method manifest includes the <a data-cite=
+          "HTML#origin">origin</a> of the payment handler, fire the
+          <a>CanMakePaymentEvent</a> in the payment handler and return the
+          result.
+          </li>
+          <li>Otherwise, return <code>false</code>.
           </li>
         </ol>
-        <div class="issue" data-number="157">
-          This is the current thinking about filtering of payment instruments.
-          As we continue to experiment with implementations, we are soliciting
-          feedback on this approach. Also see the <a href=
-          "https://github.com/w3c/payment-request-info/wiki/PaymentMethodPractice#canmakepaymentevent-implementation">
-          Wiki page</a>.
-        </div>
         <section id="capabilities-example" class="informative">
           <h2>
             How to specify capabilities
@@ -2029,7 +2032,7 @@ window.addEventListener("message", function(e) {
         </h2>
         <ul>
           <li>The party responsible for a payment method authorizes payment
-          apps through a [[payment-method-manifest]]. See the <a>Handling a
+          apps through a payment-method-manifest. See the <a>Handling a
           CanMakePaymentEvent</a> algorithm for details.
           </li>
           <li>The user agent is not required to make available payment handlers
