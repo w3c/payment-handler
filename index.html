@@ -454,6 +454,7 @@
             <li>If the <a>document</a> is not <a>allowed to use</a> the
             policy-controlled-feature <code>payment</code>, reject <var>p</var>
             with <a>SecurityError</a>.
+            </li>
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, resolve <var>p</var> with that
             <a>PaymentInstrument</a>.
@@ -478,6 +479,7 @@
             <li>If the <a>document</a> is not <a>allowed to use</a> the
             policy-controlled-feature <code>payment</code>, reject <var>p</var>
             with <a>SecurityError</a>.
+            </li>
             <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains
             all the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
             contained in the collection, in original insertion order.
@@ -500,6 +502,7 @@
             <li>If the <a>document</a> is not <a>allowed to use</a> the
             policy-controlled-feature <code>payment</code>, reject <var>p</var>
             with <a>SecurityError</a>.
+            </li>
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, resolve <var>p</var> with
             <b>true</b>.
@@ -551,6 +554,7 @@
             <li>If the <a>document</a> is not <a>allowed to use</a> the
             policy-controlled-feature <code>payment</code>, reject <var>p</var>
             with <a>SecurityError</a>.
+            </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then for each <var>icon</var> in
             <var>details</var>.<a data-lt="PaymentInstrument.icons">icons</a>:
@@ -598,6 +602,7 @@
             <li>If the <a>document</a> is not <a>allowed to use</a> the
             policy-controlled-feature <code>payment</code>, reject <var>p</var>
             with <a>SecurityError</a>.
+            </li>
             <li>Remove all <a>PaymentInstrument</a>s from the collection and
             resolve <var>p</var>.
             </li>
