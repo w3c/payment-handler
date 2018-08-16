@@ -426,9 +426,9 @@
             <li>Return <var>p</var> and perform the remaining steps in
             parallel:
             </li>
-            <li>If the <a>document</a> is not <a>allowed to use</a> the
-            policy-controlled-feature <code>payment</code>, reject <var>p</var>
-            with <a>SecurityError</a>.
+            <li>If the <a>document</a> is not <a>allowed to use</a>
+            <code>payment</code>, reject <var>p</var> with
+            "<a>SecurityError</a>" <a>DOMException</a>.
             </li>
             <li>If the collection contains a <a>PaymentInstrument</a> with a
             matching <var>instrumentKey</var>, remove it from the collection
@@ -2107,9 +2107,10 @@ window.addEventListener("message", function(e) {
           Iframes
         </h2>
         <ul>
-          <li>Cross-origin iframes should not be able to register payment
-          handlers, unless allowed by [[!feature-policy]], e.g., by specifying
-          the <code>allow="payment"</code> attribute on the iframe element.
+          <li>The top-level document needs to explicitly grant access to nested
+          browsing contexts via the "payment" [[!feature-policy]], e.g., by
+          specifying the <code>allow="payment"</code> attribute on a
+          cross-origin iframe element.
           </li>
         </ul>
       </section>
