@@ -1029,10 +1029,18 @@
           <li>Let <var>methodData</var> be the payment method specific data of
           <a>PaymentMethodData</a>.
           </li>
+          <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
+          <a>ServiceWorkerRegistration</a> scope URL of the payment handler
+          with this <var>instrument</var>.
+          </li>
+          <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
+          <a>parsed</a> <a>payment method manifest</a> for the
+          <var>methodName</var>.
+          </li>
           <li>If <var>methodName</var> is a <a>standardized payment method
           identifier</a> or is a <a>URL-based payment method identifier</a>
-          with <code>"supported_origins": "*"</code> in its payment method
-          manifest, filter based on <a data-lt=
+          with the <code>"*"</code> string <a>supported origins</a> in
+          <var>paymentMethodManifest</var>, filter based on <a data-lt=
           "PaymentInstrument.capabilities">capabilities</a>:
             <ol>
               <li>For each <var>key</var> in <var>methodData</var>:
@@ -1047,14 +1055,14 @@
               </li>
             </ol>
           </li>
-          <li>Otherwise, if the <a>URL-based payment method identifier</a> and
-          payment handler share the same <a data-cite=
-          "!HTML#origin">origin</a>, fire the <a>CanMakePaymentEvent</a> in the
-          payment handler and return the result.
+          <li>Otherwise, if the <a>URL-based payment method identifier</a>
+          <var>methodName</var> has the same <a>origin</a> as
+          <var>paymentHandlerOrigin</var>, fire the <a>CanMakePaymentEvent</a>
+          in the payment handler and return the result.
           </li>
-          <li>Otherwise, if <code>"supported_origins"</code> value in the
-          payment method manifest includes the <a data-cite=
-          "HTML#origin">origin</a> of the payment handler, fire the
+          <li>Otherwise, if <a>supported origins</a> in
+          <var>paymentMethodManifest</var> is an ordered set of <a>origins</a>
+          that contains the <var>paymentHandlerOrigin</var>, fire the
           <a>CanMakePaymentEvent</a> in the payment handler and return the
           result.
           </li>
@@ -1176,10 +1184,9 @@
             <dfn>topOrigin</dfn> attribute
           </h2>
           <p>
-            Returns a string that indicates the <a data-cite=
-            "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
-            This attribute is initialized by <a>Handling a
-            PaymentRequestEvent</a>.
+            Returns a string that indicates the <a>origin</a> of the top level
+            <a>payee</a> web page. This attribute is initialized by <a>Handling
+            a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1187,15 +1194,14 @@
             <dfn>paymentRequestOrigin</dfn> attribute
           </h2>
           <p>
-            Returns a string that indicates the <a data-cite=
-            "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
-            initialized. When a <a>PaymentRequest</a> is initialized in the
-            <a>topOrigin</a>, the attributes have the same value, otherwise the
-            attributes have different values. For example, when a
-            <a>PaymentRequest</a> is initialized within an iframe from an
-            origin other than <a>topOrigin</a>, the value of this attribute is
-            the origin of the iframe. This attribute is initialized by
-            <a>Handling a PaymentRequestEvent</a>.
+            Returns a string that indicates the <a>origin</a> where a
+            <a>PaymentRequest</a> was initialized. When a <a>PaymentRequest</a>
+            is initialized in the <a>topOrigin</a>, the attributes have the
+            same value, otherwise the attributes have different values. For
+            example, when a <a>PaymentRequest</a> is initialized within an
+            iframe from an origin other than <a>topOrigin</a>, the value of
+            this attribute is the origin of the iframe. This attribute is
+            initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -2032,7 +2038,7 @@ window.addEventListener("message", function(e) {
         </h2>
         <ul>
           <li>The party responsible for a payment method authorizes payment
-          apps through a payment-method-manifest. See the <a>Handling a
+          apps through a <a>payment method manifest</a>. See the <a>Handling a
           CanMakePaymentEvent</a> algorithm for details.
           </li>
           <li>The user agent is not required to make available payment handlers
@@ -2048,11 +2054,12 @@ window.addEventListener("message", function(e) {
           Supported Origin
         </h2>
         <ul>
-          <li>Payment method manifests authorize origins to distribute payment
-          apps for a given payment method. When the user agent is determining
-          whether a payment handler matches the origin listed in a payment
-          method manifest, the user agent uses the scope URL of the payment
-          handler's service worker registration.
+          <li>
+            <a>Payment method manifests</a> authorize origins to distribute
+            payment apps for a given payment method. When the user agent is
+            determining whether a payment handler matches the origin listed in
+            a <a>payment method manifest</a>, the user agent uses the scope URL
+            of the payment handler's service worker registration.
           </li>
         </ul>
       </section>
@@ -2170,6 +2177,21 @@ window.addEventListener("message", function(e) {
           Identifier specification [[!payment-method-id]].
         </dd>
         <dt>
+          Payment Method Manifest
+        </dt>
+        <dd>
+          The terms <dfn data-lt="payment method manifests" data-cite=
+          "!payment-method-manifest#payment-method-manifest">payment method
+          manifest</dfn>, <dfn data-lt="ingested" data-cite=
+          "!payment-method-manifest#ingest-payment-method-manifests">ingest
+          payment method manifest</dfn>, <dfn data-lt="parsed" data-cite=
+          "!payment-method-manifest#parsed-payment-method-manifest">parsed
+          payment method manifest</dfn>, and <dfn data-cite=
+          "!payment-method-manifest#parsed-payment-method-manifest-supported-origins">
+          supported origins</dfn> are defined by the Payment Method Manifest
+          specification [[!payment-method-manifest]].
+        </dd>
+        <dt>
           Basic Card Payment
         </dt>
         <dd>
@@ -2199,7 +2221,8 @@ window.addEventListener("message", function(e) {
           RFC6454
         </dt>
         <dd>
-          The term <dfn>origin</dfn> is defined in [[!RFC6454]].
+          The term <dfn data-lt="origins">origin</dfn> is defined in
+          [[!RFC6454]].
         </dd>
         <dt>
           Writing Promise-Using Specifications
