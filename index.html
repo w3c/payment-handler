@@ -912,7 +912,6 @@
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
         };
         </pre>
@@ -939,13 +938,12 @@
               USVString topOrigin;
               USVString paymentRequestOrigin;
               sequence&lt;PaymentMethodData&gt; methodData;
-              sequence&lt;PaymentDetailsModifier&gt; modifiers;
             };
           </pre>
           <p>
-            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
-            <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
-            definitions with those defined for <a>PaymentRequestEvent</a>.
+            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>, and
+            <dfn>methodData</dfn> members share their definitions with those
+            defined for <a>PaymentRequestEvent</a>.
           </p>
         </section>
       </section>
@@ -982,8 +980,7 @@
               <li>Set the <a data-lt=
               "PaymentRequestEvent.topOrigin">topOrigin</a>, <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
-              <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
-              <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+              and <a data-lt="PaymentRequestEvent.methodData">methodData</a>
               attributes of <var>e</var> the same way as when handling
               <a>PaymentRequestEvent</a>.
               </li>
