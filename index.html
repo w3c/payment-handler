@@ -1157,9 +1157,9 @@
           The <dfn>PaymentMethodChangeResponse</dfn>
         </h2>
         <p>
-          The PaymentMethodChangeResponse contains the udpated total
-          (optionally with modifiers) and possible errors resulting from user
-          selecting an payment method within a payment handler.
+          The <code>PaymentMethodChangeResponse</code> contains the updated
+          total (optionally with modifiers) and possible errors resulting from
+          user selection of a payment method within a payment handler.
         </p>
         <pre class="idl">
         dictionary PaymentMethodChangeResponse {
@@ -1183,9 +1183,9 @@
             <dfn>total</dfn> member
           </h2>
           <p>
-            Updated total based on the changed payment method. This can change,
-            for example, in VAT calculations based on the billing address
-            associated with the payment method.
+            Updated total based on the changed payment method. The total can
+            change, for example, because the billing address of the payment
+            method selected by the user changes the Value Added Tax (VAT).
           </p>
         </section>
         <section>
@@ -1193,9 +1193,10 @@
             <dfn>modifiers</dfn> member
           </h2>
           <p>
-            Updated modifiers based on the changed payment method. These can
-            change, for example, in VAT calculations based on the billing
-            address associated with the payment method.
+            Updated modifiers based on the changed payment method. For example,
+            if the overall total has increased by €1.00 based on the billing
+            address, then the totals specified in each of the modifiers should
+            also increase by €1.00.
           </p>
         </section>
         <section>
