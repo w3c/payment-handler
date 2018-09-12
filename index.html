@@ -1166,7 +1166,7 @@
           DOMString error;
           PaymentItem total;
           FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
-          AddressErrors billingAddressErrors;
+          object paymentMethodErrors;
         };
         </pre>
         <section>
@@ -1193,18 +1193,17 @@
             <dfn>modifiers</dfn> member
           </h2>
           <p>
-            Updated modifiers based on the changed payment method. These change
+            Updated modifiers based on the changed payment method. These can
             change, for example, in VAT calculations based on the billing
             address associated with the payment method.
           </p>
         </section>
         <section>
           <h2>
-            <dfn>billingAddressErrors</dfn> member
+            <dfn>paymentMethodErrors</dfn> member
           </h2>
           <p>
-            Validation errors for the billing address of the payment method, if
-            any.
+            Validation errors for the payment method, if any.
           </p>
         </section>
       </section>
