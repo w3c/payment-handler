@@ -1231,7 +1231,7 @@
           readonly attribute DOMString instrumentKey;
           readonly attribute bool requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
-          Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, object? methodDetails);
+          Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
       </pre>
