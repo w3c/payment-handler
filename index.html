@@ -1151,6 +1151,63 @@
           </p>
         </section>
       </section>
+      <section data-dfn-for="PaymentMethodChangeResponse" data-link-for=
+      "PaymentMethodChangeResponse">
+        <h2>
+          The <dfn>PaymentMethodChangeResponse</dfn>
+        </h2>
+        <p>
+          The <code>PaymentMethodChangeResponse</code> contains the updated
+          total (optionally with modifiers) and possible errors resulting from
+          user selection of a payment method within a payment handler.
+        </p>
+        <pre class="idl">
+        dictionary PaymentMethodChangeResponse {
+          DOMString error;
+          PaymentCurrencyAmount total;
+          FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          object paymentMethodErrors;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>error</dfn> member
+          </h2>
+          <p>
+            A human readable string that explains why the payment method cannot
+            be used.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>total</dfn> member
+          </h2>
+          <p>
+            Updated total based on the changed payment method. The total can
+            change, for example, because the billing address of the payment
+            method selected by the user changes the Value Added Tax (VAT).
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>modifiers</dfn> member
+          </h2>
+          <p>
+            Updated modifiers based on the changed payment method. For example,
+            if the overall total has increased by €1.00 based on the billing
+            address, then the totals specified in each of the modifiers should
+            also increase by €1.00.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>paymentMethodErrors</dfn> member
+          </h2>
+          <p>
+            Validation errors for the payment method, if any.
+          </p>
+        </section>
+      </section>
       <section data-dfn-for="PaymentRequestEvent" data-link-for=
       "PaymentRequestEvent">
         <h2>
@@ -1172,7 +1229,9 @@
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
+          readonly attribute bool requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
+          Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
       </pre>
@@ -1265,11 +1324,32 @@
         </section>
         <section>
           <h2>
+            <dfn>requestBillingAddress</dfn> attribute
+          </h2>
+          <p>
+            The value of <a>PaymentOptions</a>.<var>requestBillingAddress</var>
+            in the <a>PaymentRequest</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
             <dfn>openWindow()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to show a window to the
             user. When called, it runs the <a>open window algorithm</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn data-lt=
+            "changePaymentMethod(methodName, methodDetails)">changePaymentMethod()</dfn>
+            method
+          </h2>
+          <p>
+            This method is used by the payment handler to get updated total
+            given such payment method details as the billing address. When
+            called, it runs the <a>change payment method algorithm</a>.
           </p>
         </section>
         <section>
@@ -1830,6 +1910,36 @@ window.addEventListener("message", function(e) {
       </section>
       <section>
         <h2>
+          <dfn>Change Payment Method Algorithm</dfn>
+        </h2>
+        <p>
+          When this algorithm is invoked with <var>methodName</var> and
+          <var>methodDetails</var> parameters, the user agent MUST run the
+          following steps:
+        </p>
+        <ol class="algorithm">
+          <li>Run the <a>payment method changed algorithm</a> with
+          <a>PaymentMethodChangeEvent</a> <var>event</var> constructed using
+          the given <var>methodName</var> and <var>methodDetails</var>
+          parameters.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> is not run,
+          return <code>null</code>.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> throws,
+          rethrow the error.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> times out
+          (optional), throw "<a>InvalidStateError</a>" <a>DOMException</a>.
+          </li>
+          <li>Construct and return a <a>PaymentMethodChangeResponse</a> from
+          the <var>detailsPromise</var> in
+          <var>event</var>.<a>updateWith(detailsPromise)</a>.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h2>
           <dfn>Respond to PaymentRequest Algorithm</dfn>
         </h2>
         <p>
@@ -2134,13 +2244,21 @@ window.addEventListener("message", function(e) {
           "!payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
+          <dfn data-cite=
+          "!payment-request#dom-paymentoptions">PaymentOptions</dfn>,
+          <dfn data-cite=
+          "!payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
           <dfn data-cite=
           "!payment-request#canmakepayment()-method">canMakePayment()</dfn>,
-          <dfn data-cite="!payment-request#show()-method">show()</dfn>, and
+          <dfn data-cite="!payment-request#show()-method">show()</dfn>,
+          <dfn data-cite=
+          "!payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn> <dfn data-cite=
+          accepts the payment request algorithm</dfn>, <dfn data-cite=
+          "!payment-request#payment-method-changed-algorithm">payment method
+          changed algorithm</dfn>, and <dfn data-cite=
           "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
           defined by the Payment Request API specification
           [[!payment-request]].
