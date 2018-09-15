@@ -1229,7 +1229,7 @@
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
-          readonly attribute bool requestBillingAddress;
+          readonly attribute boolean requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
           Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
