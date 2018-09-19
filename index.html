@@ -542,10 +542,10 @@
                 <li>If the user agent wants to display the <var>icon</var>,
                 then:
                   <ol>
-                    <li>Let <var>fetchedImage</var> be the result of running
-                    the <a data-cite=
-                    "!appmanifest#fetching-image-objects">fetching image
-                    object</a> passing <var>icon</var> as the argument.
+                    <li>Let <var>fetchedImage</var> be the result of
+                    <a data-cite="!appmanifest#fetching-image-resources">steps
+                    to fetch an image resource</a> passing <var>icon</var> as
+                    the argument.
                     </li>
                     <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
                     <var>fetchedImage</var>.
@@ -1547,8 +1547,8 @@
             </td>
             <td>
               This value is a result of <a data-cite=
-              "!appmanifest#fetching-image-objects">fetching image object</a>
-              or a fallback image provided by the user agent.
+              "!appmanifest#fetching-image-resources">steps to fetch an image
+              resource</a> or a fallback image provided by the user agent.
             </td>
           </tr>
           <tr>
