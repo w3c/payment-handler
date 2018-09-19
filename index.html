@@ -295,6 +295,11 @@
       <h2>
         Registration
       </h2>
+      <p>
+        One registers a payment handler with the user agent when assigning the
+        first <a>PaymentInstrument</a> to it through the <a data-link-for=
+        "PaymentInstruments">set()</a> method.
+      </p>
       <section data-dfn-for="ServiceWorkerRegistration" data-link-for=
       "ServiceWorkerRegistration">
         <h2>
@@ -322,7 +327,6 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
-        [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
         attribute DOMString userHint;
       };
       </pre>
@@ -342,39 +346,6 @@
             That instrument needs to match the payment methods and required
             capabilities specified by the payment request.
           </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>requestPermission()</dfn> method
-          </h2>
-          <p class="note">
-            The user agent is NOT REQUIRED to prompt the user to grant
-            permission to the origin for each new supported payment method or
-            new payment instrument.
-          </p>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
-              the permission state algorithm</a> of the permission associated
-              with <a>payment handler</a>'s <a>origin</a>.
-            </li>
-            <li>If <var>permission</var> is "prompt", ask the user whether
-            allowing adding new payment instruments for the <a data-cite=
-            "!HTML#current-settings-object">current settings object</a>'s
-            origin is acceptable. If it is, set <var>permission</var> to
-            "granted", and "denied" otherwise.
-            </li>
-            <li>Resolve <var>p</var> with <var>permission</var>.
-            </li>
-          </ol>
         </section>
         <section>
           <h2>
@@ -503,14 +474,9 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieving
-              the permission state</a> of the permission associated with
-              <a>payment handler</a>'s <a>origin</a>.
-            </li>
-            <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a "<a>NotAllowedError</a>"
-            <a>DOMException</a>.
+            <li>Upon user agent discretion and depending on user consent,
+            optionally return a <a>Promise</a> rejected with a
+            <a>NotAllowedError</a>.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -805,11 +771,6 @@
         button.addEventListener("click", async() =&gt; {
           if (!window.PaymentManager) {
             return; // not supported, so bail out.
-          }
-
-          const result = await PaymentManager.requestPermission();
-          if (result !== "granted") {
-            return;
           }
 
           const registration =
@@ -2108,6 +2069,23 @@ window.addEventListener("message", function(e) {
           </li>
           <li>User agents should allow users to disable support for the
           <a>CanMakePaymentEvent</a>.
+          </li>
+        </ul>
+      </section>
+      <section data-link-for="PaymentInstruments">
+        <h2>
+          User Consent to Install a Payment Handler
+        </h2>
+        <ul>
+          <li>This specification does not define how the user agent establishes
+          user consent when <a>set()</a> is first called. The user agent might
+          prompt the user as a result of <a>set()</a>, or might not if consent
+          has been established previously through manual configuration by the
+          user or usage patterns.
+          </li>
+          <li>User agents MAY reject a <a>set()</a> promise for security
+          reasons (e.g., due to an invalid SSL certificate) and SHOULD notify
+          the user when this happens.
           </li>
         </ul>
       </section>
