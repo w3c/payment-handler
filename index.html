@@ -295,6 +295,11 @@
       <h2>
         Registration
       </h2>
+      <p>
+        One registers a payment handler with the user agent when assigning the
+        first <a>PaymentInstrument</a> to it through the <a data-link-for=
+        "PaymentInstruments">set()</a> method.
+      </p>
       <section data-dfn-for="ServiceWorkerRegistration" data-link-for=
       "ServiceWorkerRegistration">
         <h2>
@@ -306,7 +311,7 @@
         </p>
         <pre class="idl">
         partial interface ServiceWorkerRegistration {
-          readonly attribute PaymentManager paymentManager;
+          [SameObject] readonly attribute PaymentManager paymentManager;
         };
         </pre>
         <p>
@@ -322,7 +327,6 @@
       [SecureContext, Exposed=(Window,Worker)]
       interface PaymentManager {
         [SameObject] readonly attribute PaymentInstruments instruments;
-        [Exposed=Window] static Promise&lt;PermissionState&gt; requestPermission();
         attribute DOMString userHint;
       };
       </pre>
@@ -342,39 +346,6 @@
             That instrument needs to match the payment methods and required
             capabilities specified by the payment request.
           </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>requestPermission()</dfn> method
-          </h2>
-          <p class="note">
-            The user agent is NOT REQUIRED to prompt the user to grant
-            permission to the origin for each new supported payment method or
-            new payment instrument.
-          </p>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>p</var> be a new promise.
-            </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
-            </li>
-            <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieve
-              the permission state algorithm</a> of the permission associated
-              with <a>payment handler</a>'s <a>origin</a>.
-            </li>
-            <li>If <var>permission</var> is "prompt", ask the user whether
-            allowing adding new payment instruments for the <a data-cite=
-            "!HTML#current-settings-object">current settings object</a>'s
-            origin is acceptable. If it is, set <var>permission</var> to
-            "granted", and "denied" otherwise.
-            </li>
-            <li>Resolve <var>p</var> with <var>permission</var>.
-            </li>
-          </ol>
         </section>
         <section>
           <h2>
@@ -519,14 +490,9 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>permission</var> be the result of running
-              <a data-cite="!permissions#dfn-retrieve-the-permission-state">retrieving
-              the permission state</a> of the permission associated with
-              <a>payment handler</a>'s <a>origin</a>.
-            </li>
-            <li>If <var>permission</var> is not "granted", then return a
-            <a>Promise</a> rejected with a "<a>NotAllowedError</a>"
-            <a>DOMException</a>.
+            <li>Upon user agent discretion and depending on user consent,
+            optionally return a <a>Promise</a> rejected with a
+            <a>NotAllowedError</a>.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -562,10 +528,10 @@
                 <li>If the user agent wants to display the <var>icon</var>,
                 then:
                   <ol>
-                    <li>Let <var>fetchedImage</var> be the result of running
-                    the <a data-cite=
-                    "!appmanifest#fetching-image-objects">fetching image
-                    object</a> passing <var>icon</var> as the argument.
+                    <li>Let <var>fetchedImage</var> be the result of
+                    <a data-cite="!appmanifest#fetching-image-resources">steps
+                    to fetch an image resource</a> passing <var>icon</var> as
+                    the argument.
                     </li>
                     <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
                     <var>fetchedImage</var>.
@@ -787,7 +753,7 @@
             }]
           });
 
-        const { storedInstrument } =
+        const storedInstrument =
           await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
         // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
@@ -812,7 +778,7 @@
             }]
           });
 
-        const { storedInstrument } =
+        const storedInstrument =
           await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
         // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
@@ -829,11 +795,6 @@
         button.addEventListener("click", async() =&gt; {
           if (!window.PaymentManager) {
             return; // not supported, so bail out.
-          }
-
-          const result = await PaymentManager.requestPermission();
-          if (result !== "granted") {
-            return;
           }
 
           const registration =
@@ -933,15 +894,14 @@
         <pre class="idl">
         [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
         interface CanMakePaymentEvent : ExtendableEvent {
-          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
         };
         </pre>
         <p>
-          The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+          The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
           <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
           definitions with those defined for <a>PaymentRequestEvent</a>.
         </p>
@@ -960,16 +920,15 @@
           </h2>
           <pre class="idl">
             dictionary CanMakePaymentEventInit : ExtendableEventInit {
-              USVString topLevelOrigin;
+              USVString topOrigin;
               USVString paymentRequestOrigin;
               sequence&lt;PaymentMethodData&gt; methodData;
-              sequence&lt;PaymentDetailsModifier&gt; modifiers;
             };
           </pre>
           <p>
-            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
-            <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
-            definitions with those defined for <a>PaymentRequestEvent</a>.
+            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>, and
+            <dfn>methodData</dfn> members share their definitions with those
+            defined for <a>PaymentRequestEvent</a>.
           </p>
         </section>
       </section>
@@ -1004,11 +963,9 @@
               has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a>,
-              <a data-lt=
+              "PaymentRequestEvent.topOrigin">topOrigin</a>, <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
-              <a data-lt="PaymentRequestEvent.methodData">methodData</a>, and
-              <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+              and <a data-lt="PaymentRequestEvent.methodData">methodData</a>
               attributes of <var>e</var> the same way as when handling
               <a>PaymentRequestEvent</a>.
               </li>
@@ -1054,10 +1011,18 @@
           <li>Let <var>methodData</var> be the payment method specific data of
           <a>PaymentMethodData</a>.
           </li>
+          <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
+          <a>ServiceWorkerRegistration</a> scope URL of the payment handler
+          with this <var>instrument</var>.
+          </li>
+          <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
+          <a>parsed</a> <a>payment method manifest</a> for the
+          <var>methodName</var>.
+          </li>
           <li>If <var>methodName</var> is a <a>standardized payment method
           identifier</a> or is a <a>URL-based payment method identifier</a>
-          with <code>"supported_origins": "*"</code> in its payment method
-          manifest, filter based on <a data-lt=
+          with the <code>"*"</code> string <a>supported origins</a> in
+          <var>paymentMethodManifest</var>, filter based on <a data-lt=
           "PaymentInstrument.capabilities">capabilities</a>:
             <ol>
               <li>For each <var>key</var> in <var>methodData</var>:
@@ -1072,17 +1037,20 @@
               </li>
             </ol>
           </li>
-          <li>Otherwise, fire the <a>CanMakePaymentEvent</a> in the payment
-          handler and return the result.
+          <li>Otherwise, if the <a>URL-based payment method identifier</a>
+          <var>methodName</var> has the same <a>origin</a> as
+          <var>paymentHandlerOrigin</var>, fire the <a>CanMakePaymentEvent</a>
+          in the payment handler and return the result.
+          </li>
+          <li>Otherwise, if <a>supported origins</a> in
+          <var>paymentMethodManifest</var> is an ordered set of <a>origins</a>
+          that contains the <var>paymentHandlerOrigin</var>, fire the
+          <a>CanMakePaymentEvent</a> in the payment handler and return the
+          result.
+          </li>
+          <li>Otherwise, return <code>false</code>.
           </li>
         </ol>
-        <div class="issue" data-number="157">
-          This is the current thinking about filtering of payment instruments.
-          As we continue to experiment with implementations, we are soliciting
-          feedback on this approach. Also see the <a href=
-          "https://github.com/w3c/payment-request-info/wiki/PaymentMethodPractice#canmakepaymentevent-implementation">
-          Wiki page</a>.
-        </div>
         <section id="capabilities-example" class="informative">
           <h2>
             How to specify capabilities
@@ -1168,6 +1136,63 @@
           </p>
         </section>
       </section>
+      <section data-dfn-for="PaymentMethodChangeResponse" data-link-for=
+      "PaymentMethodChangeResponse">
+        <h2>
+          The <dfn>PaymentMethodChangeResponse</dfn>
+        </h2>
+        <p>
+          The <code>PaymentMethodChangeResponse</code> contains the updated
+          total (optionally with modifiers) and possible errors resulting from
+          user selection of a payment method within a payment handler.
+        </p>
+        <pre class="idl">
+        dictionary PaymentMethodChangeResponse {
+          DOMString error;
+          PaymentCurrencyAmount total;
+          FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          object paymentMethodErrors;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>error</dfn> member
+          </h2>
+          <p>
+            A human readable string that explains why the payment method cannot
+            be used.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>total</dfn> member
+          </h2>
+          <p>
+            Updated total based on the changed payment method. The total can
+            change, for example, because the billing address of the payment
+            method selected by the user changes the Value Added Tax (VAT).
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>modifiers</dfn> member
+          </h2>
+          <p>
+            Updated modifiers based on the changed payment method. For example,
+            if the overall total has increased by €1.00 based on the billing
+            address, then the totals specified in each of the modifiers should
+            also increase by €1.00.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>paymentMethodErrors</dfn> member
+          </h2>
+          <p>
+            Validation errors for the payment method, if any.
+          </p>
+        </section>
+      </section>
       <section data-dfn-for="PaymentRequestEvent" data-link-for=
       "PaymentRequestEvent">
         <h2>
@@ -1182,26 +1207,27 @@
         <pre class="idl">
         [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
-          readonly attribute USVString topLevelOrigin;
+          readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
+          readonly attribute boolean requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
+          Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
       </pre>
         <section>
           <h2>
-            <dfn>topLevelOrigin</dfn> attribute
+            <dfn>topOrigin</dfn> attribute
           </h2>
           <p>
-            Returns a string that indicates the <a data-cite=
-            "!HTML#origin">origin</a> of the top level <a>payee</a> web page.
-            This attribute is initialized by <a>Handling a
-            PaymentRequestEvent</a>.
+            Returns a string that indicates the <a>origin</a> of the top level
+            <a>payee</a> web page. This attribute is initialized by <a>Handling
+            a PaymentRequestEvent</a>.
           </p>
         </section>
         <section>
@@ -1209,14 +1235,13 @@
             <dfn>paymentRequestOrigin</dfn> attribute
           </h2>
           <p>
-            Returns a string that indicates the <a data-cite=
-            "!HTML#origin">origin</a> where a <a>PaymentRequest</a> was
-            initialized. When a <a>PaymentRequest</a> is initialized in the
-            <a>topLevelOrigin</a>, the attributes have the same value,
-            otherwise the attributes have different values. For example, when a
-            <a>PaymentRequest</a> is initialized within an iframe from an
-            origin other than <a>topLevelOrigin</a>, the value of this
-            attribute is the origin of the iframe. This attribute is
+            Returns a string that indicates the <a>origin</a> where a
+            <a>PaymentRequest</a> was initialized. When a <a>PaymentRequest</a>
+            is initialized in the <a>topOrigin</a>, the attributes have the
+            same value, otherwise the attributes have different values. For
+            example, when a <a>PaymentRequest</a> is initialized within an
+            iframe from an origin other than <a>topOrigin</a>, the value of
+            this attribute is the origin of the iframe. This attribute is
             initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
@@ -1284,11 +1309,32 @@
         </section>
         <section>
           <h2>
+            <dfn>requestBillingAddress</dfn> attribute
+          </h2>
+          <p>
+            The value of <a>PaymentOptions</a>.<var>requestBillingAddress</var>
+            in the <a>PaymentRequest</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
             <dfn>openWindow()</dfn> method
           </h2>
           <p>
             This method is used by the payment handler to show a window to the
             user. When called, it runs the <a>open window algorithm</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn data-lt=
+            "changePaymentMethod(methodName, methodDetails)">changePaymentMethod()</dfn>
+            method
+          </h2>
+          <p>
+            This method is used by the payment handler to get updated total
+            given such payment method details as the billing address. When
+            called, it runs the <a>change payment method algorithm</a>.
           </p>
         </section>
         <section>
@@ -1317,7 +1363,7 @@
           </h2>
           <pre class="idl">
             dictionary PaymentRequestEventInit : ExtendableEventInit {
-              USVString topLevelOrigin;
+              USVString topOrigin;
               USVString paymentRequestOrigin;
               DOMString paymentRequestId;
               sequence&lt;PaymentMethodData&gt; methodData;
@@ -1327,7 +1373,7 @@
             };
           </pre>
           <p>
-            The <dfn>topLevelOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
+            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
             <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
             <dfn>total</dfn>, <dfn>modifiers</dfn>, and
             <dfn>instrumentKey</dfn> members share their definitions with those
@@ -1486,8 +1532,8 @@
             </td>
             <td>
               This value is a result of <a data-cite=
-              "!appmanifest#fetching-image-objects">fetching image object</a>
-              or a fallback image provided by the user agent.
+              "!appmanifest#fetching-image-resources">steps to fetch an image
+              resource</a> or a fallback image provided by the user agent.
             </td>
           </tr>
           <tr>
@@ -1537,10 +1583,10 @@
               and has no default action.
               </li>
               <li>Set the <a data-lt=
-              "PaymentRequestEvent.topLevelOrigin">topLevelOrigin</a> attribute
-              of <var>e</var> to <a data-cite=
-              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
-              origin</a> of the top level payee web page.
+              "PaymentRequestEvent.topOrigin">topOrigin</a> attribute of <var>
+                e</var> to <a data-cite=
+                "!HTML#ascii-serialisation-of-an-origin">the serialization of
+                the origin</a> of the top level payee web page.
               </li>
               <li>Set the <a data-lt=
               "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
@@ -1637,6 +1683,10 @@
         <ol class="algorithm">
           <li>Let <var>event</var> be this <a>PaymentRequestEvent</a>.
           </li>
+          <li>If <var>event</var>'s <a>isTrusted</a> attribute is false, return
+          a <a>Promise</a> rejected with a "<a>InvalidStateError</a>"
+          <a>DOMException</a>.
+          </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a> that
           triggered this <a>PaymentRequestEvent</a>.
           </li>
@@ -1656,7 +1706,7 @@
           <li>If this algorithm is not <a data-cite=
           "!HTML#triggered-by-user-activation">triggered by user
           activation</a>, return a <a>Promise</a> rejected with a
-          <a>InvalidAccessError</a>.
+          "<a>NotAllowedError</a>" <a>DOMException</a>.
           </li>
           <li>Let <var>promise</var> be a new <a>Promise</a>.
           </li>
@@ -1845,6 +1895,36 @@ window.addEventListener("message", function(e) {
       </section>
       <section>
         <h2>
+          <dfn>Change Payment Method Algorithm</dfn>
+        </h2>
+        <p>
+          When this algorithm is invoked with <var>methodName</var> and
+          <var>methodDetails</var> parameters, the user agent MUST run the
+          following steps:
+        </p>
+        <ol class="algorithm">
+          <li>Run the <a>payment method changed algorithm</a> with
+          <a>PaymentMethodChangeEvent</a> <var>event</var> constructed using
+          the given <var>methodName</var> and <var>methodDetails</var>
+          parameters.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> is not run,
+          return <code>null</code>.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> throws,
+          rethrow the error.
+          </li>
+          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> times out
+          (optional), throw "<a>InvalidStateError</a>" <a>DOMException</a>.
+          </li>
+          <li>Construct and return a <a>PaymentMethodChangeResponse</a> from
+          the <var>detailsPromise</var> in
+          <var>event</var>.<a>updateWith(detailsPromise)</a>.
+          </li>
+        </ol>
+      </section>
+      <section>
+        <h2>
           <dfn>Respond to PaymentRequest Algorithm</dfn>
         </h2>
         <p>
@@ -1853,6 +1933,10 @@ window.addEventListener("message", function(e) {
           the following steps:
         </p>
         <ol class="algorithm">
+          <li>If <var>event</var>'s <a>isTrusted</a> is false, then
+          <a>throw</a> an "InvalidStateError" <a>DOMException</a> and abort
+          these steps.
+          </li>
           <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
           <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a> and
           abort these steps.
@@ -2012,6 +2096,23 @@ window.addEventListener("message", function(e) {
           </li>
         </ul>
       </section>
+      <section data-link-for="PaymentInstruments">
+        <h2>
+          User Consent to Install a Payment Handler
+        </h2>
+        <ul>
+          <li>This specification does not define how the user agent establishes
+          user consent when <a>set()</a> is first called. The user agent might
+          prompt the user as a result of <a>set()</a>, or might not if consent
+          has been established previously through manual configuration by the
+          user or usage patterns.
+          </li>
+          <li>User agents MAY reject a <a>set()</a> promise for security
+          reasons (e.g., due to an invalid SSL certificate) and SHOULD notify
+          the user when this happens.
+          </li>
+        </ul>
+      </section>
       <section>
         <h2>
           User Consent before Payment
@@ -2042,33 +2143,47 @@ window.addEventListener("message", function(e) {
       </section>
       <section>
         <h2>
-          Payment App Authenticity
+          Authorized Payment Apps
         </h2>
         <ul>
+          <li>The party responsible for a payment method authorizes payment
+          apps through a <a>payment method manifest</a>. See the <a>Handling a
+          CanMakePaymentEvent</a> algorithm for details.
+          </li>
           <li>The user agent is not required to make available payment handlers
-          that pose security issues. When a payment handler is unavailable for
-          security reasons, the user agent should provide rationale to the
-          payment handler developers (e.g., through console messages) and may
-          also inform the user to help avoid confusion.
+          that pose security issues. Security issues might include:
+            <ul>
+              <li>Certificates that are expired, revoked, self-signed, and so
+              on.
+              </li>
+              <li>Mixed content
+              </li>
+              <li>Page available through HTTPs redirects to one that is not.
+              </li>
+              <li>Payment handler is known from safe browsing database to be
+              malicious
+              </li>
+            </ul>
+            <p>
+              When a payment handler is unavailable for security reasons, the
+              user agent should provide rationale to the payment handler
+              developers (e.g., through console messages) and may also inform
+              the user to help avoid confusion.
+            </p>
           </li>
         </ul>
-        <p class="note">
-          The Web Payments Working Group is also discussing Payment App
-          authenticity; see the (draft) <a href=
-          "https://w3c.github.io/payment-method-manifest/">Payment Method
-          Manifest</a>.
-        </p>
       </section>
       <section>
         <h2>
           Supported Origin
         </h2>
         <ul>
-          <li>Payment method manifests authorize origins to distribute payment
-          apps for a given payment method. When the user agent is determining
-          whether a payment handler matches the origin listed in a payment
-          method manifest, the user agent uses the scope URL of the payment
-          handler's service worker registration.
+          <li>
+            <a>Payment method manifests</a> authorize origins to distribute
+            payment apps for a given payment method. When the user agent is
+            determining whether a payment handler matches the origin listed in
+            a <a>payment method manifest</a>, the user agent uses the scope URL
+            of the payment handler's service worker registration.
           </li>
         </ul>
       </section>
@@ -2077,9 +2192,12 @@ window.addEventListener("message", function(e) {
           Data Validation
         </h2>
         <ul>
-          <li>Payees should validate that the data they have received through
-          the paymentRequest API is what they expect (e.g., the total that was
-          paid, etc.).
+          <li>To mitigate the scenario where a hijacked payee site submits
+          fraudlent or malformed payment method data (or, for that matter,
+          payment request data) to the payee's server, the payee's server
+          should validate the data format and correlate the data with
+          authoritative information on the server such as accepted payment
+          methods, total, display items, and shipping address.
           </li>
         </ul>
       </section>
@@ -2158,13 +2276,21 @@ window.addEventListener("message", function(e) {
           "!payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
           <dfn data-cite=
           "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
+          <dfn data-cite=
+          "!payment-request#dom-paymentoptions">PaymentOptions</dfn>,
+          <dfn data-cite=
+          "!payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
           <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
           <dfn data-cite=
           "!payment-request#canmakepayment()-method">canMakePayment()</dfn>,
-          <dfn data-cite="!payment-request#show()-method">show()</dfn>, and
+          <dfn data-cite="!payment-request#show()-method">show()</dfn>,
+          <dfn data-cite=
+          "!payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
           <dfn data-cite=
           "!payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn> <dfn data-cite=
+          accepts the payment request algorithm</dfn>, <dfn data-cite=
+          "!payment-request#payment-method-changed-algorithm">payment method
+          changed algorithm</dfn>, and <dfn data-cite=
           "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
           defined by the Payment Request API specification
           [[!payment-request]].
@@ -2198,6 +2324,21 @@ window.addEventListener("message", function(e) {
           Identifier specification [[!payment-method-id]].
         </dd>
         <dt>
+          Payment Method Manifest
+        </dt>
+        <dd>
+          The terms <dfn data-lt="payment method manifests" data-cite=
+          "!payment-method-manifest#payment-method-manifest">payment method
+          manifest</dfn>, <dfn data-lt="ingested" data-cite=
+          "!payment-method-manifest#ingest-payment-method-manifests">ingest
+          payment method manifest</dfn>, <dfn data-lt="parsed" data-cite=
+          "!payment-method-manifest#parsed-payment-method-manifest">parsed
+          payment method manifest</dfn>, and <dfn data-cite=
+          "!payment-method-manifest#parsed-payment-method-manifest-supported-origins">
+          supported origins</dfn> are defined by the Payment Method Manifest
+          specification [[!payment-method-manifest]].
+        </dd>
+        <dt>
           Basic Card Payment
         </dt>
         <dd>
@@ -2228,7 +2369,8 @@ window.addEventListener("message", function(e) {
           RFC6454
         </dt>
         <dd>
-          The term <dfn>origin</dfn> is defined in [[!RFC6454]].
+          The term <dfn data-lt="origins">origin</dfn> is defined in
+          [[!RFC6454]].
         </dd>
         <dt>
           Writing Promise-Using Specifications
@@ -2246,9 +2388,10 @@ window.addEventListener("message", function(e) {
           The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
           <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
           <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
-          flag</dfn>, and <dfn data-cite=
-          "!DOM#stop-immediate-propagation-flag">stop immediate propagation
-          flag</dfn> are defined in [[!DOM]].
+          flag</dfn>, <code><dfn data-cite=
+          "!DOM#dom-event-istrusted">isTrusted</dfn></code> attribute, and
+          <dfn data-cite="!DOM#stop-immediate-propagation-flag">stop immediate
+          propagation flag</dfn> are defined in [[!DOM]].
         </dd>
         <dt>
           Web IDL
@@ -2274,22 +2417,13 @@ window.addEventListener("message", function(e) {
           </p>
           <ul>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#invalidaccesserror">InvalidAccessError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
             "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
             </li>
             <li>"<code><dfn data-cite=
-            "!WEBIDL#notfounderror">NotFoundError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
             "!WEBIDL#operationerror">OperationError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#securityerror">SecurityError</dfn></code>"
             </li>
           </ul>
         </dd>
