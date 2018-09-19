@@ -2190,9 +2190,12 @@ window.addEventListener("message", function(e) {
           Data Validation
         </h2>
         <ul>
-          <li>Payees should validate that the data they have received through
-          the paymentRequest API is what they expect (e.g., the total that was
-          paid, etc.).
+          <li>To mitigate the scenario where a hijacked payee site submits
+          fraudlent or malformed payment method data (or, for that matter,
+          payment request data) to the payee's server, the payee's server
+          should validate the data format and correlate the data with
+          authoritative information on the server such as accepted payment
+          methods, total, display items, and shipping address.
           </li>
         </ul>
       </section>
