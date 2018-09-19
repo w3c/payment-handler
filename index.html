@@ -763,7 +763,7 @@
             }]
           });
 
-        const { storedInstrument } =
+        const storedInstrument =
           await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
         // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
@@ -788,7 +788,7 @@
             }]
           });
 
-        const { storedInstrument } =
+        const storedInstrument =
           await registration.paymentManager.paymentInstruments.get(instrumentKey);
 
         // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
