@@ -2149,10 +2149,25 @@ window.addEventListener("message", function(e) {
           CanMakePaymentEvent</a> algorithm for details.
           </li>
           <li>The user agent is not required to make available payment handlers
-          that pose security issues. When a payment handler is unavailable for
-          security reasons, the user agent should provide rationale to the
-          payment handler developers (e.g., through console messages) and may
-          also inform the user to help avoid confusion.
+          that pose security issues. Security issues might include:
+            <ul>
+              <li>Certificates that are expired, revoked, self-signed, and so
+              on.
+              </li>
+              <li>Mixed content
+              </li>
+              <li>Page available through HTTPs redirects to one that is not.
+              </li>
+              <li>Payment handler is known from safe browsing database to be
+              malicious
+              </li>
+            </ul>
+            <p>
+              When a payment handler is unavailable for security reasons, the
+              user agent should provide rationale to the payment handler
+              developers (e.g., through console messages) and may also inform
+              the user to help avoid confusion.
+            </p>
           </li>
         </ul>
       </section>
