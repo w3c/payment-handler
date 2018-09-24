@@ -1192,6 +1192,7 @@
           readonly attribute DOMString instrumentKey;
           readonly attribute boolean requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
+          Promise&lt;PaymentHandlerResponse?&gt; showPaymentUI(USVString url, optional object? data = null);
           Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
@@ -1299,6 +1300,16 @@
           <p>
             This method is used by the payment handler to show a window to the
             user. When called, it runs the <a>open window algorithm</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>showPaymentUI()</dfn> method
+          </h2>
+          <p>
+            This method is used by the payment handler to show a custom UI to
+            the user. When called, it runs the <a>show payment UI
+            algorithm</a>.
           </p>
         </section>
         <section>
@@ -1643,6 +1654,44 @@
         <a>PaymentRequest</a>. A single <a>payment handler</a> SHOULD NOT be
         allowed to open more than one client window using this method.
       </p>
+      <section data-dfn-for="PaymentHandlerContainer" data-link-for=
+      "PaymentHandlerContainer">
+        <h2>
+          <dfn>PaymentHandlerContainer</dfn> interface
+        </h2>
+        <pre class="idl">
+        [SecureContxt, Exposed=Window]
+        interface PaymentHandlerContainer {
+          readonly attribute object? data;
+          void respondWith(PaymentHandlerResponse response);
+        };
+
+        partial interface Navigator {
+          [SecureContext, SameObject] readonly attribute PaymentHandlerContainer paymentHandler;
+        };
+        </pre>
+        <section>
+          <h2>
+            <dfn>data</dfn> attribute
+          </h2>
+          <p>
+            The <a>data</a> attribute returns
+            <a>[[\paymentHandlerRequestData]]</a>.
+          </p>
+        </section>
+        <section>
+          <h2>
+            <dfn>respondWith()</dfn> method
+          </h2>
+          <p>
+            This method is used by the associated payment handler window to
+            provide a <a>PaymentHandlerResponse</a> to the associated payment
+            handler. When called, this method sets the <a>user agent</a>'s
+            <a>payment handler response data</a> to the <var>response</var>
+            argument.
+          </p>
+        </section>
+      </section>
       <section>
         <h2>
           <dfn>Open Window Algorithm</dfn>
@@ -1729,6 +1778,79 @@
           </li>
           <li>Resolve <var>promise</var> with <var>client</var>.
           </li>
+        </ol>
+      </section>
+      <section>
+        <h2>
+          <dfn>Show Payment UI Algorithm</dfn>
+        </h2>
+        <ol class="algorithm">
+          <li>Let <var>url</var> be the result of <a data-cite=
+          "!URL#concept-url-parser">parsing</a> the <var>url</var> argument.
+          </li>
+          <li>If the url parsing throws an exception, return a <a>Promise</a>
+          rejected with that exception.
+          </li>
+          <li>If <var>url</var> is <code>about:blank</code>, return a
+          <a>Promise</a> rejected with a <a>TypeError</a>.
+          </li>
+          <li>If <var>url</var>'s origin is not the same as the <a>service
+          worker</a>'s origin associated with the payment handler, return a <a>
+            Promise</a> rejected with a "<a>NotAllowedError</a>"
+            <a>DOMException</a>.
+          </li>
+          <li>If this algorithm is not <a data-cite=
+          "!HTML#triggered-by-user-activation">triggered by user
+          activation</a>, return a <a>Promise</a> rejected with a
+          "<a>NotAllowedError</a>" <a>DOMException</a>.
+          </li>
+          <li>If the <a>user agent</a>'s <a>payment handler's UI is showing</a>
+          boolean is true, return a <a>Promise</a> with an
+          "<a>InvalidStateError</a>" <a>DOMException</a> and abort these steps.
+          </li>
+          <li>Set the <a>user agent</a>'s <dfn>payment handler's UI is
+          showing</dfn> boolean to true.
+          </li>
+          <li>Set the <a>user agent</a>'s <dfn>payment handler response
+          data</dfn> object to <code>undefined</code>.
+          </li>
+          <li>Let <var>promise</var> be a new <a>Promise</a>.
+          </li>
+          <li>Return <var>promise</var> and perform the remaining steps in
+          parallel:
+          </li>
+          <ol>
+            <li>Let <var>newContext</var> be a new <a data-cite=
+            "!HTML#top-level-browsing-context">top-level browsing context</a>.
+            </li>
+            <li>
+              <a data-cite="!HTML#navigate">Navigate</a> <var>newContext</var>
+              to <var>url</var>, with exceptions enabled and replacement
+              enabled.
+            </li>
+            <li>If the navigation throws an exception, reject
+            <var>promise</var> with that exception and abort these steps.
+            </li>
+            <li>If the origin of <var>newContext</var> is not the same as the
+            <a>service worker</a> origin associated with the payment handler,
+            return a <var>promise</var> with a "<a>NotAllowedError</a>"
+            <a>DOMException</a> and abort these steps.
+            </li>
+            <li>Let <var>window</var> be a new <var>newContext</var>'s
+            <a data-cite="!HTML#active-document">active document</a>'s
+            <a data-cite="!HTML#relevant-settings-object">relevant global
+            object</a>.
+            </li>
+            <li>Set <var>window</var>.<dfn>[[\paymentHandlerRequestData]]</dfn>
+            to the <var>data</var> argument.
+            </li>
+            <li>Wait until <var>window</var>.<a data-cite=
+            "!HTML#dom-window-closed">closed</a> is true.
+            </li>
+            <li>Resolve <var>promise</var> with the <a>user agent</a>'s
+            <a>payment handler response data</a> object.
+            </li>
+          </ol>
         </ol>
       </section>
       <section id="post-example" class="informative">
