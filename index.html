@@ -474,6 +474,14 @@
             When called, this method executes the following steps:
           </p>
           <ol>
+            <li>Let <var>registration</var> be the <a>PaymentInstrument</a>'s
+            associated <a>service worker registration</a>.
+            </li>
+            <li>If <var>registration</var> has no <a>active worker</a>, then
+            reject a <a>Promise</a> with an
+            "<code><a>InvalidStateError</a></code>" DOMException and terminate
+            these steps.
+            </li>
             <li>Upon user agent discretion and depending on user consent,
             optionally return a <a>Promise</a> rejected with a
             <a>NotAllowedError</a>.
@@ -716,7 +724,8 @@
         &lt;script&gt;
 
         const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-        const registration = await navigator.serviceWorker.register("/register/sw.js");
+        navigator.serviceWorker.register("/register/sw.js");
+        const registration = await navigator.serviceWorker.ready;
         await registration.paymentManager.paymentInstruments.set({
           instrumentKey,
           {
@@ -773,8 +782,8 @@
             return; // not supported, so bail out.
           }
 
-          const registration =
-            await navigator.serviceWorker.register("/sw.js");
+          navigator.serviceWorker.register("/sw.js");
+          const registration = await navigator.serviceWorker.ready;
 
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
@@ -2396,6 +2405,7 @@ window.addEventListener("message", function(e) {
         <dd>
           The terms <dfn data-cite=
           "!SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
+          <dfn>service worker registration</dfn>, <dfn>active worker</dfn>,
           <dfn data-cite="!SERVICE-WORKERS#dfn-service-worker-client">service
           worker client</dfn>, <code><dfn data-cite=
           "!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
