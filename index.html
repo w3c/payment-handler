@@ -935,31 +935,45 @@
           </li>
           <li>If <var>registration</var> is not found, terminate these steps.
           </li>
-          <li>Invoke the <a>handle functional event</a> algorithm with a
-          <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
-            callbackSteps</var> set to the following steps:
-            <ol>
-              <li>Set <var>global</var> to the global object that was provided
-              as an argument.
-              </li>
-              <li>Create a <a>trusted event</a>, <var>e</var>, that uses the
-              <a>CanMakePaymentEvent</a> interface, with the event type
-              canmakepayment, which does not bubble, cannot be canceled, and
-              has no default action.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.topOrigin">topOrigin</a>, <a data-lt=
-              "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>,
-              and <a data-lt="PaymentRequestEvent.methodData">methodData</a>
-              attributes of <var>e</var> the same way as when handling
-              <a>PaymentRequestEvent</a>.
-              </li>
-              <li>Dispatch <var>e</var> to <var>global</var>.
-              </li>
-              <li>Wait for all of the promises in the <a>extend lifetime
-              promises</a> of <var>e</var> to resolve.
-              </li>
-            </ol>
+          <li>
+            <p>
+              <a>Fire Functional Event</a> "<code>canmakepayment</code>" using
+              <a>CanMakePaymentEvent</a> on <var>registration</var> with the
+              following properties:
+            </p>
+            <dl>
+              <dt>
+                <a data-lt="CanMakePaymentEvent.topOrigin">topOrigin</a>
+              </dt>
+              <dd>
+                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
+                serialization of the origin</a> of the top level payee web
+                page.
+              </dd>
+              <dt>
+                <a data-lt=
+                "CanMakePaymentEvent.paymentRequestOrigin">paymentRequestOrigin</a>
+              </dt>
+              <dd>
+                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
+                serialization of the origin</a> of the context where
+                PaymentRequest was initialized.
+              </dd>
+              <dt>
+                <a data-lt="CanMakePaymentEvent.methodData">methodData</a>
+              </dt>
+              <dd>
+                The result of executing the <a>MethodData Population
+                Algorithm</a>.
+              </dd>
+              <dt>
+                <a data-lt="CanMakePaymentEvent.modifiers">modifiers</a>
+              </dt>
+              <dd>
+                The result of executing the <a>Modifiers Population
+                Algorithm</a>.
+              </dd>
+            </dl>
           </li>
         </ol>
       </section>
@@ -1555,56 +1569,76 @@
           "<a>InvalidStateError</a>" <a>DOMException</a> and terminate these
           steps.
           </li>
-          <li>Invoke the <a>handle functional event</a> algorithm with a
-          <a>ServiceWorkerRegistration</a> of <var>registration</var> and <var>
-            callbackSteps</var> set to the following steps:
+          <li>
+            <p>
+              <a>Fire Functional Event</a> "<code>paymentrequest</code>" using
+              <a>PaymentRequestEvent</a> on <var>registration</var> with the
+              following properties:
+            </p>
+            <dl>
+              <dt>
+                <a data-lt="PaymentRequestEvent.topOrigin">topOrigin</a>
+              </dt>
+              <dd>
+                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
+                serialization of the origin</a> of the top level payee web
+                page.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
+              </dt>
+              <dd>
+                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
+                serialization of the origin</a> of the context where
+                PaymentRequest was initialized.
+              </dd>
+              <dt>
+                <a data-lt="PaymentRequestEvent.methodData">methodData</a>
+              </dt>
+              <dd>
+                The result of executing the <a>MethodData Population
+                Algorithm</a>.
+              </dd>
+              <dt>
+                <a data-lt="CanMakePaymentEvent.modifiers">modifiers</a>
+              </dt>
+              <dd>
+                The result of executing the <a>Modifiers Population
+                Algorithm</a>.
+              </dd>
+              <dt>
+                <a data-lt="PaymentRequestEvent.total">total</a>
+              </dt>
+              <dd>
+                A <a>structured clone</a> of the total field on the
+                <a>PaymentDetailsInit</a> from the corresponding
+                <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
+              </dt>
+              <dd>
+                The [[\details]].<a>id</a> from the <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.instrumentKey">instrumentKey</a>
+              </dt>
+              <dd>
+                The <a>instrumentKey</a> of the selected
+                <a>PaymentInstrument</a>, or the empty string if none was
+                selected.
+              </dd>
+            </dl>
+            <p>
+              Then run the following steps in parallel, with
+              <var>dispatchedEvent</var>:
+            </p>
             <ol>
-              <li>Set <var>global</var> to the global object that was provided
-              as an argument.
-              </li>
-              <li>Create a <a>trusted event</a>, <var>e</var>, that uses the
-              <a>PaymentRequestEvent</a> interface, with the event type
-              <a>paymentrequest</a>, which does not bubble, cannot be canceled,
-              and has no default action.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.topOrigin">topOrigin</a> attribute of <var>
-                e</var> to <a data-cite=
-                "!HTML#ascii-serialisation-of-an-origin">the serialization of
-                the origin</a> of the top level payee web page.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
-              attribute of <var>e</var> to <a data-cite=
-              "!HTML#ascii-serialisation-of-an-origin">the serialization of the
-              origin</a> of the context where PaymentRequest was initialized.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
-              attribute of <var>e</var> to the [[\details]].<a>id</a> from the
-              <a>PaymentRequest</a>.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.methodData">methodData</a> and <a data-lt=
-              "PaymentRequestEvent.modifiers">modifiers</a> attributes of <var>
-                e</var> by executing the <a>MethodData Population Algorithm</a>
-                and <a>Modifiers Population Algorithm</a> respectively.
-              </li>
-              <li>Set the <a data-lt="PaymentRequestEvent.total">total</a>
-              attribute of <var>e</var> to a <a>structured clone</a> of the
-              total field on the <a>PaymentDetailsInit</a> from the
-              corresponding <a>PaymentRequest</a>.
-              </li>
-              <li>Set the <a data-lt=
-              "PaymentRequestEvent.instrumentKey">instrumentKey</a> attribute
-              of <var>e</var> to the <a>instrumentKey</a> of the selected
-              <a>PaymentInstrument</a>, or the empty string if none was
-              selected.
-              </li>
-              <li>Dispatch <var>e</var> to <var>global</var>.
-              </li>
               <li>Wait for all of the promises in the <a>extend lifetime
-              promises</a> of <var>e</var> to resolve.
+              promises</a> of <var>dispatchedEvent</var> to resolve.
               </li>
               <li>If the <a>payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the <a>Promise</a> that was
@@ -2412,8 +2446,8 @@ window.addEventListener("message", function(e) {
           <code><dfn data-cite=
           "!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>,
           <dfn data-cite=
-          "!SERVICE-WORKERS#handle-functional-event-algorithm">handle
-          functional event</dfn>, <dfn data-cite=
+          "!SERVICE-WORKERS#fire-functional-event-algorithm">fire functional
+          event</dfn>, <dfn data-cite=
           "!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
           promises</dfn>,<dfn data-cite=
           "!SERVICE-WORKERS#dfn-pending-promises-count">pending promises
