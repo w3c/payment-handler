@@ -966,6 +966,37 @@
                 The result of executing the <a>MethodData Population
                 Algorithm</a>
               </dd>
+              <dt>
+                <a data-lt="PaymentRequestEvent.total">total</a>
+              </dt>
+              <dd>
+                A <a>structured clone</a> of the total field on the
+                <a>PaymentDetailsInit</a> from the corresponding
+                <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
+              </dt>
+              <dd>
+                The [[\details]].<a>id</a> from the <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.instrumentKey">instrumentKey</a>
+              </dt>
+              <dd>
+                The <a>instrumentKey</a> of the selected
+                <a>PaymentInstrument</a>, or the empty string if none was
+                selected.
+              </dd>
+              <dt>
+                <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+              </dt>
+              <dd>
+                The result of executing the <a>Modifiers Population
+                Algorithm</a>.
+              </dd>
             </dl>
           </li>
         </ol>
