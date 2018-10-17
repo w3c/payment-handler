@@ -943,7 +943,7 @@
             </p>
             <dl>
               <dt>
-                <a data-lt="PaymentRequestEvent.topOrigin">topOrigin</a>
+                <a data-lt="CanMakePaymentEvent.topOrigin">topOrigin</a>
               </dt>
               <dd>
                 <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
@@ -952,7 +952,7 @@
               </dd>
               <dt>
                 <a data-lt=
-                "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
+                "CanMakePaymentEvent.paymentRequestOrigin">paymentRequestOrigin</a>
               </dt>
               <dd>
                 <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
@@ -960,38 +960,14 @@
                 PaymentRequest was initialized.
               </dd>
               <dt>
-                <a data-lt="PaymentRequestEvent.methodData">methodData</a>
+                <a data-lt="CanMakePaymentEvent.methodData">methodData</a>
               </dt>
               <dd>
                 The result of executing the <a>MethodData Population
-                Algorithm</a>
+                Algorithm</a>.
               </dd>
               <dt>
-                <a data-lt="PaymentRequestEvent.total">total</a>
-              </dt>
-              <dd>
-                A <a>structured clone</a> of the total field on the
-                <a>PaymentDetailsInit</a> from the corresponding
-                <a>PaymentRequest</a>.
-              </dd>
-              <dt>
-                <a data-lt=
-                "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
-              </dt>
-              <dd>
-                The [[\details]].<a>id</a> from the <a>PaymentRequest</a>.
-              </dd>
-              <dt>
-                <a data-lt=
-                "PaymentRequestEvent.instrumentKey">instrumentKey</a>
-              </dt>
-              <dd>
-                The <a>instrumentKey</a> of the selected
-                <a>PaymentInstrument</a>, or the empty string if none was
-                selected.
-              </dd>
-              <dt>
-                <a data-lt="PaymentRequestEvent.modifiers">modifiers</a>
+                <a data-lt="CanMakePaymentEvent.modifiers">modifiers</a>
               </dt>
               <dd>
                 The result of executing the <a>Modifiers Population
@@ -1622,7 +1598,38 @@
               </dt>
               <dd>
                 The result of executing the <a>MethodData Population
-                Algorithm</a>
+                Algorithm</a>.
+              </dd>
+              <dt>
+                <a data-lt="CanMakePaymentEvent.modifiers">modifiers</a>
+              </dt>
+              <dd>
+                The result of executing the <a>Modifiers Population
+                Algorithm</a>.
+              </dd>
+              <dt>
+                <a data-lt="PaymentRequestEvent.total">total</a>
+              </dt>
+              <dd>
+                A <a>structured clone</a> of the total field on the
+                <a>PaymentDetailsInit</a> from the corresponding
+                <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
+              </dt>
+              <dd>
+                The [[\details]].<a>id</a> from the <a>PaymentRequest</a>.
+              </dd>
+              <dt>
+                <a data-lt=
+                "PaymentRequestEvent.instrumentKey">instrumentKey</a>
+              </dt>
+              <dd>
+                The <a>instrumentKey</a> of the selected
+                <a>PaymentInstrument</a>, or the empty string if none was
+                selected.
               </dd>
             </dl>
             <p>
