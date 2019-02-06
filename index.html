@@ -227,7 +227,7 @@
         <p>
           Handling a payment request may include numerous interactions: with
           the user through a new window or other APIs (such as
-          [[!WebCryptoAPI]]) or with other services and origins through web
+          [[WebCryptoAPI]]) or with other services and origins through web
           requests or other means.
         </p>
         <p>
@@ -2107,9 +2107,21 @@ window.addEventListener("message", function(e) {
           payment handlers. Information from origins is only shared with the
           payee with the consent of the user.
           </li>
-          <li>Similarly, user agents should not share payment request
-          information with any payment handler until the user has selected that
-          payment handler.
+          <li>User agents should not share payment request information with any
+          payment handler until the user has selected that payment handler.
+          </li>
+          <li>In a browser that supports Payment Handler API, when a merchant
+          creates a PaymentRequest object with URL-based payment method
+          identifiers, <a>CanMakePaymentEvent</a> will fire in registered
+          payment handlers from a finite number of origins: the origins of the
+          payment method manifests and their <a>supported origins</a>. This
+          means that a registered payment handler will know that a user has
+          visited a website before the user has selected that payment handler
+          to complete a transaction. This behavior is similar to the status quo
+          where a merchant embeds a third-party iframe in a checkout page.
+          However, because user agents enable users to disable the
+          <a>CanMakePaymentEvent</a> and users can choose to uninstall payment
+          handlers, this approach improves upon the iframe status quo.
           </li>
           <li>User agents should allow users to disable support for the
           <a>CanMakePaymentEvent</a>.
