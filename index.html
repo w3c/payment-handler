@@ -66,10 +66,11 @@
             testSuiteURI: "https://w3c-test.org/payment-handler/",
             issueBase:    "https://github.com/w3c/payment-handler/issues/",
             githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
+            xref: "web-platform",
         };
     </script>
   </head>
-  <body>
+  <body data-cite="service-workers">
     <section id="abstract">
       <p>
         This specification defines capabilities that enable Web applications to
@@ -680,7 +681,7 @@
             <li>For each <var>image</var> in <var>inputImages</var>:
               <ol>
                 <li>If <var>image</var>.<a data-lt="ImageObject.type">type</a>
-                is not a <a data-cite="#valid-mime-type">valid MIME type</a> or
+                is not a <a data-cite="mimesniff">valid MIME type string</a> or
                 the value of type is not a supported media format, then return
                 an empty <a>Sequence</a> of <a>ImageObject</a>.
                 </li>
@@ -878,8 +879,9 @@
           handler is able to respond to a payment request.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+        [Exposed=ServiceWorker]
         interface CanMakePaymentEvent : ExtendableEvent {
+          constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
@@ -1205,8 +1207,9 @@
           <a>PaymentRequest</a> to the Payment Handler.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
+        [Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
+          constructor(DOMString type, PaymentRequestEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
@@ -1692,9 +1695,8 @@
           <dfn>Open Window Algorithm</dfn>
         </h2>
         <p class="issue" title="The Open Window Algorithm" data-number="115">
-          This algorithm resembles the <a data-cite=
-          "!SERVICE-WORKERS#clients-openwindow">Open Window Algorithm</a> in
-          the Service Workers specification.
+          This algorithm resembles the <a>Open Window Algorithm</a> in the
+          Service Workers specification.
         </p>
         <p class="issue" data-number="115">
           Should we refer to the Service Workers specification instead of
