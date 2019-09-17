@@ -878,12 +878,13 @@
           handler is able to respond to a payment request.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+        [ Exposed=ServiceWorker]
         interface CanMakePaymentEvent : ExtendableEvent {
+          constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
-          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
+          readonly attribute FrozenArray<PaymentMethodData> methodData;
+          void respondWith(Promise<boolean>canMakePaymentResponse);
         };
         </pre>
         <p>
@@ -1205,21 +1206,22 @@
           <a>PaymentRequest</a> to the Payment Handler.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
+        [ Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
+          constructor(DOMString type, PaymentRequestEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
-          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+          readonly attribute FrozenArray<PaymentMethodData> methodData;
           readonly attribute object total;
-          readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
+          readonly attribute FrozenArray<PaymentDetailsModifier> modifiers;
           readonly attribute DOMString instrumentKey;
           readonly attribute boolean requestBillingAddress;
-          Promise&lt;WindowClient?&gt; openWindow(USVString url);
-          Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-          void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
+          Promise<WindowClient?> openWindow(USVString url);
+          Promise<PaymentMethodChangeResponse?> changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
+          void respondWith(Promise<PaymentHandlerResponse>handlerResponsePromise);
         };
-      </pre>
+        </pre>
         <section>
           <h2>
             <dfn>topOrigin</dfn> attribute
