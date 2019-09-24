@@ -878,8 +878,9 @@
           handler is able to respond to a payment request.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, CanMakePaymentEventInit eventInitDict), Exposed=ServiceWorker]
+        [Exposed=ServiceWorker]
         interface CanMakePaymentEvent : ExtendableEvent {
+          constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
@@ -1205,8 +1206,9 @@
           <a>PaymentRequest</a> to the Payment Handler.
         </p>
         <pre class="idl">
-        [Constructor(DOMString type, PaymentRequestEventInit eventInitDict), Exposed=ServiceWorker]
+        [Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
+          constructor(DOMString type, PaymentRequestEventInit eventInitDict);
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
@@ -1219,7 +1221,7 @@
           Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
         };
-      </pre>
+        </pre>
         <section>
           <h2>
             <dfn>topOrigin</dfn> attribute
