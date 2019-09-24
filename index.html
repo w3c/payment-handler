@@ -884,7 +884,7 @@
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          void respondWith(Promise&lt;boolean&gt;canMakePaymentResponse);
+          void respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
         };
         </pre>
         <p>
@@ -1219,7 +1219,7 @@
           readonly attribute boolean requestBillingAddress;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
           Promise&lt;PaymentMethodChangeResponse?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-          void respondWith(Promise&lt;PaymentHandlerResponse&gt;handlerResponsePromise);
+          void respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
         };
         </pre>
         <section>
