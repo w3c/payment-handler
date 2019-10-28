@@ -1,0 +1,13 @@
+const methodData = [{
+ supportedMethods: 'basic-card',
+ data: {
+   supportedNetworks: ['visa', 'master', 'jcb']
+ }
+}, {
+ supportedMethods: 'https://google.com/pay',
+ data: {
+   ...
+ }
+}, {
+ supportedMethods: 'https://bobpay.xyz/pay'
+}];
