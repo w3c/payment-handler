@@ -5,20 +5,17 @@
       Payment Handler API
     </title>
     <meta charset="utf-8">
-    <script src="https://www.w3.org/Tools/respec/respec-w3c-common" class=
+    <script src="https://www.w3.org/Tools/respec/respec-w3c" class=
     "remove"></script>
-    <script src="utils.js" class="remove"></script>
     <script class="remove">
       var respecConfig = {
             github:    "https://github.com/w3c/payment-handler/",
-            shortName:  "payment-handler",
-            edDraftURI:   "https://w3c.github.io/payment-handler/",
             specStatus: "ED",
             editors: [
                 {   name:       "Adrian Hope-Bailie",
                     url:        "https://github.com/adrianhopebailie",
-                    company:    "Ripple",
-                    companyURL: "https://ripple.com",
+                    company:    "Coil",
+                    companyURL: "https://coil.com",
                     w3cid:      42590
                 },
                 {   name:       "Andre Lyver",
@@ -59,18 +56,15 @@
                     w3cid:      67785
                 },
             ],
-            license:      "w3c-software-doc",
             wg:           "Web Payments Working Group",
             wgURI:        "https://www.w3.org/Payments/WG/",
             wgPatentURI:  "https://www.w3.org/2004/01/pp-impl/83744/status",
             testSuiteURI: "https://w3c-test.org/payment-handler/",
-            issueBase:    "https://github.com/w3c/payment-handler/issues/",
-            githubAPI:    "https://api.github.com/repos/w3c/payment-handler",
             xref: "web-platform",
         };
     </script>
   </head>
-  <body data-cite="service-workers">
+  <body data-cite="service-workers payment-method-id">
     <section id="abstract">
       <p>
         This specification defines capabilities that enable Web applications to
@@ -99,15 +93,14 @@
       <ul>
         <li>An origin-based permission to handle payment request events.
         </li>
-        <li>A payment request event type (<a>PaymentRequestEvent</a>). A
-        <a>payment handler</a> is an event handler for the
-        <a>PaymentRequestEvent</a>.
+        <li>A payment request event type {{PaymentRequestEvent}}). A <a>payment
+        handler</a> is an event handler for the {{PaymentRequestEvent}}.
         </li>
         <li>An extension to the service worker registration interface
-        (<a>PaymentManager</a>) to manage the definition, display, and user
-        selection of <a>PaymentInstrument</a>s.
+        ({{PaymentManager}} to manage the definition, display, and user
+        selection of {{PaymentInstrument}}s.
         </li>
-        <li>A mechanism to respond to the <a>PaymentRequestEvent</a>.
+        <li>A mechanism to respond to the {{PaymentRequestEvent}}.
         </li>
       </ul>
       <p class="note">
@@ -132,9 +125,9 @@
         additional user consent.
         </li>
         <li>
-          <a>Payment handler</a>s are defined in <a>service worker</a> code.
+          <a>Payment handlers</a> are defined in <a>service worker</a> code.
         </li>
-        <li>The <a>PaymentManager</a> is used to set a list of <a data-lt=
+        <li>The {{PaymentManager}} is used to set a list of <a data-lt=
         "PaymentManager.instruments">payment instruments</a>. Each
           <a data-lt="PaymentInstrument">payment instrument</a> provides data
           to the user agent to improve the user experience of selecting payment
@@ -172,11 +165,11 @@
         otherwise available from the Web app.
         </li>
         <li>When the user (the <dfn>payer</dfn>) selects an <a data-lt=
-        "PaymentManager.instruments">instrument</a>, the user agent
-        <a>fires</a> a <a>PaymentRequestEvent</a> (cf. the <a>user interaction
-        task source</a>) in the service worker whose <a data-lt=
+        "PaymentManager.instruments">instrument</a>, the user agent fires a
+        {{PaymentRequestEvent}} (cf. the <a>user interaction task source</a>)
+        in the service worker whose <a data-lt=
         "ServiceWorkerRegistration.paymentManager">PaymentManager</a> the
-        instrument was registered with. The <a>PaymentRequestEvent</a> includes
+        instrument was registered with. The {{PaymentRequestEvent}} includes
         some information from the PaymentRequest (defined in
         [[!payment-request]]) as well as additional information (e.g., origin
         and selected instrument).
@@ -194,7 +187,7 @@
       </ol>
       <p class="note">
         An origin may implement a payment app with more than one service worker
-        and therefore multiple <a>payment handler</a>s may be registered per
+        and therefore multiple <a>payment handlers</a> may be registered per
         origin. The handler that is invoked is determined by the selection made
         by the user of a <a data-lt="PaymentManager.instruments">payment
         instrument</a>. The <a>service worker</a> which stored the <a data-lt=
@@ -228,13 +221,13 @@
         <p>
           Handling a payment request may include numerous interactions: with
           the user through a new window or other APIs (such as
-          [[WebCryptoAPI]]) or with other services and origins through web
+          [[[WebCryptoAPI]]]) or with other services and origins through web
           requests or other means.
         </p>
         <p>
           This specification does not address these activities that occur
-          between the payment handler accepting the <a>PaymentRequestEvent</a>
-          and the payment handler returning a response. All of these activities
+          between the payment handler accepting the {{PaymentRequestEvent}} and
+          the payment handler returning a response. All of these activities
           which may be required to configure the payment handler and handle the
           payment request, are left to the implementation of the payment
           handler, including:
@@ -266,10 +259,9 @@
           src="app-arch.png">
           <figcaption>
             A Web payment app is associated with an origin. Payment handlers
-            respond to <a>PaymentRequestEvent</a>s. <a>PaymentManager</a>s
-            manage the definition, display, and user selection of
-            <a>PaymentInstrument</a>s. A <a>PaymentInstrument</a> supports one
-            or more payment methods.
+            respond to {{PaymentRequestEvent}}s. {{PaymentManager}} manage the
+            definition, display, and user selection of {{PaymentInstrument}}s.
+            A {{PaymentInstrument}} supports one or more payment methods.
           </figcaption>
         </figure>
       </section>
@@ -299,44 +291,39 @@
       </h2>
       <p>
         One registers a payment handler with the user agent when assigning the
-        first <a>PaymentInstrument</a> to it through the <a data-link-for=
-        "PaymentInstruments">set()</a> method.
+        first {{PaymentInstrument}} to it through the
+        {{PaymentInstruments/set()}} method.
       </p>
-      <section data-dfn-for="ServiceWorkerRegistration" data-link-for=
-      "ServiceWorkerRegistration">
+      <section data-dfn-for="ServiceWorkerRegistration">
         <h2>
-          Extension to the <code>ServiceWorkerRegistration</code> interface
+          Extension to the `ServiceWorkerRegistration` interface
         </h2>
-        <p>
-          This specification extends the <a>ServiceWorkerRegistration</a>
-          interface with the addition of a <dfn>paymentManager</dfn> attribute.
-        </p>
         <pre class="idl">
         partial interface ServiceWorkerRegistration {
           [SameObject] readonly attribute PaymentManager paymentManager;
         };
         </pre>
         <p>
-          The <a>paymentManager</a> attribute exposes payment handler
+          The <dfn>paymentManager</dfn> attribute exposes payment handler
           functionality in the service worker.
         </p>
       </section>
-      <section data-dfn-for="PaymentManager" data-link-for="PaymentManager">
+      <section data-dfn-for="PaymentManager">
         <h2>
           <dfn>PaymentManager</dfn> interface
         </h2>
         <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface PaymentManager {
-        [SameObject] readonly attribute PaymentInstruments instruments;
-        attribute DOMString userHint;
-        Promise&lt;void&gt; enableDelegations(FrozenArray&lt;PaymentDelegation&gt; delegations);
-      };
-      </pre>
+          [SecureContext, Exposed=(Window,Worker)]
+          interface PaymentManager {
+            [SameObject] readonly attribute PaymentInstruments instruments;
+            attribute DOMString userHint;
+            Promise&lt;void&gt; enableDelegations(FrozenArray&lt;PaymentDelegation&gt; delegations);
+          };
+        </pre>
         <p>
-          The <a>PaymentManager</a> is used by <a>payment handler</a>s to
-          manage their associated instruments as well as supported payment
-          methods and delegations.
+          The {{PaymentManager}} is used by <a>payment handler</a>s to manage
+          their associated instruments as well as supported payment methods and
+          delegations.
         </p>
         <section>
           <h2>
@@ -374,8 +361,7 @@
           </p>
         </section>
       </section>
-      <section data-dfn-for="PaymentDelegation" data-link-for=
-      "PaymentDelegation">
+      <section data-dfn-for="PaymentDelegation">
         <h2>
           <dfn>PaymentDelegation</dfn> enum
         </h2>
@@ -414,28 +400,27 @@
           </dd>
         </dl>
       </section>
-      <section data-dfn-for="PaymentInstruments" data-link-for=
-      "PaymentInstruments">
+      <section data-dfn-for="PaymentInstruments">
         <h2>
           <dfn>PaymentInstruments</dfn> interface
         </h2>
         <pre class="idl">
-      [SecureContext, Exposed=(Window,Worker)]
-      interface PaymentInstruments {
-          Promise&lt;boolean&gt;           delete(DOMString instrumentKey);
-          Promise&lt;any&gt; get(DOMString instrumentKey);
-          Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-          Promise&lt;boolean&gt;           has(DOMString instrumentKey);
-          Promise&lt;void&gt;              set(DOMString instrumentKey, PaymentInstrument details);
-          Promise&lt;void&gt;           clear();
-      };
-      </pre>
+          [SecureContext, Exposed=(Window,Worker)]
+          interface PaymentInstruments {
+            Promise&lt;boolean&gt; delete(DOMString instrumentKey);
+            Promise&lt;any&gt; get(DOMString instrumentKey);
+            Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
+            Promise&lt;boolean&gt; has(DOMString instrumentKey);
+            Promise&lt;void&gt; set(DOMString instrumentKey, PaymentInstrument details);
+            Promise&lt;void&gt; clear();
+          };
+        </pre>
         <p>
-          The <a>PaymentInstruments</a> interface represents a collection of
+          The {{PaymentInstruments}} interface represents a collection of
           payment instruments, each uniquely identified by an
           <dfn>instrumentKey</dfn>. The <var>instrumentKey</var> identifier
           will be passed to the payment handler to indicate the
-          <a>PaymentInstrument</a> selected by the user, if any.
+          {{PaymentInstrument}} selected by the user, if any.
         </p>
         <section>
           <h2>
@@ -445,16 +430,15 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            <li>If the collection contains a {{PaymentInstrument}} with a
             matching <var>instrumentKey</var>, remove it from the collection
-            and resolve <var>p</var> with <b>true</b>.
+            and resolve |p| with <b>true</b>.
             </li>
-            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
+            <li>Otherwise, resolve |p| with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -466,16 +450,15 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, resolve <var>p</var> with that
-            <a>PaymentInstrument</a>.
+            <li>If the collection contains a {{PaymentInstrument}} with a
+            matching <var>instrumentKey</var>, resolve |p| with that
+            {{PaymentInstrument}}.
             </li>
-            <li>Otherwise, resolve <var>p</var> with <code>undefined</code>.
+            <li>Otherwise, resolve |p| with `undefined`.
             </li>
           </ol>
         </section>
@@ -487,14 +470,13 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
-            <li>Resolve <var>p</var> with a <dfn>Sequence</dfn> that contains
-            all the <var>instrumentKey</var>s for the <a>PaymentInstrument</a>s
-            contained in the collection, in original insertion order.
+            <li>Resolve |p| with a <dfn>Sequence</dfn> that contains all the
+            <var>instrumentKey</var>s for the {{PaymentInstrument}}s contained
+            in the collection, in original insertion order.
             </li>
           </ol>
         </section>
@@ -506,16 +488,14 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
-            matching <var>instrumentKey</var>, resolve <var>p</var> with
-            <b>true</b>.
+            <li>If the collection contains a {{PaymentInstrument}} with a
+            matching <var>instrumentKey</var>, resolve |p| with <b>true</b>.
             </li>
-            <li>Otherwise, resolve <var>p</var> with <b>false</b>.
+            <li>Otherwise, resolve |p| with <b>false</b>.
             </li>
           </ol>
         </section>
@@ -527,17 +507,16 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>registration</var> be the <a>PaymentInstrument</a>'s
+            <li>Let <var>registration</var> be the {{PaymentInstrument}}'s
             associated <a>service worker registration</a>.
             </li>
             <li>If <var>registration</var> has no <a>active worker</a>, then
-            reject a <a>Promise</a> with an
-            "<code><a>InvalidStateError</a></code>" DOMException and terminate
-            these steps.
+            reject a {{Promise}} with an {{"InvalidStateError"}}
+            {{DOMException}} and terminate these steps.
             </li>
             <li>Upon user agent discretion and depending on user consent,
-            optionally return a <a>Promise</a> rejected with a
-            <a>NotAllowedError</a>.
+            optionally return a {{Promise}} rejected with a
+            {{NotAllowedError}}.
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then:
@@ -548,8 +527,8 @@
                 "PaymentInstrument.icons">icons</a> as the argument.
                 </li>
                 <li>If the <var>convertedIcons</var> is an empty
-                <a>Sequence</a>, then return a <a>Promise</a> rejected with a
-                <a>TypeError</a>.
+                <a>Sequence</a>, then return a {{Promise}} rejected with a
+                {{TypeError}}.
                 </li>
                 <li>Set <var>details</var>.<a data-lt=
                 "PaymentInstrument.icons">icons</a> to
@@ -557,10 +536,9 @@
                 </li>
               </ol>
             </li>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
             <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
             <var>details</var> is present, then for each <var>icon</var> in
@@ -570,7 +548,7 @@
                 then:
                   <ol>
                     <li>Let <var>fetchedImage</var> be the result of
-                    <a data-cite="!appmanifest#fetching-image-resources">steps
+                    <a data-cite="appmanifest#fetching-image-resources">steps
                     to fetch an image resource</a> passing <var>icon</var> as
                     the argument.
                     </li>
@@ -581,15 +559,15 @@
                 </li>
               </ol>
             </li>
-            <li>If the collection contains a <a>PaymentInstrument</a> with a
+            <li>If the collection contains a {{PaymentInstrument}} with a
             matching <var>instrumentKey</var>, replace it with the
-            <a>PaymentInstrument</a> in <var>details</var>.
+            {{PaymentInstrument}} in <var>details</var>.
             </li>
-            <li>Otherwise, insert the <a>PaymentInstrument</a> in
+            <li>Otherwise, insert the {{PaymentInstrument}} in
             <var>details</var> as a new member of the collection and associate
             it with the key <var>instrumentKey</var>.
             </li>
-            <li>Resolve <var>p</var>.
+            <li>Resolve |p|.
             </li>
           </ol>
         </section>
@@ -601,13 +579,12 @@
             When called, this method executes the following steps:
           </p>
           <ol>
-            <li>Let <var>p</var> be a new promise.
+            <li>Let |p:Promise| be [=a new promise=].
             </li>
-            <li>Return <var>p</var> and perform the remaining steps in
-            parallel:
+            <li>Return |p| and perform the remaining steps in parallel:
             </li>
-            <li>Remove all <a>PaymentInstrument</a>s from the collection and
-            resolve <var>p</var>.
+            <li>Remove all {{PaymentInstrument}}s from the collection and
+            resolve |p|.
             </li>
           </ol>
         </section>
@@ -630,7 +607,7 @@
             </dt>
             <dd>
               The <a>name</a> member is a string that represents the label for
-              this <a>PaymentInstrument</a> as it is usually displayed to the
+              this {{PaymentInstrument}} as it is usually displayed to the
               user.
             </dd>
             <dt>
@@ -687,24 +664,23 @@
             <dd>
               The <a>sizes</a> member is used to specify the
               <a>ImageObject</a>'s sizes. It follows the spec of sizes member
-              in <a data-cite="!HTML#the-link-element">HTML link element</a>,
+              in <a data-cite="HTML#the-link-element">HTML link element</a>,
               which is a string consisting of an <a data-cite=
-              "!HTML#unordered-set-of-unique-space-separated-tokens">unordered
-              set of unique space-separated tokens</a> which are <a data-cite=
-              "!HTML#ascii-case-insensitive">ASCII case-insensitive</a> that
-              represents the dimensions of an image. Each keyword is either an
-              <a data-cite="!HTML#ascii-case-insensitive">ASCII
-              case-insensitive</a> match for the string "any", or a value that
-              consists of two valid non-negative integers that do not have a
-              leading U+0030 DIGIT ZERO (0) character and that are separated by
-              a single U+0078 LATIN SMALL LETTER X or U+0058 LATIN CAPITAL
-              LETTER X character. The keywords represent icon sizes in raw
-              pixels (as opposed to CSS pixels). When multiple image objects
-              are available, a user agent MAY use the value to decide which
-              icon is most suitable for a display context (and ignore any that
-              are inappropriate). The parsing steps for the <a>sizes</a> member
-              MUST follow <a data-cite="!HTML#attr-link-sizes">the parsing
-              steps for HTML link element sizes attribute</a>.
+              "HTML#unordered-set-of-unique-space-separated-tokens">unordered
+              set of unique space-separated tokens</a> which are [=ASCII
+              case-insensitive=] that represents the dimensions of an image.
+              Each keyword is either an [=ASCII case-insensitive=] match for
+              the string "any", or a value that consists of two valid
+              non-negative integers that do not have a leading U+0030 DIGIT
+              ZERO (0) character and that are separated by a single U+0078
+              LATIN SMALL LETTER X or U+0058 LATIN CAPITAL LETTER X character.
+              The keywords represent icon sizes in raw pixels (as opposed to
+              CSS pixels). When multiple image objects are available, a user
+              agent MAY use the value to decide which icon is most suitable for
+              a display context (and ignore any that are inappropriate). The
+              parsing steps for the <a>sizes</a> member MUST follow
+              <a data-cite="HTML#attr-link-sizes">the parsing steps for HTML
+              link element sizes attribute</a>.
             </dd>
             <dt>
               <dfn>type</dfn> member
@@ -743,16 +719,13 @@
                 </li>
                 <li>Let <var>url</var> be the result of parsing
                 <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
-                <a data-cite="!HTML#context-object">context object</a>'s
-                <a data-cite="!HTML#relevant-settings-object">relevant settings
-                object</a>'s <a data-cite="!HTML#api-base-url">API base
-                URL</a>.
+                <a>context object</a>'s <a>relevant settings object</a>'s
+                [=environment settings object/api base url=].
                 </li>
                 <li>If <var>url</var> is failure, then return an empty
                 <a>Sequence</a> of <a>ImageObject</a>.
                 </li>
-                <li>If <var>url</var>'s <a data-cite=
-                "!HTML#concept-url-scheme">scheme</a> is not "https", then
+                <li>If <var>url</var>'s [=url/scheme=] is not "https", then
                 return an empty <a>Sequence</a> of <a>ImageObject</a>.
                 </li>
                 <li>Set <var>image</var>.<a data-lt="ImageObject.src">src</a>
@@ -893,19 +866,13 @@
       <p>
         Implementations may impose a timeout for developers to respond to the
         <a>CanMakePaymentEvent</a>. If the timeout expires, then the
-        implementation will behave as if <a data-lt=
-        "CanMakePaymentEvent.respondWith()">respondWith()</a> was called with
-        <code>false</code>.
+        implementation will behave as if {{CanMakePaymentEvent/respondWith()}}
+        was called with `false`.
       </p>
-      <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
-      "ServiceWorkerGlobalScope">
+      <section data-dfn-for="ServiceWorkerGlobalScope">
         <h2>
-          Extension to <a>ServiceWorkerGlobalScope</a>
+          Extension to `ServiceWorkerGlobalScope`
         </h2>
-        <p>
-          This specification extends the <a>ServiceWorkerGlobalScope</a>
-          interface.
-        </p>
         <pre class="idl">
         partial interface ServiceWorkerGlobalScope {
           attribute EventHandler oncanmakepayment;
@@ -916,14 +883,13 @@
             <dfn>oncanmakepayment</dfn> attribute
           </h2>
           <p>
-            The <a>oncanmakepayment</a> attribute is an <a>event handler</a>
-            whose corresponding <a>event handler event type</a> is
-            canmakepayment.
+            The {{ServiceWorkerGlobalScope/oncanmakepayment}} attribute is an
+            <a>event handler</a> whose corresponding <a>event handler event
+            type</a> is "canmakepayment".
           </p>
         </section>
       </section>
-      <section data-dfn-for="CanMakePaymentEvent" data-link-for=
-      "CanMakePaymentEvent">
+      <section data-dfn-for="CanMakePaymentEvent">
         <h2>
           The <dfn>CanMakePaymentEvent</dfn>
         </h2>
@@ -932,19 +898,19 @@
           handler is able to respond to a payment request.
         </p>
         <pre class="idl">
-        [Exposed=ServiceWorker]
-        interface CanMakePaymentEvent : ExtendableEvent {
-          constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
-          readonly attribute USVString topOrigin;
-          readonly attribute USVString paymentRequestOrigin;
-          readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-          void respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
-        };
+          [Exposed=ServiceWorker]
+          interface CanMakePaymentEvent : ExtendableEvent {
+            constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
+            readonly attribute USVString topOrigin;
+            readonly attribute USVString paymentRequestOrigin;
+            readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+            void respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
+          };
         </pre>
         <p>
           The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
           <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
-          definitions with those defined for <a>PaymentRequestEvent</a>.
+          definitions with those defined for {{PaymentRequestEvent}}.
         </p>
         <section>
           <h2>
@@ -969,7 +935,7 @@
           <p>
             The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>, and
             <dfn>methodData</dfn> members share their definitions with those
-            defined for <a>PaymentRequestEvent</a>.
+            defined for {{PaymentRequestEvent}}.
           </p>
         </section>
       </section>
@@ -986,8 +952,7 @@
           <a>CanMakePaymentEvent</a> (e.g., in private browsing mode),
           terminate these steps.
           </li>
-          <li>Let <var>registration</var> be a
-          <a>ServiceWorkerRegistration</a>.
+          <li>Let <var>registration</var> be a {{ServiceWorkerRegistration}}.
           </li>
           <li>If <var>registration</var> is not found, terminate these steps.
           </li>
@@ -1002,8 +967,7 @@
                 <a data-lt="CanMakePaymentEvent.topOrigin">topOrigin</a>
               </dt>
               <dd>
-                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
-                serialization of the origin</a> of the top level payee web
+                the [=serialization of an origin=] of the top level payee web
                 page.
               </dd>
               <dt>
@@ -1011,8 +975,7 @@
                 "CanMakePaymentEvent.paymentRequestOrigin">paymentRequestOrigin</a>
               </dt>
               <dd>
-                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
-                serialization of the origin</a> of the context where
+                the [=serialization of an origin=] of the context where
                 PaymentRequest was initialized.
               </dd>
               <dt>
@@ -1053,12 +1016,12 @@
           Filtering of Payment Instruments
         </h2>
         <p>
-          Given a <a>PaymentMethodData</a> and a <a>PaymentInstrument</a> that
+          Given a <a>PaymentMethodData</a> and a {{PaymentInstrument}} that
           match on <a>payment method identifier</a>, this algorithm returns
           <code>true</code> if this instrument can be used for payment:
         </p>
         <ol class="algorithm">
-          <li>Let <var>instrument</var> be the given <a>PaymentInstrument</a>.
+          <li>Let <var>instrument</var> be the given {{PaymentInstrument}}.
           </li>
           <li>Let <var>methodName</var> be the <a>payment method identifier</a>
           string specified in the <a>PaymentMethodData</a>.
@@ -1067,8 +1030,8 @@
           <a>PaymentMethodData</a>.
           </li>
           <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
-          <a>ServiceWorkerRegistration</a> scope URL of the payment handler
-          with this <var>instrument</var>.
+          {{ServiceWorkerRegistration}} scope URL of the payment handler with
+          this <var>instrument</var>.
           </li>
           <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
           <a>parsed</a> <a>payment method manifest</a> for the
@@ -1084,7 +1047,7 @@
                 <ol>
                   <li>If the intersection of <var>methodData[key]</var> and
                   <var>instrument.capabilities[key]</var> is empty, return
-                  <code>false</code>.
+                  `false`.
                   </li>
                 </ol>
               </li>
@@ -1098,12 +1061,12 @@
           in the payment handler and return the result.
           </li>
           <li>Otherwise, if <a>supported origins</a> in
-          <var>paymentMethodManifest</var> is an ordered set of <a>origins</a>
+          <var>paymentMethodManifest</var> is an ordered set of [=url/origin=]
           that contains the <var>paymentHandlerOrigin</var>, fire the
           <a>CanMakePaymentEvent</a> in the payment handler and return the
           result.
           </li>
-          <li>Otherwise, return <code>false</code>.
+          <li>Otherwise, return `false`.
           </li>
         </ol>
         <section id="capabilities-example" class="informative">
@@ -1140,9 +1103,8 @@
             <code>true</code> because there's an active card in the payment
             handler. Note that <code>new PaymentRequest([{supportedMethods:
             "basic-card", data: {supportedTypes: ["debit"]}}],
-            shoppingCart).canMakePayment()</code> would return
-            <code>false</code> because of mismatch in
-            <code>supportedTypes</code> in this example.
+            shoppingCart).canMakePayment()</code> would return `false` because
+            of mismatch in <code>supportedTypes</code> in this example.
           </p>
         </section>
       </section>
@@ -1153,7 +1115,7 @@
       </h2>
       <p>
         Once the user has selected an Instrument, the user agent fires a
-        <a>PaymentRequestEvent</a> and uses the subsequent
+        {{PaymentRequestEvent}} and uses the subsequent
         <a>PaymentHandlerResponse</a> to create a PaymentReponse for
         [[!payment-request]].
       </p>
@@ -1187,7 +1149,7 @@
           <p>
             The <a>onpaymentrequest</a> attribute is an <a>event handler</a>
             whose corresponding <a>event handler event type</a> is
-            <a>PaymentRequestEvent</a>.
+            {{PaymentRequestEvent}}.
           </p>
         </section>
       </section>
@@ -1337,7 +1299,7 @@
           <p>
             When getting, the <a>paymentRequestId</a> attribute returns the
             [[\details]].<a>id</a> from the <a>PaymentRequest</a> that
-            corresponds to this <a>PaymentRequestEvent</a>.
+            corresponds to this {{PaymentRequestEvent}}.
           </p>
         </section>
         <section>
@@ -1360,10 +1322,9 @@
           <p>
             This attribute indicates the total amount being requested for
             payment. It is of type <a>PaymentCurrencyAmount</a> dictionary as
-            defined in [[payment-request]], and initialized with a
-            <a>structured clone</a> of the <a>total</a> field of the
-            <a>PaymentDetailsInit</a> provided when the corresponding
-            <a>PaymentRequest</a> object was instantiated.
+            defined in [[payment-request]], and initialized with a copy of the
+            <a>total</a> field of the <a>PaymentDetailsInit</a> provided when
+            the corresponding <a>PaymentRequest</a> object was instantiated.
           </p>
         </section>
         <section>
@@ -1384,12 +1345,12 @@
             <dfn>instrumentKey</dfn> attribute
           </h2>
           <p>
-            This attribute indicates the <a>PaymentInstrument</a> selected by
-            the user. It corresponds to the <a data-lt=
+            This attribute indicates the {{PaymentInstrument}} selected by the
+            user. It corresponds to the <a data-lt=
             "instrumentKey">instrumentKey</a> provided to the
             <a>PaymentManager.instruments</a> interface during registration. An
             empty string means that the user did not choose a specific
-            <a>PaymentInstrument</a>.
+            {{PaymentInstrument}}.
           </p>
         </section>
         <section>
@@ -1476,8 +1437,8 @@
             This method is used by the payment handler to provide a
             <a>PaymentHandlerResponse</a> when the payment successfully
             completes. When called, it runs the <a>Respond to PaymentRequest
-            Algorithm</a> with <var>event</var> and
-            <var>handlerResponsePromise</var> as arguments.
+            Algorithm</a> with |event| and <var>handlerResponsePromise</var> as
+            arguments.
           </p>
         </section>
         <p class="issue" title="Share user data with payment app?" data-number=
@@ -1510,7 +1471,7 @@
             <dfn>total</dfn>, <dfn>modifiers</dfn>, <dfn>instrumentKey</dfn>,
             <dfn>paymentOptions</dfn>, and <dfn>shippingOptions</dfn> members
             share their definitions with those defined for
-            <a>PaymentRequestEvent</a>
+            {{PaymentRequestEvent}}
           </p>
         </section>
         <section>
@@ -1524,9 +1485,9 @@
           <ol>
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
-            <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a data-lt=
-            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+            <li>For each {{PaymentInstrument}} <var>instrument</var> in the <a>
+              payment handler</a>'s <a data-lt=
+              "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
               add the value of <var>instrument</var>.<a data-lt=
               "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
@@ -1556,7 +1517,7 @@
                 <li>Set <var>outData</var>.<a>supportedMethods</a> to a list
                 containing the members of <var>commonMethods</var>.
                 </li>
-                <li>Set <var>outData</var>.data to a <a>structured clone</a> of
+                <li>Set <var>outData</var>.data to a copy of
                 <var>inData</var>.data.
                 </li>
                 <li>Append <var>outData</var> to <var>dataList</var>.
@@ -1578,9 +1539,9 @@
           <ol>
             <li>Set <var>registeredMethods</var> to an empty set.
             </li>
-            <li>For each <a>PaymentInstrument</a> <var>instrument</var> in the
-            <a>payment handler</a>'s <a data-lt=
-            "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
+            <li>For each {{PaymentInstrument}} <var>instrument</var> in the <a>
+              payment handler</a>'s <a data-lt=
+              "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
               add the value of <var>instrument</var>.<a data-lt=
               "PaymentInstrument.method">method</a> to
               <var>registeredMethods</var>.
@@ -1611,8 +1572,8 @@
                 <li>Set <var>outModifier</var>.<a>supportedMethods</a> to a
                 list containing the members of <var>commonMethods</var>.
                 </li>
-                <li>Set <var>outModifier</var>.<a>total</a> to a <a>structured
-                clone</a> of <var>inModifier</var>.<a>total</a>.
+                <li>Set <var>outModifier</var>.<a>total</a> to a copy of <var>
+                  inModifier</var>.<a>total</a>.
                 </li>
                 <li>Append <var>outModifier</var> to <var>modifierList</var>.
                 </li>
@@ -1628,7 +1589,7 @@
           Internal Slots
         </h2>
         <p>
-          Instances of <a>PaymentRequestEvent</a> are created with the internal
+          Instances of {{PaymentRequestEvent}} are created with the internal
           slots in the following table:
         </p>
         <table>
@@ -1665,7 +1626,7 @@
             </td>
             <td>
               This value is a result of <a data-cite=
-              "!appmanifest#fetching-image-resources">steps to fetch an image
+              "appmanifest#fetching-image-resources">steps to fetch an image
               resource</a> or a fallback image provided by the user agent.
             </td>
           </tr>
@@ -1688,34 +1649,31 @@
         </h2>
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
-          "!payment-request#show-method">PaymentRequest.show()</a> and
+          "payment-request#show-method">PaymentRequest.show()</a> and
           subsequent user selection of a payment instrument, the <a>user
           agent</a> MUST run the following steps:
         </p>
         <ol>
-          <li>Let <var>registration</var> be the
-          <a>ServiceWorkerRegistration</a> corresponding to the
-          <a>PaymentInstrument</a> selected by the user.
+          <li>Let <var>registration</var> be the {{ServiceWorkerRegistration}}
+          corresponding to the {{PaymentInstrument}} selected by the user.
           </li>
-          <li>If <var>registration</var> is not found, reject the
-          <a>Promise</a> that was created by <a data-cite=
-          "!payment-request#show-method">PaymentRequest.show()</a> with an
-          "<a>InvalidStateError</a>" <a>DOMException</a> and terminate these
-          steps.
+          <li>If <var>registration</var> is not found, reject the {{Promise}}
+          that was created by <a data-cite=
+          "payment-request#show-method">PaymentRequest.show()</a> with an
+          {{"InvalidStateError"}} {{DOMException}} and terminate these steps.
           </li>
           <li>
             <p>
               <a>Fire Functional Event</a> "<code>paymentrequest</code>" using
-              <a>PaymentRequestEvent</a> on <var>registration</var> with the
+              {{PaymentRequestEvent}} on <var>registration</var> with the
               following properties:
             </p>
             <dl>
               <dt>
-                <a data-lt="PaymentRequestEvent.topOrigin">topOrigin</a>
+                {{PaymentRequestEvent/topOrigin}}
               </dt>
               <dd>
-                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
-                serialization of the origin</a> of the top level payee web
+                the [=serialization of an origin=] of the top level payee web
                 page.
               </dd>
               <dt>
@@ -1723,12 +1681,11 @@
                 "PaymentRequestEvent.paymentRequestOrigin">paymentRequestOrigin</a>
               </dt>
               <dd>
-                <a data-cite="!HTML#ascii-serialisation-of-an-origin">the
-                serialization of the origin</a> of the context where
+                the [=serialization of an origin=] of the context where
                 PaymentRequest was initialized.
               </dd>
               <dt>
-                <a data-lt="PaymentRequestEvent.methodData">methodData</a>
+                {{PaymentRequestEvent/methodData}}
               </dt>
               <dd>
                 The result of executing the <a>MethodData Population
@@ -1742,12 +1699,11 @@
                 Algorithm</a>.
               </dd>
               <dt>
-                <a data-lt="PaymentRequestEvent.total">total</a>
+                {{PaymentRequestEvent/total}}
               </dt>
               <dd>
-                A <a>structured clone</a> of the total field on the
-                <a>PaymentDetailsInit</a> from the corresponding
-                <a>PaymentRequest</a>.
+                A copy of the total field on the <a>PaymentDetailsInit</a> from
+                the corresponding <a>PaymentRequest</a>.
               </dd>
               <dt>
                 <a data-lt=
@@ -1761,25 +1717,23 @@
                 "PaymentRequestEvent.instrumentKey">instrumentKey</a>
               </dt>
               <dd>
-                The <a>instrumentKey</a> of the selected
-                <a>PaymentInstrument</a>, or the empty string if none was
-                selected.
+                The <a>instrumentKey</a> of the selected {{PaymentInstrument}},
+                or the empty string if none was selected.
               </dd>
               <dt>
                 <a data-lt=
                 "PaymentRequestEvent.paymentOptions">paymentOptions</a>
               </dt>
               <dd>
-                A <a>structured clone</a> of the paymentOptions dictionary
-                passed to the constructor of the corresponding
-                <a>PaymentRequest</a>.
+                A copy of the paymentOptions dictionary passed to the
+                constructor of the corresponding <a>PaymentRequest</a>.
               </dd>
               <dt>
                 <a data-lt=
                 "PaymentRequestEvent.shippingOptions">shippingOptions</a>
               </dt>
               <dd>
-                A <a>structured clone</a> of the shippingOptions field on the
+                A copy of the shippingOptions field on the
                 <a>PaymentDetailsInit</a> from the corresponding
                 <a>PaymentRequest</a>.
               </dd>
@@ -1793,10 +1747,10 @@
               promises</a> of <var>dispatchedEvent</var> to resolve.
               </li>
               <li>If the <a>payment handler</a> has not provided a
-              <a>PaymentHandlerResponse</a>, reject the <a>Promise</a> that was
+              <a>PaymentHandlerResponse</a>, reject the {{Promise}} that was
               created by <a data-cite=
-              "!payment-request#show-method">PaymentRequest.show()</a> with an
-              "<a>OperationError</a>" <a>DOMException</a>.
+              "payment-request#show-method">PaymentRequest.show()</a> with an
+              {{"OperationError"}} {{DOMException}}.
               </li>
             </ol>
           </li>
@@ -1832,9 +1786,9 @@
       </p>
       <p class="note">
         Since user agents know that this method is connected to the
-        <a>PaymentRequestEvent</a>, they SHOULD render the window in a way that
-        is consistent with the flow and not confusing to the user. The
-        resulting window client is bound to the tab/window that initiated the
+        {{PaymentRequestEvent}}, they SHOULD render the window in a way that is
+        consistent with the flow and not confusing to the user. The resulting
+        window client is bound to the tab/window that initiated the
         <a>PaymentRequest</a>. A single <a>payment handler</a> SHOULD NOT be
         allowed to open more than one client window using this method.
       </p>
@@ -1851,54 +1805,51 @@
           copying their steps?
         </p>
         <ol class="algorithm">
-          <li>Let <var>event</var> be this <a>PaymentRequestEvent</a>.
+          <li>Let |event| be this {{PaymentRequestEvent}}.
           </li>
-          <li>If <var>event</var>'s <a>isTrusted</a> attribute is false, return
-          a <a>Promise</a> rejected with a "<a>InvalidStateError</a>"
-          <a>DOMException</a>.
+          <li>If |event|'s {{Event/isTrusted}} attribute is false, return a
+          {{Promise}} rejected with a {{"InvalidStateError"}} {{DOMException}}.
           </li>
           <li>Let <var>request</var> be the <a>PaymentRequest</a> that
-          triggered this <a>PaymentRequestEvent</a>.
+          triggered this {{PaymentRequestEvent}}.
           </li>
           <li>Let <var>url</var> be the result of <a data-cite=
-          "!URL#concept-url-parser">parsing</a> the <var>url</var> argument.
+          "URL#concept-url-parser">parsing</a> the <var>url</var> argument.
           </li>
-          <li>If the url parsing throws an exception, return a <a>Promise</a>
+          <li>If the url parsing throws an exception, return a {{Promise}}
           rejected with that exception.
           </li>
           <li>If <var>url</var> is <code>about:blank</code>, return a
-          <a>Promise</a> rejected with a <a>TypeError</a>.
+          {{Promise}} rejected with a {{TypeError}}.
           </li>
           <li>If <var>url</var>'s origin is not the same as the <a>service
-          worker</a>'s origin associated with the payment handler, return a <a>
-            Promise</a> resolved with null.
+          worker</a>'s origin associated with the payment handler, return a
+          {{Promise}} resolved with null.
           </li>
-          <li>If this algorithm is not <a data-cite=
-          "!HTML#triggered-by-user-activation">triggered by user
-          activation</a>, return a <a>Promise</a> rejected with a
-          "<a>NotAllowedError</a>" <a>DOMException</a>.
+          <li>If this algorithm is not <a>triggered by user activation</a>,
+          return a {{Promise}} rejected with a "{{NotAllowedError}}"
+          {{DOMException}}.
           </li>
-          <li>Let <var>promise</var> be a new <a>Promise</a>.
+          <li>Let <var>promise</var> be a new {{Promise}}.
           </li>
           <li>Return <var>promise</var> and perform the remaining steps in
           parallel:
           </li>
-          <li>If <var>event</var>.<a>[[\windowClient]]</a> is not null, then:
+          <li>If |event|.<a>[[\windowClient]]</a> is not null, then:
             <ol>
-              <li>If <var>event</var>.<a>[[\windowClient]]</a>.<a data-cite=
-              "!SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
+              <li>If |event|.<a>[[\windowClient]]</a>.<a data-cite=
+              "SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
               is not "unloaded", reject <var>promise</var> with an
-              "<a>InvalidStateError</a>" <a>DOMException</a> and abort these
-              steps.
+              {{"InvalidStateError"}} {{DOMException}} and abort these steps.
               </li>
             </ol>
           </li>
-          <li>Let <var>newContext</var> be a new <a data-cite=
-          "!HTML#top-level-browsing-context">top-level browsing context</a>.
+          <li>Let <var>newContext</var> be a new <a>top-level browsing
+          context</a>.
           </li>
           <li>
-            <a data-cite="!HTML#navigate">Navigate</a> <var>newContext</var> to
-            <var>url</var>, with exceptions enabled and replacement enabled.
+            <a>Navigate</a> <var>newContext</var> to <var>url</var>, with
+            exceptions enabled and replacement enabled.
           </li>
           <li>If the navigation throws an exception, reject <var>promise</var>
           with that exception and abort these steps.
@@ -1914,12 +1865,11 @@
             </ol>
           </li>
           <li>Let <var>client</var> be the result of running the
-            <a data-cite="!SERVICE-WORKERS#create-windowclient-algorithm">create
+            <a data-cite="SERVICE-WORKERS#create-windowclient-algorithm">create
             window client</a> algorithm with <var>newContext</var> as the
             argument.
           </li>
-          <li>Set <var>event</var>.<a>[[\windowClient]]</a> to
-          <var>client</var>.
+          <li>Set |event|.<a>[[\windowClient]]</a> to <var>client</var>.
           </li>
           <li>Resolve <var>promise</var> with <var>client</var>.
           </li>
@@ -1927,13 +1877,12 @@
       </section>
       <section id="post-example" class="informative">
         <h2>
-          Example of handling the <a>PaymentRequestEvent</a>
+          Example of handling the {{PaymentRequestEvent}}
         </h2>
         <p>
           This example shows how to write a service worker that listens to the
-          <a>PaymentRequestEvent</a>. When a <a>PaymentRequestEvent</a> is
-          received, the service worker opens a window to interact with the
-          user.
+          {{PaymentRequestEvent}}. When a {{PaymentRequestEvent}} is received,
+          the service worker opens a window to interact with the user.
         </p>
         <pre class="example js" title="Handling the PaymentRequestEvent">
       async function getPaymentResponseFromWindow() {
@@ -2050,12 +1999,11 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <p>
             The user agent receives a successful response from the payment
             handler through resolution of the Promise provided to the
-            <a data-lt="PaymentRequestEvent.respondWith">respondWith()</a>
-            function of the corresponding <a>PaymentRequestEvent</a> interface.
-            The application is expected to resolve the Promise with a
-            <a>PaymentHandlerResponse</a> instance containing the payment
-            response. In case of user cancellation or error, the application
-            may signal failure by rejecting the Promise.
+            {{PaymentRequestEvent/respondWith}} function of the corresponding
+            {{PaymentRequestEvent}} interface. The application is expected to
+            resolve the Promise with a <a>PaymentHandlerResponse</a> instance
+            containing the payment response. In case of user cancellation or
+            error, the application may signal failure by rejecting the Promise.
           </p>
           <p>
             If the Promise is rejected, the user agent MUST run the
@@ -2068,7 +2016,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             with a different one.
             </li>
             <li>Rejecting the Promise that was created by <a data-cite=
-            "!payment-request#show-method">PaymentRequest.show()</a>.
+            "payment-request#show-method">PaymentRequest.show()</a>.
             </li>
           </ul>
         </section>
@@ -2124,22 +2072,21 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </p>
         <ol class="algorithm">
           <li>Run the <a>payment method changed algorithm</a> with
-          <a>PaymentMethodChangeEvent</a> <var>event</var> constructed using
-          the given <var>methodName</var> and <var>methodDetails</var>
-          parameters.
+          <a>PaymentMethodChangeEvent</a> |event| constructed using the given
+          <var>methodName</var> and <var>methodDetails</var> parameters.
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> is not run,
-          return <code>null</code>.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> is not run, return
+          <code>null</code>.
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> throws,
-          rethrow the error.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> throws, rethrow the
+          error.
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> times out
-          (optional), throw "<a>InvalidStateError</a>" <a>DOMException</a>.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> times out
+          (optional), throw {{"InvalidStateError"}} {{DOMException}}.
           </li>
           <li>Construct and return a <a>PaymentRequestDetailsUpdate</a> from
           the <var>detailsPromise</var> in
-          <var>event</var>.<a>updateWith(detailsPromise)</a>.
+          |event|.<a>updateWith(detailsPromise)</a>.
           </li>
         </ol>
       </section>
@@ -2154,22 +2101,22 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </p>
         <ol class="algorithm">
           <li>Run the <a>PaymentRequest updated algorithm</a> with
-          <a>PaymentRequestUpdateEvent</a> <var>event</var> constructed using
-          the updated details (<var>shippingAddress</var> or
+          <a>PaymentRequestUpdateEvent</a> |event| constructed using the
+          updated details (<var>shippingAddress</var> or
           <var>shippingOption</var>).
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> is not run,
-          return <code>null</code>.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> is not run, return
+          <code>null</code>.
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> throws,
-          rethrow the error.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> throws, rethrow the
+          error.
           </li>
-          <li>If <var>event</var>.<a>updateWith(detailsPromise)</a> times out
-          (optional), throw "<a>InvalidStateError</a>" <a>DOMException</a>.
+          <li>If |event|.<a>updateWith(detailsPromise)</a> times out
+          (optional), throw {{"InvalidStateError"}} {{DOMException}}.
           </li>
           <li>Construct and return a <a>PaymentRequestDetailsUpdate</a> from
           the <var>detailsPromise</var> in
-          <var>event</var>.<a>updateWith(detailsPromise)</a>.
+          |event|.<a>updateWith(detailsPromise)</a>.
           </li>
         </ol>
       </section>
@@ -2178,47 +2125,45 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <dfn>Respond to PaymentRequest Algorithm</dfn>
         </h2>
         <p>
-          When this algorithm is invoked with <var>event</var> and
+          When this algorithm is invoked with |event| and
           <var>handlerResponsePromise</var> parameters, the user agent MUST run
           the following steps:
         </p>
         <ol class="algorithm">
-          <li>If <var>event</var>'s <a>isTrusted</a> is false, then
-          <a>throw</a> an "InvalidStateError" <a>DOMException</a> and abort
-          these steps.
+          <li>If |event|'s {{Event/isTrusted}} is false, then throw an
+          "InvalidStateError" {{DOMException}} and abort these steps.
           </li>
-          <li>If <var>event</var>'s <a>dispatch flag</a> is unset, then
-          <a>throw</a> an "<a>InvalidStateError</a>" <a>DOMException</a> and
-          abort these steps.
+          <li>If |event|'s [=Event/dispatch flag=] is unset, then throw an
+          {{"InvalidStateError"}} {{DOMException}} and abort these steps.
           </li>
-          <li>If <var>event</var>.<a>[[\respondWithCalled]]</a> is true, throw
-          an "<a>InvalidStateError</a>" <a>DOMException</a> and abort these
-          steps.
+          <li>If |event|.<a>[[\respondWithCalled]]</a> is true, throw an
+          {{"InvalidStateError"}} {{DOMException}} and abort these steps.
           </li>
-          <li>Set <var>event</var>.<a>[[\respondWithCalled]]</a> to true.
+          <li>Set |event|.<a>[[\respondWithCalled]]</a> to true.
           </li>
-          <li>Set the <var>event</var>'s <a>stop propagation flag</a> and <var>
-            event</var>'s <a>stop immediate propagation flag</a>.
+          <li>Set the |event|'s [=Event/stop propagation flag=] and
+          <var>event</var>'s [=Event/stop immediate propagation flag=].
           </li>
-          <li>Add <var>handlerResponsePromise</var> to the <var>event</var>'s
-          <a>extend lifetime promises</a>
+          <li>Add <var>handlerResponsePromise</var> to the |event|'s <a>extend
+          lifetime promises</a>
           </li>
-          <li>Increment the <var>event</var>'s <a>pending promises count</a> by
-          one.
+          <li>Increment the |event|'s <a>pending promises count</a> by one.
           </li>
-          <li>Upon <a>rejection</a> of <var>handlerResponsePromise</var>:
+          <li>
+            <a>Upon rejection</a> of <var>handlerResponsePromise</var>:
             <ol>
               <li>Run the <a>payment app failure algorithm</a> and terminate
               these steps.
               </li>
             </ol>
           </li>
-          <li>Upon <a>fulfillment</a> of <var>handlerResponsePromise</var>:
+          <li>
+            <a>Upon fulfillment</a> of <var>handlerResponsePromise</var>:
             <ol>
-              <li>Let <var>handlerResponse</var> be the result of
-              <a>converting</a> value to a <a>PaymentHandlerResponse</a>
-              dictionary. If this <a>throws</a> an exception, run the
-              <a>payment app failure algorithm</a> and terminate these steps.
+              <li>Let <var>handlerResponse</var> be |value| <a>converted to an
+              IDL value</a> {{PaymentHandlerResponse}}. If this throws an
+              exception, run the <a>payment app failure algorithm</a> and
+              terminate these steps.
               </li>
               <li>Validate that all required members exist in
               <var>handlerResponse</var> and are well formed.
@@ -2226,7 +2171,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <li>If <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.methodName">methodName</a> is not
                   present or not set to one of the values from
-                  <var>event</var>.<a data-lt=
+                  |event|.<a data-lt=
                   "PaymentRequestEvent.methodData">methodData</a>, run the <a>
                     payment app failure algorithm</a> and terminate these
                     steps.
@@ -2237,7 +2182,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   failure algorithm</a> and terminate these steps.
                   </li>
                   <li>Let <var>shippingRequired</var> be the <a data-cite=
-                  "!payment-request#dom-paymentoptions-requestshipping">requestShipping</a>
+                  "payment-request#dom-paymentoptions-requestshipping">requestShipping</a>
                   value of the associated PaymentRequest's
                   <a>paymentOptions</a>. If <var>shippingRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
@@ -2249,13 +2194,13 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.shippingOption">shippingOption</a> is
                   not present or not set to one of shipping options identifiers
-                  from <var>event</var>.<a data-lt=
+                  from |event|.<a data-lt=
                   "PaymentRequestEvent.shippingOptions">shippingOptions</a>,
                   run the <a>payment app failure algorithm</a> and terminate
                   these steps.
                   </li>
                   <li>Let <var>payerNameRequired</var> be the <a data-cite=
-                  "!payment-request#dom-paymentoptions-requestpayername">requestPayerName</a>
+                  "payment-request#dom-paymentoptions-requestpayername">requestPayerName</a>
                   value of the associated PaymentRequest's
                   <a>paymentOptions</a>. If <var>payerNameRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
@@ -2264,7 +2209,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   terminate these steps.
                   </li>
                   <li>Let <var>payerEmailRequired</var> be the <a data-cite=
-                  "!payment-request#dom-paymentoptions-requestpayeremail">requestPayerEmail</a>
+                  "payment-request#dom-paymentoptions-requestpayeremail">requestPayerEmail</a>
                   value of the associated PaymentRequest's
                   <a>paymentOptions</a>. If <var>payerEmailRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
@@ -2273,7 +2218,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   terminate these steps.
                   </li>
                   <li>Let <var>payerPhoneRequired</var> be the <a data-cite=
-                  "!payment-request#dom-paymentoptions-requestpayerphone">requestPayerPhone</a>
+                  "payment-request#dom-paymentoptions-requestpayerphone">requestPayerPhone</a>
                   value of the associated PaymentRequest's
                   <a>paymentOptions</a>. If <var>payerPhoneRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
@@ -2294,7 +2239,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                 <ol>
                   For each <var>member</var>in <var>handlerResponse</var>Let
                   <var>serializeMember</var>be the result of <a data-cite=
-                  "!HTML#structuredserialize">StructuredSerialize</a>with
+                  "HTML#structuredserialize">StructuredSerialize</a>with
                   <var>handlerResponse</var>.<var>member</var>. Rethrow any
                   exceptions.
                 </ol>
@@ -2307,7 +2252,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                     <ol>
                       For each <var>serializeMember</var>let
                       <var>member</var>be the result of <a data-cite=
-                      "!HTML#structureddeserialize">StructuredDeserialize</a>with
+                      "HTML#structureddeserialize">StructuredDeserialize</a>with
                       <var>serializeMember</var>. Rethrow any exceptions.
                     </ol>
                   </li>
@@ -2318,43 +2263,42 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <li>Assign <var>methodName</var> to associated
                   PaymentRequest's <a data-lt=
                   "PaymentResponse"><var>response</var></a>.<a data-cite=
-                  "!payment-request#dom-paymentresponse-methodname">methodName</a>.
+                  "payment-request#dom-paymentresponse-methodname">methodName</a>.
                   </li>
                   <li>Assign <var>details</var> to associated PaymentReqeust's
                   <a data-lt=
                   "PaymentResponse"><var>response</var></a>.<a data-cite=
-                  "!payment-request#dom-paymentresponse-details">details</a>.
+                  "payment-request#dom-paymentresponse-details">details</a>.
                   </li>
                   <li>If <var>shippingRequired</var>, then set the
-                    <a data-cite="!payment-request#dom-paymentresponse-shippingaddress">
+                    <a data-cite="payment-request#dom-paymentresponse-shippingaddress">
                     shippingAddress</a> attribute of associated
                     PaymentReqeust's <a data-lt=
                     "PaymentResponse"><var>response</var></a> to
                     <var>shippingAddress</var>. Otherwise, set it to null.
                   </li>
                   <li>If <var>shippingRequired</var>, then set the
-                    <a data-cite="!payment-request#dom-paymentresponse-shippingoption">
+                    <a data-cite="payment-request#dom-paymentresponse-shippingoption">
                     shippingOption</a> attribute of associated PaymentReqeust's
                     <a data-lt="PaymentResponse"><var>response</var></a> to
                     <var>shippingOption</var>. Otherwise, set it to null.
                   </li>
                   <li>If <var>payerNameRequired</var>, then set the
-                  <a data-cite=
-                  "!payment-request#dom-paymentresponse-payername">payerName</a>
-                  attribute of associated PaymentReqeust's <a data-lt=
-                  "PaymentResponse"><var>response</var></a> to
-                  <var>payerName</var>. Otherwise, set it to null.
+                  <a data-cite="payment-request#dom-paymentresponse-payername">
+                    payerName</a> attribute of associated PaymentReqeust's
+                    <a data-lt="PaymentResponse"><var>response</var></a> to
+                    <var>payerName</var>. Otherwise, set it to null.
                   </li>
                   <li>If <var>payerEmailRequired</var>, then set the
                   <a data-cite=
-                  "!payment-request#dom-paymentresponse-payeremail">payerEmail</a>
+                  "payment-request#dom-paymentresponse-payeremail">payerEmail</a>
                   attribute of associated PaymentReqeust's <a data-lt=
                   "PaymentResponse"><var>response</var></a> to
                   <var>payerEmail</var>. Otherwise, set it to null.
                   </li>
                   <li>If <var>payerPhoneRequired</var>, then set the
                   <a data-cite=
-                  "!payment-request#dom-paymentresponse-payerphone">payerPhone</a>
+                  "payment-request#dom-paymentresponse-payerphone">payerPhone</a>
                   attribute of associated PaymentReqeust's <a data-lt=
                   "PaymentResponse"><var>response</var></a> to
                   <var>payerPhone</var>. Otherwise, set it to null.
@@ -2363,17 +2307,17 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
               </li>
             </ol>
           </li>
-          <li>Upon <a>fulfillment</a> or <a>rejection</a> of
-          <var>handlerResponsePromise</var>, <a data-cite=
-          "!HTML#queue-a-microtask">queue a microtask</a> to perform the
-          following steps:
+          <li>
+            <a>Upon fulfillment</a> or <a>upon rejection</a> of
+            <var>handlerResponsePromise</var>, <a data-cite=
+            "HTML#queue-a-microtask">queue a microtask</a> to perform the
+            following steps:
             <ol>
-              <li>Decrement the <var>event</var>'s <a>pending promises
-              count</a> by one.
+              <li>Decrement the |event|'s <a>pending promises count</a> by one.
               </li>
               <li>Let <var>registration</var> be the <a data-cite=
-              "!HTML#context-object">context object</a>'s <a data-cite=
-              "!HTML#relevant-settings-object">relevant global object</a>'s
+              "HTML#context-object">context object</a>'s <a data-cite=
+              "HTML#relevant-settings-object">relevant global object</a>'s
               associated <a>service worker</a>'s <a>containing service worker
               registration</a>.
               </li>
@@ -2587,10 +2531,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>The <a>CanMakePaymentEvent</a> event should not be fired in
           private browsing mode. The user agent should behave as if
             <a data-lt="CanMakePaymentEvent.respondWith()">respondWith()</a>
-            was called with <code>false</code>. We acknowledge a consequent
-            risk: if an entity controls both the origin of the Payment Request
-            API call and the origin of the payment handler, that entity may be
-            able to deduce that the user may be in private browsing mode.
+            was called with `false`. We acknowledge a consequent risk: if an
+            entity controls both the origin of the Payment Request API call and
+            the origin of the payment handler, that entity may be able to
+            deduce that the user may be in private browsing mode.
           </li>
         </ul>
       </section>
@@ -2623,46 +2567,46 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </dt>
         <dd>
           The terms <dfn data-lt="payment methods" data-cite=
-          "!payment-request#dfn-payment-method">payment method</dfn>,
+          "payment-request#dfn-payment-method">payment method</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentrequest">PaymentRequest</dfn>,
+          "payment-request#dom-paymentrequest">PaymentRequest</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentresponse">PaymentResponse</dfn>,
+          "payment-request#dom-paymentresponse">PaymentResponse</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
+          "payment-request#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
           <dfn data-cite=
-          "!payment-request#paymentcurrencyamount-dictionary">PaymentCurrencyAmount</dfn>,
+          "payment-request#paymentcurrencyamount-dictionary">PaymentCurrencyAmount</dfn>,
           <dfn data-cite=
-          "!payment-request#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
+          "payment-request#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
           <dfn data-cite=
-          "!payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
+          "payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
           <dfn data-cite=
-          "!payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
+          "payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentoptions">PaymentOptions</dfn>,
+          "payment-request#dom-paymentoptions">PaymentOptions</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentshippingoption">PaymentShippingOption</dfn>,
-          <dfn data-cite="!payment-request#dom-addressinit">AddressInit</dfn>,
+          "payment-request#dom-paymentshippingoption">PaymentShippingOption</dfn>,
+          <dfn data-cite="payment-request#dom-addressinit">AddressInit</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-addresserrors">AddressErrors</dfn>,
+          "payment-request#dom-addresserrors">AddressErrors</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
+          "payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
           <dfn data-cite=
-          "!payment-request#dom-paymentrequestupdateevent">PaymentRequestUpdateEvent</dfn>,
-          <dfn data-cite="!payment-request#id-attribute">ID</dfn>,
+          "payment-request#dom-paymentrequestupdateevent">PaymentRequestUpdateEvent</dfn>,
+          <dfn data-cite="payment-request#id-attribute">ID</dfn>,
           <dfn data-cite=
-          "!payment-request#canmakepayment()-method">canMakePayment()</dfn>,
-          <dfn data-cite="!payment-request#show()-method">show()</dfn>,
+          "payment-request#canmakepayment()-method">canMakePayment()</dfn>,
+          <dfn data-cite="payment-request#show()-method">show()</dfn>,
           <dfn data-cite=
-          "!payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
+          "payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
           <dfn data-cite=
-          "!payment-request#user-accepts-the-payment-request-algorithm">user
+          "payment-request#user-accepts-the-payment-request-algorithm">user
           accepts the payment request algorithm</dfn>, <dfn data-cite=
-          "!payment-request#payment-method-changed-algorithm">payment method
+          "payment-request#payment-method-changed-algorithm">payment method
           changed algorithm</dfn>, <dfn data-cite=
-          "!payment-request#paymentrequest-updated-algorithm">PaymentRequest
+          "payment-request#paymentrequest-updated-algorithm">PaymentRequest
           updated algorithm</dfn>, and <dfn data-cite=
-          "!payment-request#dfn-json-serialize">JSON-serializable</dfn> are
+          "payment-request#dfn-json-serialize">JSON-serializable</dfn> are
           defined by the Payment Request API specification
           [[!payment-request]].
         </dd>
@@ -2671,41 +2615,23 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!ECMASCRIPT#sec-promise-objects">Promise</dfn>, <dfn data-cite=
-          "!ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
-          slot</dfn>, <code><dfn data-cite=
-          "!ECMASCRIPT#sec-native-error-types-used-in-this-standard-typeerror">TypeError</dfn></code>,
-          and <code><dfn data-cite=
-          "!ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
+          "ECMASCRIPT#sec-object-internal-methods-and-internal-slots">internal
+          slot</dfn> and <code><dfn data-cite=
+          "ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
           defined by [[!ECMASCRIPT]].
-        </dd>
-        <dt>
-          Payment Method Identifiers
-        </dt>
-        <dd>
-          The terms <dfn data-lt="payment method identifiers" data-cite=
-          "!payment-method-id#payment-method-identifiers-(pmis)">payment method
-          identifier</dfn>, <dfn data-lt=
-          "standardized payment method identifiers" data-cite=
-          "!payment-method-id#standardized-payment-method-identifiers">standardized
-          payment method identifier</dfn>, and <dfn data-lt=
-          "URL-based payment method identifiers" data-cite=
-          "!payment-method-id#url-based-payment-method-identifiers">URL-based
-          payment method identifier</dfn> are defined by the Payment Method
-          Identifier specification [[!payment-method-id]].
         </dd>
         <dt>
           Payment Method Manifest
         </dt>
         <dd>
           The terms <dfn data-lt="payment method manifests" data-cite=
-          "!payment-method-manifest#payment-method-manifest">payment method
+          "payment-method-manifest#payment-method-manifest">payment method
           manifest</dfn>, <dfn data-lt="ingested" data-cite=
-          "!payment-method-manifest#ingest-payment-method-manifests">ingest
+          "payment-method-manifest#ingest-payment-method-manifests">ingest
           payment method manifest</dfn>, <dfn data-lt="parsed" data-cite=
-          "!payment-method-manifest#parsed-payment-method-manifest">parsed
+          "payment-method-manifest#parsed-payment-method-manifest">parsed
           payment method manifest</dfn>, and <dfn data-cite=
-          "!payment-method-manifest#parsed-payment-method-manifest-supported-origins">
+          "payment-method-manifest#parsed-payment-method-manifest-supported-origins">
           supported origins</dfn> are defined by the Payment Method Manifest
           specification [[!payment-method-manifest]].
         </dd>
@@ -2714,120 +2640,42 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!payment-method-basic-card#method-id">basic-card</dfn>,
+          "payment-method-basic-card#method-id">basic-card</dfn>,
           <dfn data-cite=
-          "!payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
+          "payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
           and <dfn data-cite=
-          "!payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
+          "payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
           are defined in [[!payment-method-basic-card]].
-        </dd>
-        <dt>
-          HTML
-        </dt>
-        <dd>
-          The terms <dfn data-cite="!HTML#global-object">global object</dfn>,
-          <dfn data-cite="!HTML#top-level-browsing-context">top-level browsing
-          context</dfn>, <dfn data-cite="!HTML#structured-clone">structured
-          clone</dfn>, <dfn data-cite="!HTML#event-handlers">event
-          handler</dfn>, <dfn data-cite="!HTML#event-handler-event-type">event
-          handler event type</dfn>, <dfn data-cite=
-          "!HTML#concept-events-trusted">trusted event</dfn>, and
-          <dfn data-cite="!HTML#user-interaction-task-source">user interaction
-          task source</dfn> are defined by [[!HTML]].
-        </dd>
-        <dt>
-          RFC6454
-        </dt>
-        <dd>
-          The term <dfn data-lt="origins">origin</dfn> is defined in
-          [[!RFC6454]].
-        </dd>
-        <dt>
-          Writing Promise-Using Specifications
-        </dt>
-        <dd>
-          The terms upon <dfn data-cite=
-          "!PROMISES-GUIDE#upon-fulfillment">fulfillment</dfn> and upon
-          <dfn data-cite="!PROMISES-GUIDE#upon-rejection">rejection</dfn> are
-          defined by [[!PROMISES-GUIDE]].
-        </dd>
-        <dt>
-          DOM
-        </dt>
-        <dd>
-          The term <dfn data-cite="!DOM#firing-events">fires</dfn> (an event),
-          <dfn data-cite="!DOM#dispatch-flag">dispatch flag</dfn>,
-          <dfn data-cite="!DOM#stop-propagation-flag">stop propagation
-          flag</dfn>, <code><dfn data-cite=
-          "!DOM#dom-event-istrusted">isTrusted</dfn></code> attribute, and
-          <dfn data-cite="!DOM#stop-immediate-propagation-flag">stop immediate
-          propagation flag</dfn> are defined in [[!DOM]].
-        </dd>
-        <dt>
-          Web IDL
-        </dt>
-        <dd>
-          <p>
-            When this specification says to <dfn data-cite="!WEBIDL#dfn-throw"
-            data-lt="throws">throw</dfn> an error, the <a>user agent</a> must
-            throw an error as described in [[!WEBIDL]]. When this occurs in a
-            sub-algorithm, this results in termination of execution of the
-            sub-algorithm and all ancestor algorithms until one is reached that
-            explicitly describes procedures for catching exceptions.
-          </p>
-          <p>
-            The algorithm for <dfn data-cite=
-            "!WEBIDL#dfn-convert-idl-to-ecmascript-value" data-lt=
-            "converting">converting an ECMAScript value to a dictionary</dfn>
-            is defined by [[!WEBIDL]].
-          </p>
-          <p>
-            <dfn data-cite="!WEBIDL#dfn-DOMException">DOMException</dfn> and
-            the following <a>DOMException</a> types from [[!WEBIDL]] are used:
-          </p>
-          <ul>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#invalidstateerror">InvalidStateError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#notallowederror">NotAllowedError</dfn></code>"
-            </li>
-            <li>"<code><dfn data-cite=
-            "!WEBIDL#operationerror">OperationError</dfn></code>"
-            </li>
-          </ul>
         </dd>
         <dt>
           Service Workers
         </dt>
         <dd>
           The terms <dfn data-cite=
-          "!SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
+          "SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
           <dfn>service worker registration</dfn>, <dfn>active worker</dfn>,
-          <dfn data-cite="!SERVICE-WORKERS#dfn-service-worker-client">service
+          <dfn data-cite="SERVICE-WORKERS#dfn-service-worker-client">service
           worker client</dfn>, <code><dfn data-cite=
-          "!SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
+          "SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
           <code><dfn data-cite=
-          "!SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>,
-          <dfn data-cite=
-          "!SERVICE-WORKERS#fire-functional-event-algorithm">fire functional
-          event</dfn>, <dfn data-cite=
-          "!SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
+          "SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>,
+          <dfn data-cite="SERVICE-WORKERS#fire-functional-event-algorithm">fire
+          functional event</dfn>, <dfn data-cite=
+          "SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
           promises</dfn>,<dfn data-cite=
-          "!SERVICE-WORKERS#dfn-pending-promises-count">pending promises
+          "SERVICE-WORKERS#dfn-pending-promises-count">pending promises
           count</dfn>, <dfn data-cite=
-          "!SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
+          "SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
           service worker registration</dfn>, <dfn data-cite=
-          "!SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
+          "SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
+          <dfn data-cite="SERVICE-WORKERS#try-clear-registration-algorithm">Try
+          Clear Registration</dfn>, <dfn data-cite=
+          "SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>,
           <dfn data-cite=
-          "!SERVICE-WORKERS#try-clear-registration-algorithm">Try Clear
-          Registration</dfn>, <dfn data-cite=
-          "!SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>,
+          "SERVICE-WORKERS#extendableevent-interface">ExtendableEvent</dfn>,
           <dfn data-cite=
-          "!SERVICE-WORKERS#extendableevent-interface">ExtendableEvent</dfn>,
-          <dfn data-cite=
-          "!SERVICE-WORKERS#dictdef-extendableeventinit">ExtendableEventInit</dfn>,
-          and <dfn data-cite="!SERVICE-WORKERS#dfn-scope-url">scope URL</dfn>
+          "SERVICE-WORKERS#dictdef-extendableeventinit">ExtendableEventInit</dfn>,
+          and <dfn data-cite="SERVICE-WORKERS#dfn-scope-url">scope URL</dfn>
           are defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
@@ -2848,8 +2696,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         guard against running out of memory, or to work around
         platform-specific limitations. When an input exceeds
         implementation-specific limit, the user agent MUST throw, or, in the
-        context of a promise, reject with, a <a>TypeError</a> optionally
-        informing the developer of how a particular input exceeded an
+        context of a promise, reject with, a {{TypeError}} optionally informing
+        the developer of how a particular input exceeded an
         implementation-specific limit.
       </p>
     </section>
