@@ -900,7 +900,7 @@
         <pre class="idl">
           [Exposed=ServiceWorker]
           interface CanMakePaymentEvent : ExtendableEvent {
-            constructor(DOMString type, CanMakePaymentEventInit eventInitDict);
+            constructor(DOMString type, optional CanMakePaymentEventInit eventInitDict = {});
             readonly attribute USVString topOrigin;
             readonly attribute USVString paymentRequestOrigin;
             readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
@@ -1249,7 +1249,7 @@
         <pre class="idl">
         [Exposed=ServiceWorker]
         interface PaymentRequestEvent : ExtendableEvent {
-          constructor(DOMString type, PaymentRequestEventInit eventInitDict);
+          constructor(DOMString type, optional PaymentRequestEventInit eventInitDict = {});
           readonly attribute USVString topOrigin;
           readonly attribute USVString paymentRequestOrigin;
           readonly attribute DOMString paymentRequestId;
@@ -1262,7 +1262,7 @@
           readonly attribute FrozenArray&lt;PaymentShippingOption&gt;? shippingOptions;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-          Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingAddress(AddressInit shippingAddress);
+          Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingAddress(optional AddressInit shippingAddress = {});
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingOption(DOMString shippingOption);
           void respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
         };
