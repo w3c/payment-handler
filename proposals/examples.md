@@ -29,6 +29,7 @@ For each use case we should see code that demonstrates the following, with descr
 ## Code Samples
 
 <h3 id="example2">Getting permission to "handle payments"</h3>
+
 ```javascript
 navigator.serviceWorker
   .register('/app.js', 'https://apps.domain.net/')
@@ -44,6 +45,7 @@ navigator.serviceWorker
 ```
 
 <h3 id="example31">Adding payment methods</h3>
+
 ```javascript
 navigator.serviceWorker
   .getRegistration('https://apps.domain.net/')
@@ -59,6 +61,7 @@ navigator.serviceWorker
 ```
 
 <h3 id="example33">Updating payment methods</h3>
+
 ```javascript
 navigator.serviceWorker
   .getRegistration('https://apps.domain.net/')
@@ -74,7 +77,9 @@ navigator.serviceWorker
 ```
 
 <h3 id="example32">Removing payment methods</h3>
-```javascript
+
+```
+javascript
 navigator.serviceWorker
   .getRegistration('https://apps.domain.net/')
   .then(function(registration) {
@@ -83,6 +88,7 @@ navigator.serviceWorker
 ```
 
 <h3 id="example1">A service worker that has an event listener for the `onpaymentrequest` event</h3>
+
 ```javascript
 self.addEventListener('paymentrequest', function (paymentrequestEvent) {
   console.log("got it! " + JSON.stringify(paymentrequestEvent.data));
@@ -90,6 +96,7 @@ self.addEventListener('paymentrequest', function (paymentrequestEvent) {
 ```
 
 <h3 id="example4">Returning a response to the `onpaymentrequest` event</h3>
+
 ```javascript
 self.addEventListener('paymentrequest', function (paymentrequestEvent) {
   var accepted = true;
@@ -103,7 +110,9 @@ self.addEventListener('paymentrequest', function (paymentrequestEvent) {
 ## App Samples
 <h3 id="app1">`basic-card` payment</h3>
 Actual running full project [here](https://github.com/pjbazin/wapp-examples)
+
 #### registration
+
 ```javascript
 navigator.serviceWorker
     .register('/app-bc.js')
@@ -132,6 +141,7 @@ navigator.serviceWorker
 ```
 
 #### execution (app-bc.js)
+
 ```javascript
 self.addEventListener('install', function(event) {
   // 'install' event is fired when the SW registration is successfully completed.
@@ -175,6 +185,4 @@ self.addEventListener('paymentrequest', function(paymentrequestEvent) {
 
   }));
 
-});
-
-```
+});```
