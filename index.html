@@ -2438,10 +2438,13 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </h2>
         <ul>
           <li>One goal of this specification is to minimize the user
-          interaction required to make a payment. At the same time, user agents
-          must not permit combinations of configurations that would enable
-          invoking Web sites to invoke payment request and receive payments
-          silently.
+          interaction required to make a payment. However, we also want to
+          ensure that the user has an opportunity to consent to making a
+          payment. Because payment handlers are not required to open a window
+          for user interaction, user agents should take necessary steps to make
+          sure the user (1) is made aware when a payment request is invoked,
+          and (2) has an opportunity to interact with a payment handler before
+          the merchant receives the response from that payment handler.
           </li>
         </ul>
       </section>
