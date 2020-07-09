@@ -317,7 +317,7 @@
           interface PaymentManager {
             [SameObject] readonly attribute PaymentInstruments instruments;
             attribute DOMString userHint;
-            Promise&lt;void&gt; enableDelegations(FrozenArray&lt;PaymentDelegation&gt; delegations);
+            Promise&lt;void&gt; enableDelegations(sequence&lt;PaymentDelegation&gt; delegations);
           };
         </pre>
         <p>
@@ -1168,8 +1168,8 @@
         dictionary PaymentRequestDetailsUpdate {
           DOMString error;
           PaymentCurrencyAmount total;
-          FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
-          FrozenArray&lt;PaymentShippingOption&gt; shippingOptions;
+          sequence&lt;PaymentDetailsModifier&gt; modifiers;
+          sequence&lt;PaymentShippingOption&gt; shippingOptions;
           object paymentMethodErrors;
           AddressErrors shippingAddressErrors;
         };
