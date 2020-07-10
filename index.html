@@ -1830,10 +1830,6 @@
           worker</a>'s origin associated with the payment handler, return a
           {{Promise}} resolved with null.
           </li>
-          <li>If this algorithm is not <a>triggered by user activation</a>,
-          return a {{Promise}} rejected with a "{{NotAllowedError}}"
-          {{DOMException}}.
-          </li>
           <li>Let <var>promise</var> be a new {{Promise}}.
           </li>
           <li>Return <var>promise</var> and perform the remaining steps in
