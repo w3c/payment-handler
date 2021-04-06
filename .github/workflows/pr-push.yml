@@ -1,0 +1,16 @@
+name: CI
+on:
+  pull_request: {}
+  push:
+    branches: [gh-pages]
+jobs:
+  main:
+    name: Build, Validate and Deploy
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+      - uses: w3c/spec-prod@v2
+        with:
+          W3C_ECHIDNA_TOKEN: ${{ secrets.ECHIDNA_TOKEN }}
+          W3C_WG_DECISION_URL: "https://www.w3.org/2016/04/14-wpwg-minutes#item02"
+          CC: "${{ secrets.CC }}"
