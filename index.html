@@ -317,7 +317,7 @@
           interface PaymentManager {
             [SameObject] readonly attribute PaymentInstruments instruments;
             attribute DOMString userHint;
-            Promise&lt;void&gt; enableDelegations(sequence&lt;PaymentDelegation&gt; delegations);
+            Promise&lt;undefined&gt; enableDelegations(sequence&lt;PaymentDelegation&gt; delegations);
           };
         </pre>
         <p>
@@ -411,8 +411,8 @@
             Promise&lt;any&gt; get(DOMString instrumentKey);
             Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
             Promise&lt;boolean&gt; has(DOMString instrumentKey);
-            Promise&lt;void&gt; set(DOMString instrumentKey, PaymentInstrument details);
-            Promise&lt;void&gt; clear();
+            Promise&lt;undefined&gt; set(DOMString instrumentKey, PaymentInstrument details);
+            Promise&lt;undefined&gt; clear();
           };
         </pre>
         <p>
@@ -904,7 +904,7 @@
             readonly attribute USVString topOrigin;
             readonly attribute USVString paymentRequestOrigin;
             readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
-            void respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
+            undefined respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
           };
         </pre>
         <p>
@@ -1264,7 +1264,7 @@
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingAddress(optional AddressInit shippingAddress = {});
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingOption(DOMString shippingOption);
-          void respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
+          undefined respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
         };
         </pre>
         <section>
