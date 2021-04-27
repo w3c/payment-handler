@@ -665,9 +665,8 @@
             <dd>
               The <a>sizes</a> member is used to specify the
               <a>ImageObject</a>'s sizes. It follows the spec of sizes member
-              in <a data-cite="HTML#the-link-element">HTML link element</a>,
-              which is a string consisting of an <a data-cite=
-              "HTML#unordered-set-of-unique-space-separated-tokens">unordered
+              in HTML [^link^] element,
+              which is a string consisting of an <a>unordered
               set of unique space-separated tokens</a> which are [=ASCII
               case-insensitive=] that represents the dimensions of an image.
               Each keyword is either an [=ASCII case-insensitive=] match for
@@ -720,7 +719,7 @@
                 </li>
                 <li>Let <var>url</var> be the result of parsing
                 <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
-                <a>context object</a>'s <a>relevant settings object</a>'s
+                <a>this</a>'s <a>relevant settings object</a>'s
                 [=environment settings object/api base url=].
                 </li>
                 <li>If <var>url</var> is failure, then return an empty
@@ -2319,9 +2318,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <ol>
               <li>Decrement the |event|'s <a>pending promises count</a> by one.
               </li>
-              <li>Let <var>registration</var> be the <a data-cite=
-              "HTML#context-object">context object</a>'s <a data-cite=
-              "HTML#relevant-settings-object">relevant global object</a>'s
+              <li>Let <var>registration</var> be the <a>this</a>'s <a>relevant global object</a>'s
               associated <a>service worker</a>'s <a>containing service worker
               registration</a>.
               </li>
