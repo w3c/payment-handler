@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
+    <meta name="generator" content=
+    "HTML Tidy for HTML5 for Apple macOS version 5.6.0">
+    <meta charset="utf-8">
     <title>
       Payment Handler API
     </title>
-    <meta charset="utf-8">
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class=
     "remove"></script>
     <script class="remove">
@@ -20,12 +22,6 @@
                     company:    "Coil",
                     companyURL: "https://coil.com",
                     w3cid:      42590
-                },
-                {   name:       "Andre Lyver",
-                    url:        "https://github.com/lyverovski",
-                    company:    "Shopify",
-                    companyURL: "https://shopify.com",
-                    w3cid:      87485
                 },
                 {   name:       "Ian Jacobs",
                     url:        "http://www.w3.org/People/Jacobs/",
@@ -46,6 +42,12 @@
                 },
             ],
             formerEditors: [
+                {   name:       "Andre Lyver",
+                    url:        "https://github.com/lyverovski",
+                    company:    "Shopify",
+                    companyURL: "https://shopify.com",
+                    w3cid:      87485
+                },
                 {   name:       "Tommy Thorsen",
                     url:        "https://github.com/tommythorsen",
                     company:    "Opera",
@@ -318,13 +320,11 @@
           interface PaymentManager {
             [SameObject] readonly attribute PaymentInstruments instruments;
             attribute DOMString userHint;
-            Promise&lt;undefined&gt; enableDelegations(sequence&lt;PaymentDelegation&gt; delegations);
           };
         </pre>
         <p>
           The {{PaymentManager}} is used by <a>payment handler</a>s to manage
-          their associated instruments as well as supported payment methods and
-          delegations.
+          their associated instruments as well as supported payment methods.
         </p>
         <section>
           <h2>
@@ -352,54 +352,6 @@
             cause confusion to display the additional hint.
           </p>
         </section>
-        <section>
-          <h2>
-            <dfn>enableDelegations()</dfn> method
-          </h2>
-          <p>
-            This method allows a <a>payment handler</a> to asynchronously
-            declare its supported <a>PaymentDelegation</a> list.
-          </p>
-        </section>
-      </section>
-      <section data-dfn-for="PaymentDelegation">
-        <h2>
-          <dfn>PaymentDelegation</dfn> enum
-        </h2>
-        <pre class="idl">
-        enum PaymentDelegation {
-          "shippingAddress",
-          "payerName",
-          "payerPhone",
-          "payerEmail"
-        };
-        </pre>
-        <dl>
-          <dt>
-            "<dfn>shippingAddress</dfn>"
-          </dt>
-          <dd>
-            The payment handler will provide shipping address whenever needed.
-          </dd>
-          <dt>
-            "<dfn>payerName</dfn>"
-          </dt>
-          <dd>
-            The payment handler will provide payer's name whenever needed.
-          </dd>
-          <dt>
-            "<dfn>payerPhone</dfn>"
-          </dt>
-          <dd>
-            The payment handler will provide payer's phone whenever needed.
-          </dd>
-          <dt>
-            "<dfn>payerEmail</dfn>"
-          </dt>
-          <dd>
-            The payment handler will provide payer's email whenever needed.
-          </dd>
-        </dl>
       </section>
       <section data-dfn-for="PaymentInstruments">
         <h2>
@@ -665,12 +617,11 @@
             <dd>
               The <a>sizes</a> member is used to specify the
               <a>ImageObject</a>'s sizes. It follows the spec of sizes member
-              in HTML [^link^] element,
-              which is a string consisting of an <a>unordered
-              set of unique space-separated tokens</a> which are [=ASCII
-              case-insensitive=] that represents the dimensions of an image.
-              Each keyword is either an [=ASCII case-insensitive=] match for
-              the string "any", or a value that consists of two valid
+              in HTML [^link^] element, which is a string consisting of an
+              <a>unordered set of unique space-separated tokens</a> which are
+              [=ASCII case-insensitive=] that represents the dimensions of an
+              image. Each keyword is either an [=ASCII case-insensitive=] match
+              for the string "any", or a value that consists of two valid
               non-negative integers that do not have a leading U+0030 DIGIT
               ZERO (0) character and that are separated by a single U+0078
               LATIN SMALL LETTER X or U+0058 LATIN CAPITAL LETTER X character.
@@ -719,8 +670,8 @@
                 </li>
                 <li>Let <var>url</var> be the result of parsing
                 <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
-                <a>this</a>'s <a>relevant settings object</a>'s
-                [=environment settings object/api base url=].
+                <a>this</a>'s <a>relevant settings object</a>'s [=environment
+                settings object/api base url=].
                 </li>
                 <li>If <var>url</var> is failure, then return an empty
                 <a>Sequence</a> of <a>ImageObject</a>.
@@ -774,6 +725,13 @@
           <pre class="example js" title=
           "Resolving the relative URL of image.src in service worker context.">
 
+
+
+
+
+
+
+
         // In this example, code is located in https://www.example.com/register/sw.js
 
         const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
@@ -810,8 +768,6 @@
 
           navigator.serviceWorker.register("/sw.js");
           const registration = await navigator.serviceWorker.ready;
-          await registration.paymentManager.enableDelegations(
-            ['shippingAddress', 'payerName']);
 
           // Excellent, we got it! Let's now set up the user's cards.
           await addInstruments(registration);
@@ -1160,18 +1116,15 @@
         </h2>
         <p>
           The <code>PaymentRequestDetailsUpdate</code> contains the updated
-          total (optionally with modifiers and shipping options) and possible
-          errors resulting from user selection of a payment method, a shipping
-          address, or a shipping option within a payment handler.
+          total (optionally with modifiers) and possible errors resulting from
+          user selection of a payment method.
         </p>
         <pre class="idl">
         dictionary PaymentRequestDetailsUpdate {
           DOMString error;
           PaymentCurrencyAmount total;
           sequence&lt;PaymentDetailsModifier&gt; modifiers;
-          sequence&lt;PaymentShippingOption&gt; shippingOptions;
           object paymentMethodErrors;
-          AddressErrors shippingAddressErrors;
         };
         </pre>
         <section>
@@ -1180,7 +1133,7 @@
           </h2>
           <p>
             A human readable string that explains why the user selected payment
-            method, shipping address or shipping option cannot be used.
+            method cannot be used.
           </p>
         </section>
         <section>
@@ -1188,12 +1141,9 @@
             <dfn>total</dfn> member
           </h2>
           <p>
-            Updated total based on the changed payment method, shipping
-            address, or shipping option. The total can change, for example,
-            because the billing address of the payment method selected by the
-            user changes the Value Added Tax (VAT); Or because the shipping
-            option/address selected/provided by the user changes the shipping
-            cost.
+            Updated total based on the changed payment method. The total can
+            change, for example, because the billing address of the payment
+            method selected by the user changes the Value Added Tax (VAT).
           </p>
         </section>
         <section>
@@ -1201,21 +1151,10 @@
             <dfn>modifiers</dfn> member
           </h2>
           <p>
-            Updated modifiers based on the changed payment method, shipping
-            address, or shipping option. For example, if the overall total has
-            increased by €1.00 based on the billing or shipping address, then
-            the totals specified in each of the modifiers should also increase
-            by €1.00.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>shippingOptions</dfn> member
-          </h2>
-          <p>
-            Updated shippingOptions based on the changed shipping address. For
-            example, it is possible that express shipping is more expensive or
-            unavailable for the user provided country.
+            Updated modifiers based on the changed payment method. For example,
+            if the overall total has increased by €1.00 based on the billing or
+            shipping address, then the totals specified in each of the
+            modifiers should also increase by €1.00.
           </p>
         </section>
         <section>
@@ -1224,14 +1163,6 @@
           </h2>
           <p>
             Validation errors for the payment method, if any.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>shippingAddressErrors</dfn> member
-          </h2>
-          <p>
-            Validation errors for the shipping address, if any.
           </p>
         </section>
       </section>
@@ -1257,13 +1188,8 @@
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
           readonly attribute DOMString instrumentKey;
-          readonly attribute boolean requestBillingAddress;
-          readonly attribute object? paymentOptions;
-          readonly attribute FrozenArray&lt;PaymentShippingOption&gt;? shippingOptions;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
-          Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingAddress(optional AddressInit shippingAddress = {});
-          Promise&lt;PaymentRequestDetailsUpdate?&gt; changeShippingOption(DOMString shippingOption);
           undefined respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
         };
         </pre>
@@ -1355,40 +1281,6 @@
         </section>
         <section>
           <h2>
-            <dfn>requestBillingAddress</dfn> attribute
-          </h2>
-          <p>
-            The value of <a data-cite=
-            "payment-request/#dom-paymentoptions">PaymentOptions</a>.<var>requestBillingAddress</var>
-            in the <a>PaymentRequest</a>.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>paymentOptions</dfn> attribute
-          </h2>
-          <p>
-            The value of <a data-cite=
-            "payment-request/#dom-paymentoptions">PaymentOptions</a> in the
-            <a>PaymentRequest</a>. Available only when shippingAddress and/or
-            any subset of payer's contact information are requested.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>shippingOptions</dfn> attribute
-          </h2>
-          <p>
-            The value of <a data-cite=
-            "payment-request#dom-paymentdetailsbase-shippingoptions">ShippingOptions</a>
-            in the <a>PaymentDetailsInit</a> dictionary of the corresponding
-            <a>PaymentRequest</a>.(<a>PaymentDetailsInit</a> inherits
-            ShippingOptions from <a>PaymentDetailsBase</a>). Available only
-            when shipping address is requested.
-          </p>
-        </section>
-        <section>
-          <h2>
             <dfn>openWindow()</dfn> method
           </h2>
           <p>
@@ -1406,30 +1298,6 @@
             This method is used by the payment handler to get updated total
             given such payment method details as the billing address. When
             called, it runs the <a>change payment method algorithm</a>.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn data-lt=
-            "changeShippingAddress(shippingAddress)">changeShippingAddress()</dfn>
-            method
-          </h2>
-          <p>
-            This method is used by the payment handler to get updated payment
-            details given the shippingAddress. When called, it runs the
-            <a>change payment details algorithm</a>.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn data-lt=
-            "changeShippingOption(shippingOption)">changeShippingOption()</dfn>
-            method
-          </h2>
-          <p>
-            This method is used by the payment handler to get updated payment
-            details given the shippingOption identifier. When called, it runs
-            the <a>change payment details algorithm</a>.
           </p>
         </section>
         <section>
@@ -1465,16 +1333,13 @@
               PaymentCurrencyAmount total;
               sequence&lt;PaymentDetailsModifier&gt; modifiers;
               DOMString instrumentKey;
-              PaymentOptions paymentOptions;
-              sequence&lt;PaymentShippingOption&gt; shippingOptions;
             };
           </pre>
           <p>
             The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
             <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
             <dfn>total</dfn>, <dfn>modifiers</dfn>, <dfn>instrumentKey</dfn>,
-            <dfn>paymentOptions</dfn>, and <dfn>shippingOptions</dfn> members
-            share their definitions with those defined for
+            and members share their definitions with those defined for
             {{PaymentRequestEvent}}
           </p>
         </section>
@@ -1724,23 +1589,6 @@
                 The <a>instrumentKey</a> of the selected {{PaymentInstrument}},
                 or the empty string if none was selected.
               </dd>
-              <dt>
-                <a data-lt=
-                "PaymentRequestEvent.paymentOptions">paymentOptions</a>
-              </dt>
-              <dd>
-                A copy of the paymentOptions dictionary passed to the
-                constructor of the corresponding <a>PaymentRequest</a>.
-              </dd>
-              <dt>
-                <a data-lt=
-                "PaymentRequestEvent.shippingOptions">shippingOptions</a>
-              </dt>
-              <dd>
-                A copy of the shippingOptions field on the
-                <a>PaymentDetailsInit</a> from the corresponding
-                <a>PaymentRequest</a>.
-              </dd>
             </dl>
             <p>
               Then run the following steps in parallel, with
@@ -1971,11 +1819,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           dictionary PaymentHandlerResponse {
           DOMString methodName;
           object details;
-          DOMString? payerName;
-          DOMString? payerEmail;
-          DOMString? payerPhone;
-          AddressInit shippingAddress;
-          DOMString? shippingOption;
           };
         </pre>
         <section>
@@ -2020,46 +1863,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             </li>
           </ul>
         </section>
-        <section>
-          <h2>
-            <dfn>payerName</dfn> attribute
-          </h2>
-          <p>
-            The user provided payer's name.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>payerEmail</dfn> attribute
-          </h2>
-          <p>
-            The user provided payer's email.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>payerPhone</dfn> attribute
-          </h2>
-          <p>
-            The user provided payer's phone number.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>shippingAddress</dfn> attribute
-          </h2>
-          <p>
-            The user provided shipping address.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>shippingOption</dfn> attribute
-          </h2>
-          <p>
-            The identifier of the user selected shipping option.
-          </p>
-        </section>
       </section>
       <section>
         <h2>
@@ -2074,36 +1877,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>Run the <a>payment method changed algorithm</a> with
           <a>PaymentMethodChangeEvent</a> |event| constructed using the given
           <var>methodName</var> and <var>methodDetails</var> parameters.
-          </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> is not run, return
-          <code>null</code>.
-          </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> throws, rethrow the
-          error.
-          </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> times out
-          (optional), throw {{"InvalidStateError"}} {{DOMException}}.
-          </li>
-          <li>Construct and return a <a>PaymentRequestDetailsUpdate</a> from
-          the <var>detailsPromise</var> in
-          |event|.<a>updateWith(detailsPromise)</a>.
-          </li>
-        </ol>
-      </section>
-      <section>
-        <h2>
-          <dfn>Change Payment Details Algorithm</dfn>
-        </h2>
-        <p>
-          When this algorithm is invoked with <var>shippingAddress</var> or
-          <var>shippingOption</var> the user agent MUST run the following
-          steps:
-        </p>
-        <ol class="algorithm">
-          <li>Run the <a>PaymentRequest updated algorithm</a> with
-          <a>PaymentRequestUpdateEvent</a> |event| constructed using the
-          updated details (<var>shippingAddress</var> or
-          <var>shippingOption</var>).
           </li>
           <li>If |event|.<a>updateWith(detailsPromise)</a> is not run, return
           <code>null</code>.
@@ -2181,61 +1954,11 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   or not <a>JSON-serializable</a>, run the <a>payment app
                   failure algorithm</a> and terminate these steps.
                   </li>
-                  <li>Let <var>shippingRequired</var> be the <a data-cite=
-                  "payment-request#dom-paymentoptions-requestshipping">requestShipping</a>
-                  value of the associated PaymentRequest's
-                  <a>paymentOptions</a>. If <var>shippingRequired</var> and
-                  <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.shippingAddress">shippingAddress</a>
-                  is not present, run the <a>payment app failure algorithm</a>
-                  and terminate these steps.
-                  </li>
-                  <li>If <var>shippingRequired</var> and
-                  <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.shippingOption">shippingOption</a> is
-                  not present or not set to one of shipping options identifiers
-                  from |event|.<a data-lt=
-                  "PaymentRequestEvent.shippingOptions">shippingOptions</a>,
-                  run the <a>payment app failure algorithm</a> and terminate
-                  these steps.
-                  </li>
-                  <li>Let <var>payerNameRequired</var> be the <a data-cite=
-                  "payment-request#dom-paymentoptions-requestpayername">requestPayerName</a>
-                  value of the associated PaymentRequest's
-                  <a>paymentOptions</a>. If <var>payerNameRequired</var> and
-                  <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.payerName">payerName</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
-                  </li>
-                  <li>Let <var>payerEmailRequired</var> be the <a data-cite=
-                  "payment-request#dom-paymentoptions-requestpayeremail">requestPayerEmail</a>
-                  value of the associated PaymentRequest's
-                  <a>paymentOptions</a>. If <var>payerEmailRequired</var> and
-                  <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.payerEmail">payerEmail</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
-                  </li>
-                  <li>Let <var>payerPhoneRequired</var> be the <a data-cite=
-                  "payment-request#dom-paymentoptions-requestpayerphone">requestPayerPhone</a>
-                  value of the associated PaymentRequest's
-                  <a>paymentOptions</a>. If <var>payerPhoneRequired</var> and
-                  <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.payerPhone">payerPhone</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
-                  </li>
                 </ol>
               </li>
               <li>Serialize required members of <var>handlerResponse</var> (
-              <var>methodName</var> and <var>details</var> are always required;
-              <var>shippingAddress</var> and <var>shippingOption</var> are
-              required when <var>shippingRequired</var> is true;
-              <var>payerName</var>, <var>payerEmail</var>, and
-              <var>payerPhone</var> are required when
-              <var>payerNameRequired</var>, <var>payerEmailRequired</var>, and
-              <var>payerPhoneRequired</var> are true, respectively.):
+              <var>methodName</var> and <var>details</var> are always
+              required.):
                 <ol>
                   <li>For each <var>member</var>in
                   <var>handlerResponse</var>Let <var>serializeMember</var>be
@@ -2273,39 +1996,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   "PaymentResponse"><var>response</var></a>.<a data-cite=
                   "payment-request#dom-paymentresponse-details">details</a>.
                   </li>
-                  <li>If <var>shippingRequired</var>, then set the
-                    <a data-cite="payment-request#dom-paymentresponse-shippingaddress">
-                    shippingAddress</a> attribute of associated
-                    PaymentReqeust's <a data-lt=
-                    "PaymentResponse"><var>response</var></a> to
-                    <var>shippingAddress</var>. Otherwise, set it to null.
-                  </li>
-                  <li>If <var>shippingRequired</var>, then set the
-                    <a data-cite="payment-request#dom-paymentresponse-shippingoption">
-                    shippingOption</a> attribute of associated PaymentReqeust's
-                    <a data-lt="PaymentResponse"><var>response</var></a> to
-                    <var>shippingOption</var>. Otherwise, set it to null.
-                  </li>
-                  <li>If <var>payerNameRequired</var>, then set the
-                  <a data-cite="payment-request#dom-paymentresponse-payername">
-                    payerName</a> attribute of associated PaymentReqeust's
-                    <a data-lt="PaymentResponse"><var>response</var></a> to
-                    <var>payerName</var>. Otherwise, set it to null.
-                  </li>
-                  <li>If <var>payerEmailRequired</var>, then set the
-                  <a data-cite=
-                  "payment-request#dom-paymentresponse-payeremail">payerEmail</a>
-                  attribute of associated PaymentReqeust's <a data-lt=
-                  "PaymentResponse"><var>response</var></a> to
-                  <var>payerEmail</var>. Otherwise, set it to null.
-                  </li>
-                  <li>If <var>payerPhoneRequired</var>, then set the
-                  <a data-cite=
-                  "payment-request#dom-paymentresponse-payerphone">payerPhone</a>
-                  attribute of associated PaymentReqeust's <a data-lt=
-                  "PaymentResponse"><var>response</var></a> to
-                  <var>payerPhone</var>. Otherwise, set it to null.
-                  </li>
                 </ol>
               </li>
             </ol>
@@ -2318,9 +2008,9 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <ol>
               <li>Decrement the |event|'s <a>pending promises count</a> by one.
               </li>
-              <li>Let <var>registration</var> be the <a>this</a>'s <a>relevant global object</a>'s
-              associated <a>service worker</a>'s <a>containing service worker
-              registration</a>.
+              <li>Let <var>registration</var> be the <a>this</a>'s <a>relevant
+              global object</a>'s associated <a>service worker</a>'s
+              <a>containing service worker registration</a>.
               </li>
               <li>If <var>registration</var>’s <a>uninstalling flag</a> is set,
               invoke <a>Try Clear Registration</a> with
@@ -2347,22 +2037,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             expiryYear :      "2020",
             cardSecurityCode: "123"
            },
-          shippingAddress: {
-            addressLine: [
-              "1875 Explorer St #1000",
-            ],
-            city: "Reston",
-            country: "US",
-            dependentLocality: "",
-            organization: "",
-            phone: "+15555555555",
-            postalCode: "20190",
-            recipient: "John Smith",
-            region: "VA",
-            sortingCode: ""
-          },
-          shippingOption: "express",
-          payerEmail: "john.smith@gmail.com",
         });
       }));
           </pre>
@@ -2407,8 +2081,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           </li>
           <li>In a browser that supports Payment Handler API,
           <a>CanMakePaymentEvent</a> will fire in registered payment handlers
-          that can provide all merchant requested information including
-          shipping address and payer's contact information whenever needed.
+          that can provide all merchant requested information.
           </li>
         </ul>
       </section>
@@ -2605,13 +2278,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           "payment-request#paymentdetailsbase-dictionary">paymentDetailsBase</dfn>,
           <dfn data-cite=
           "payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentoptions">PaymentOptions</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentshippingoption">PaymentShippingOption</dfn>,
-          <dfn data-cite="payment-request#dom-addressinit">AddressInit</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-addresserrors">AddressErrors</dfn>,
           <dfn data-cite=
           "payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
           <dfn data-cite=
