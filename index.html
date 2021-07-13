@@ -1177,7 +1177,6 @@
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
-          readonly attribute DOMString instrumentKey;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
           Promise&lt;PaymentRequestDetailsUpdate?&gt; changePaymentMethod(DOMString methodName, optional object? methodDetails = null);
           undefined respondWith(Promise&lt;PaymentHandlerResponse&gt; handlerResponsePromise);
@@ -1258,19 +1257,6 @@
         </section>
         <section>
           <h2>
-            <dfn>instrumentKey</dfn> attribute
-          </h2>
-          <p>
-            This attribute indicates the {{PaymentInstrument}} selected by the
-            user. It corresponds to the <a data-lt=
-            "instrumentKey">instrumentKey</a> provided to the
-            <a>PaymentManager.instruments</a> interface during registration. An
-            empty string means that the user did not choose a specific
-            {{PaymentInstrument}}.
-          </p>
-        </section>
-        <section>
-          <h2>
             <dfn>openWindow()</dfn> method
           </h2>
           <p>
@@ -1322,15 +1308,13 @@
               sequence&lt;PaymentMethodData&gt; methodData;
               PaymentCurrencyAmount total;
               sequence&lt;PaymentDetailsModifier&gt; modifiers;
-              DOMString instrumentKey;
             };
           </pre>
           <p>
             The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
             <dfn>paymentRequestId</dfn>, <dfn>methodData</dfn>,
-            <dfn>total</dfn>, <dfn>modifiers</dfn>, and
-            <dfn>instrumentKey</dfn> members share their definitions with those
-            defined for {{PaymentRequestEvent}}
+            <dfn>total</dfn>, and <dfn>modifiers</dfn> members share their
+            definitions with those defined for {{PaymentRequestEvent}}
           </p>
         </section>
         <section>
@@ -1570,14 +1554,6 @@
               </dt>
               <dd>
                 \[\[details\]\].<a>id</a> from the <a>PaymentRequest</a>.
-              </dd>
-              <dt>
-                <a data-lt=
-                "PaymentRequestEvent.instrumentKey">instrumentKey</a>
-              </dt>
-              <dd>
-                The <a>instrumentKey</a> of the selected {{PaymentInstrument}},
-                or the empty string if none was selected.
               </dd>
             </dl>
             <p>
