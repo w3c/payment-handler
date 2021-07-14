@@ -503,7 +503,7 @@
                     to fetch an image resource</a> passing <var>icon</var> as
                     the argument.
                     </li>
-                    <li>Set <var>icon</var>.<a>[[\fetchedImage]]</a> to
+                    <li>Set <var>icon</var>.{{ PaymentRequestEvent/[[fetchedImage]] }} to
                     <var>fetchedImage</var>.
                     </li>
                   </ol>
@@ -1214,7 +1214,7 @@
           </h2>
           <p>
             When getting, the <a>paymentRequestId</a> attribute returns the
-            [[\details]].<a>id</a> from the <a>PaymentRequest</a> that
+            t/[[details]] }}.<a>id</a> from the <a>PaymentRequest</a> that
             corresponds to this {{PaymentRequestEvent}}.
           </p>
         </section>
@@ -1465,7 +1465,7 @@
           </tr>
           <tr>
             <td>
-              <dfn>[[\windowClient]]</dfn>
+              <dfn data-dfn-for="PaymentRequestEvent">[[\windowClient]]</dfn>
             </td>
             <td>
               null
@@ -1478,7 +1478,7 @@
           </tr>
           <tr>
             <td>
-              <dfn>[[\fetchedImage]]</dfn>
+              <dfn data-dfn-for="PaymentRequestEvent">[[\fetchedImage]]</dfn>
             </td>
             <td>
               undefined
@@ -1491,7 +1491,7 @@
           </tr>
           <tr>
             <td>
-              <dfn>[[\respondWithCalled]]</dfn>
+              <dfn data-dfn-for="PaymentRequestEvent">[[\respondWithCalled]]</dfn>
             </td>
             <td>
               false
@@ -1569,7 +1569,7 @@
                 "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
               </dt>
               <dd>
-                The [[\details]].<a>id</a> from the <a>PaymentRequest</a>.
+                \[\[details\]\].<a>id</a> from the <a>PaymentRequest</a>.
               </dd>
               <dt>
                 <a data-lt=
