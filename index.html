@@ -1208,13 +1208,13 @@
             initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
-        <section>
+        <section data-cite="payment-request">
           <h2>
             <dfn>paymentRequestId</dfn> attribute
           </h2>
           <p>
             When getting, the <a>paymentRequestId</a> attribute returns the
-            t/[[details]] }}.<a>id</a> from the <a>PaymentRequest</a> that
+            {{ PaymentRequest/[[details]] }}.<a>id</a> from the <a>PaymentRequest</a> that
             corresponds to this {{PaymentRequestEvent}}.
           </p>
         </section>
@@ -1673,9 +1673,9 @@
           <li>Return <var>promise</var> and perform the remaining steps in
           parallel:
           </li>
-          <li>If |event|.<a>[[\windowClient]]</a> is not null, then:
+          <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }} is not null, then:
             <ol>
-              <li>If |event|.<a>[[\windowClient]]</a>.<a data-cite=
+              <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }}.<a data-cite=
               "SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
               is not "unloaded", reject <var>promise</var> with an
               {{"InvalidStateError"}} {{DOMException}} and abort these steps.
@@ -1707,7 +1707,7 @@
             window client</a> algorithm with <var>newContext</var> as the
             argument.
           </li>
-          <li>Set |event|.<a>[[\windowClient]]</a> to <var>client</var>.
+          <li>Set |event|.{{ PaymentRequestEvent/[[windowClient]] }} to <var>client</var>.
           </li>
           <li>Resolve <var>promise</var> with <var>client</var>.
           </li>
@@ -1899,10 +1899,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>If |event|'s [=Event/dispatch flag=] is unset, then throw an
           {{"InvalidStateError"}} {{DOMException}} and abort these steps.
           </li>
-          <li>If |event|.<a>[[\respondWithCalled]]</a> is true, throw an
+          <li>If |event|.{{ PaymentRequestEvent/[[respondWithCalled]] }} is true, throw an
           {{"InvalidStateError"}} {{DOMException}} and abort these steps.
           </li>
-          <li>Set |event|.<a>[[\respondWithCalled]]</a> to true.
+          <li>Set |event|.{{ PaymentRequestEvent/[[respondWithCalled]] }} to true.
           </li>
           <li>Set the |event|'s [=Event/stop propagation flag=] and
           <var>event</var>'s [=Event/stop immediate propagation flag=].
