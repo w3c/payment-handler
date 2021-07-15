@@ -65,7 +65,7 @@
         };
     </script>
   </head>
-  <body data-cite="service-workers payment-method-id">
+  <body data-cite="service-workers payment-method-id payment-request payment-method-manifest payment-method-basic-card service-workers">
     <section id="abstract">
       <p>
         This specification defines capabilities that enable Web applications to
@@ -150,7 +150,7 @@
           </ul>
         </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
-        [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
+        [[payment-request]] method {{PaymentRequest/canMakePayment()}} or {{PaymentRequest/show()}}
         (e.g., when the user pushes a button on a checkout page), the user
         agent computes a list of candidate payment handlers, comparing the
         payment methods accepted by the merchant with those supported by
@@ -183,7 +183,7 @@
         </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
-        PaymentResponse (of [[!payment-request]]).
+        {{PaymentResponse}} (of [[!payment-request]]).
         </li>
       </ol>
       <p class="note">
@@ -206,7 +206,7 @@
         </p>
         <p>
           The logic of a payment handler is driven by the payment methods that
-          it supports. Some payment methods, such as <a>basic-card</a> expect
+          it supports. Some payment methods, such as [[payment-method-basic-card]] expect
           little to no processing by the payment handler which simply returns
           payment card details in the response. It is then the job of the payee
           website to process the payment using the returned data as input.
@@ -461,7 +461,7 @@
             <li>Let <var>registration</var> be the {{PaymentInstrument}}'s
             associated <a>service worker registration</a>.
             </li>
-            <li>If <var>registration</var> has no <a>active worker</a>, then
+            <li>If <var>registration</var> has no [=service worker registration/active worker=], then
             reject a {{Promise}} with an {{"InvalidStateError"}}
             {{DOMException}} and terminate these steps.
             </li>
@@ -583,9 +583,8 @@
               The <a>capabilities</a> member is a list of
               payment-method-specific capabilities that this payment handler is
               capable of supporting for this instrument. For example, for the
-              <a>basic-card</a> payment method, this object will consist of an
-              object with two fields: one for <a>supportedNetworks</a>, and
-              another for <a>supportedTypes</a>.
+              [[payment-method-basic-card]] payment method, this object will consist of an
+              object with one field: {{BasicCardRequest/supportedNetworks}}.
             </dd>
           </dl>
         </section>
@@ -890,7 +889,7 @@
           <dfn>Handling a CanMakePaymentEvent</dfn>
         </h2>
         <p>
-          Upon receiving a <a>PaymentRequest</a>, the <a>user agent</a> MUST
+          Upon receiving a {{PaymentRequest}}, the <a>user agent</a> MUST
           run the following steps:
         </p>
         <ol>
@@ -962,7 +961,7 @@
           Filtering of Payment Instruments
         </h2>
         <p>
-          Given a <a>PaymentMethodData</a> and a {{PaymentInstrument}} that
+          Given a {{PaymentMethodData}} and a {{PaymentInstrument}} that
           match on <a>payment method identifier</a>, this algorithm returns
           <code>true</code> if this instrument can be used for payment:
         </p>
@@ -970,22 +969,22 @@
           <li>Let <var>instrument</var> be the given {{PaymentInstrument}}.
           </li>
           <li>Let <var>methodName</var> be the <a>payment method identifier</a>
-          string specified in the <a>PaymentMethodData</a>.
+          string specified in the {{PaymentMethodData}}.
           </li>
           <li>Let <var>methodData</var> be the payment method specific data of
-          <a>PaymentMethodData</a>.
+          {{PaymentMethodData}}.
           </li>
           <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
           {{ServiceWorkerRegistration}} scope URL of the payment handler with
           this <var>instrument</var>.
           </li>
-          <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
-          <a>parsed</a> <a>payment method manifest</a> for the
+          <li>Let <var>paymentMethodManifest</var> be the [=ingest payment method manifests|ingested=] and
+          [=parsed payment method manifest|parsed=] <a>payment method manifest</a> for the
           <var>methodName</var>.
           </li>
           <li>If <var>methodName</var> is a <a>standardized payment method
           identifier</a> or is a <a>URL-based payment method identifier</a>
-          with the <code>"*"</code> string <a>supported origins</a> in
+          with the <code>"*"</code> string [=parsed payment method manifest/supported origins=] in
           <var>paymentMethodManifest</var>, filter based on <a data-lt=
           "PaymentInstrument.capabilities">capabilities</a>:
             <ol>
@@ -1006,7 +1005,7 @@
           <var>paymentHandlerOrigin</var>, fire the <a>CanMakePaymentEvent</a>
           in the payment handler and return the result.
           </li>
-          <li>Otherwise, if <a>supported origins</a> in
+          <li>Otherwise, if [=parsed payment method manifest/supported origins=] in
           <var>paymentMethodManifest</var> is an ordered set of [=url/origin=]
           that contains the <var>paymentHandlerOrigin</var>, fire the
           <a>CanMakePaymentEvent</a> in the payment handler and return the
@@ -1077,11 +1076,10 @@
       <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
       "ServiceWorkerGlobalScope">
         <h2>
-          Extension to <a>ServiceWorkerGlobalScope</a>
+          Extension to {{ServiceWorkerGlobalScope}}
         </h2>
         <p>
-          This specification extends the <a>ServiceWorkerGlobalScope</a>
-          interface.
+          This specification extends the {{ServiceWorkerGlobalScope}} interface.
         </p>
         <pre class="idl">
         partial interface ServiceWorkerGlobalScope {
@@ -1165,7 +1163,7 @@
           The PaymentRequestEvent represents the data and methods available to
           a Payment Handler after selection by the user. The user agent
           communicates a subset of data available from the
-          <a>PaymentRequest</a> to the Payment Handler.
+          {{PaymentRequest}} to the Payment Handler.
         </p>
         <pre class="idl">
         [Exposed=ServiceWorker]
@@ -1198,10 +1196,10 @@
           </h2>
           <p>
             Returns a string that indicates the <a>origin</a> where a
-            <a>PaymentRequest</a> was initialized. When a <a>PaymentRequest</a>
+            {{PaymentRequest}} was initialized. When a {{PaymentRequest}}
             is initialized in the <a>topOrigin</a>, the attributes have the
             same value, otherwise the attributes have different values. For
-            example, when a <a>PaymentRequest</a> is initialized within an
+            example, when a {{PaymentRequest}} is initialized within an
             iframe from an origin other than <a>topOrigin</a>, the value of
             this attribute is the origin of the iframe. This attribute is
             initialized by <a>Handling a PaymentRequestEvent</a>.
@@ -1213,7 +1211,7 @@
           </h2>
           <p>
             When getting, the <a>paymentRequestId</a> attribute returns the
-            {{ PaymentRequest/[[details]] }}.<a>id</a> from the <a>PaymentRequest</a> that
+            {{ PaymentRequest/[[details]] }}.{{PaymentRequest/id}} from the {{PaymentRequest}} that
             corresponds to this {{PaymentRequestEvent}}.
           </p>
         </section>
@@ -1222,11 +1220,11 @@
             <dfn>methodData</dfn> attribute
           </h2>
           <p>
-            This attribute contains <a>PaymentMethodData</a> dictionaries
+            This attribute contains {{PaymentMethodData}} dictionaries
             containing the <a>payment method identifiers</a> for the <a>payment
             methods</a> that the web site accepts and any associated <a>payment
             method</a> specific data. It is populated from the
-            <a>PaymentRequest</a> using the <a>MethodData Population
+            {{PaymentRequest}} using the <a>MethodData Population
             Algorithm</a> defined below.
           </p>
         </section>
@@ -1236,10 +1234,10 @@
           </h2>
           <p>
             This attribute indicates the total amount being requested for
-            payment. It is of type <a>PaymentCurrencyAmount</a> dictionary as
+            payment. It is of type {{PaymentCurrencyAmount}} dictionary as
             defined in [[payment-request]], and initialized with a copy of the
-            <a>total</a> field of the <a>PaymentDetailsInit</a> provided when
-            the corresponding <a>PaymentRequest</a> object was instantiated.
+            <a>total</a> field of the {{PaymentDetailsInit}} provided when
+            the corresponding {{PaymentRequest}} object was instantiated.
           </p>
         </section>
         <section>
@@ -1247,11 +1245,11 @@
             <dfn>modifiers</dfn> attribute
           </h2>
           <p>
-            This sequence of <a>PaymentDetailsModifier</a> dictionaries
+            This sequence of {{PaymentDetailsModifier}} dictionaries
             contains modifiers for particular payment method identifiers (e.g.,
             if the payment amount or currency type varies based on a
             per-payment-method basis). It is populated from the
-            <a>PaymentRequest</a> using the <a>Modifiers Population
+            {{PaymentRequest}} using the <a>Modifiers Population
             Algorithm</a> defined below.
           </p>
         </section>
@@ -1340,24 +1338,24 @@
             <li>Set <var>dataList</var> to the newly created <a>Sequence</a>.
             </li>
             <li>For each item in
-            <a>PaymentRequest</a>@<var>[[\methodData]]</var> in the
+            {{PaymentRequest}}@<var>[[\methodData]]</var> in the
             corresponding payment request, perform the following steps:
               <ol>
                 <li>Set <var>inData</var> to the item under consideration.
                 </li>
                 <li>Set <var>commonMethods</var> to the set intersection of
-                <var>inData</var>.<a>supportedMethods</a> and
+                <var>inData</var>.{{PaymentMethodData/supportedMethods}} and
                 <var>registeredMethods</var>.
                 </li>
                 <li>If <var>commonMethods</var> is empty, skip the remaining
                 substeps and move on to the next item (if any).
                 </li>
-                <li>Create a new <a>PaymentMethodData</a> object.
+                <li>Create a new {{PaymentMethodData}} object.
                 </li>
                 <li>Set <var>outData</var> to the newly created
-                <a>PaymentMethodData</a>.
+                {{PaymentMethodData}}.
                 </li>
-                <li>Set <var>outData</var>.<a>supportedMethods</a> to a list
+                <li>Set <var>outData</var>.{{PaymentMethodData/supportedMethods}} to a list
                 containing the members of <var>commonMethods</var>.
                 </li>
                 <li>Set <var>outData</var>.data to a copy of
@@ -1395,24 +1393,24 @@
             <a>Sequence</a>.
             </li>
             <li>For each item in
-            <a>PaymentRequest</a>@<var>[[\paymentDetails]]</var>.<a>modifiers</a>
+            {{PaymentRequest}}@<var>[[\paymentDetails]]</var>.<a>modifiers</a>
             in the corresponding payment request, perform the following steps:
               <ol>
                 <li>Set <var>inModifier</var> to the item under consideration.
                 </li>
                 <li>Set <var>commonMethods</var> to the set intersection of
-                <var>inModifier</var>.<a>supportedMethods</a> and
+                <var>inModifier</var>.{{PaymentDetailsModifier/supportedMethods}} and
                 <var>registeredMethods</var>.
                 </li>
                 <li>If <var>commonMethods</var> is empty, skip the remaining
                 substeps and move on to the next item (if any).
                 </li>
-                <li>Create a new <a>PaymentDetailsModifier</a> object.
+                <li>Create a new {{PaymentDetailsModifier}} object.
                 </li>
                 <li>Set <var>outModifier</var> to the newly created
-                <a>PaymentDetailsModifier</a>.
+                {{PaymentDetailsModifier}}.
                 </li>
-                <li>Set <var>outModifier</var>.<a>supportedMethods</a> to a
+                <li>Set <var>outModifier</var>.{{PaymentDetailsModifier/supportedMethods}} to a
                 list containing the members of <var>commonMethods</var>.
                 </li>
                 <li>Set <var>outModifier</var>.<a>total</a> to a copy of <var>
@@ -1491,7 +1489,7 @@
           <dfn>Handling a PaymentRequestEvent</dfn>
         </h2>
         <p>
-          Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
+          Upon receiving a {{PaymentRequest}} by way of <a data-cite=
           "payment-request#show-method">PaymentRequest.show()</a> and
           subsequent user selection of a payment instrument, the <a>user
           agent</a> MUST run the following steps:
@@ -1545,15 +1543,15 @@
                 {{PaymentRequestEvent/total}}
               </dt>
               <dd>
-                A copy of the total field on the <a>PaymentDetailsInit</a> from
-                the corresponding <a>PaymentRequest</a>.
+                A copy of the total field on the {{PaymentDetailsInit}} from
+                the corresponding {{PaymentRequest}}.
               </dd>
               <dt>
                 <a data-lt=
                 "PaymentRequestEvent.paymentRequestId">paymentRequestId</a>
               </dt>
               <dd>
-                \[\[details\]\].<a>id</a> from the <a>PaymentRequest</a>.
+                {{ PaymentRequest/[[details]] }}.{{PaymentRequest/id}} from the {{PaymentRequest}}.
               </dd>
             </dl>
             <p>
@@ -1561,8 +1559,7 @@
               <var>dispatchedEvent</var>:
             </p>
             <ol>
-              <li>Wait for all of the promises in the <a>extend lifetime
-              promises</a> of <var>dispatchedEvent</var> to resolve.
+              <li>Wait for all of the promises in the [=ExtendableEvent/extend lifetime promises=] of <var>dispatchedEvent</var> to resolve.
               </li>
               <li>If the <a>payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the {{Promise}} that was
@@ -1607,7 +1604,7 @@
         {{PaymentRequestEvent}}, they SHOULD render the window in a way that is
         consistent with the flow and not confusing to the user. The resulting
         window client is bound to the tab/window that initiated the
-        <a>PaymentRequest</a>. A single <a>payment handler</a> SHOULD NOT be
+        {{PaymentRequest}}. A single <a>payment handler</a> SHOULD NOT be
         allowed to open more than one client window using this method.
       </p>
       <section>
@@ -1628,7 +1625,7 @@
           <li>If |event|'s {{Event/isTrusted}} attribute is false, return a
           {{Promise}} rejected with a {{"InvalidStateError"}} {{DOMException}}.
           </li>
-          <li>Let <var>request</var> be the <a>PaymentRequest</a> that
+          <li>Let <var>request</var> be the {{PaymentRequest}} that
           triggered this {{PaymentRequestEvent}}.
           </li>
           <li>Let <var>url</var> be the result of <a data-cite=
@@ -1840,22 +1837,22 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           following steps:
         </p>
         <ol class="algorithm">
-          <li>Run the <a>payment method changed algorithm</a> with
-          <a>PaymentMethodChangeEvent</a> |event| constructed using the given
+          <li>Run the [=payment handler/payment method changed algorithm=] with
+          {{PaymentMethodChangeEvent}} |event| constructed using the given
           <var>methodName</var> and <var>methodDetails</var> parameters.
           </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> is not run, return
+          <li>If |event|.{{PaymentRequestUpdateEvent/updateWith(detailsPromise)}} is not run, return
           <code>null</code>.
           </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> throws, rethrow the
+          <li>If |event|.{{PaymentRequestUpdateEvent/updateWith(detailsPromise)}} throws, rethrow the
           error.
           </li>
-          <li>If |event|.<a>updateWith(detailsPromise)</a> times out
+          <li>If |event|.{{PaymentRequestUpdateEvent/updateWith(detailsPromise)}} times out
           (optional), throw {{"InvalidStateError"}} {{DOMException}}.
           </li>
           <li>Construct and return a <a>PaymentRequestDetailsUpdate</a> from
           the <var>detailsPromise</var> in
-          |event|.<a>updateWith(detailsPromise)</a>.
+          |event|.{{PaymentRequestUpdateEvent/updateWith(detailsPromise)}}.
           </li>
         </ol>
       </section>
@@ -1883,8 +1880,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>Set the |event|'s [=Event/stop propagation flag=] and
           <var>event</var>'s [=Event/stop immediate propagation flag=].
           </li>
-          <li>Add <var>handlerResponsePromise</var> to the |event|'s <a>extend
-          lifetime promises</a>
+          <li>Add <var>handlerResponsePromise</var> to the |event|'s [=ExtendableEvent/extend lifetime promises=]
           </li>
           <li>Increment the |event|'s <a>pending promises count</a> by one.
           </li>
@@ -1976,7 +1972,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
               </li>
               <li>Let <var>registration</var> be the <a>this</a>'s <a>relevant
               global object</a>'s associated <a>service worker</a>'s
-              <a>containing service worker registration</a>.
+              [=service worker/containing service worker registration=].
               </li>
               <li>If <var>registration</var>’s <a>uninstalling flag</a> is set,
               invoke <a>Try Clear Registration</a> with
@@ -2007,7 +2003,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
       }));
           </pre>
         <p class="note">
-          [[!payment-request]] defines an <a>ID</a> that parties in the
+          [[!payment-request]] defines an {{PaymentRequest/id}} that parties in the
           ecosystem (including payment app providers and payees) can use for
           reconciliation after network or other failures.
         </p>
@@ -2033,7 +2029,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           creates a PaymentRequest object with URL-based payment method
           identifiers, <a>CanMakePaymentEvent</a> will fire in registered
           payment handlers from a finite number of origins: the origins of the
-          payment method manifests and their <a>supported origins</a>. This
+          payment method manifests and their [=parsed payment method manifest/supported origins=]. This
           means that a registered payment handler will know that a user has
           visited a website before the user has selected that payment handler
           to complete a transaction. This behavior is similar to the status quo
@@ -2223,49 +2219,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
       </p>
       <dl>
         <dt>
-          Payment Request API
-        </dt>
-        <dd>
-          The terms <dfn data-lt="payment methods" data-cite=
-          "payment-request#dfn-payment-method">payment method</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentrequest">PaymentRequest</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentresponse">PaymentResponse</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentmethoddata-supportedmethods">supportedMethods</dfn>,
-          <dfn data-cite=
-          "payment-request#paymentcurrencyamount-dictionary">PaymentCurrencyAmount</dfn>,
-          <dfn data-cite=
-          "payment-request#paymentdetailsmodifier-dictionary">paymentDetailsModifier</dfn>,
-          <dfn data-cite=
-          "payment-request#paymentdetailsinit-dictionary">paymentDetailsInit</dfn>,
-          <dfn data-cite=
-          "payment-request#paymentdetailsbase-dictionary">paymentDetailsBase</dfn>,
-          <dfn data-cite=
-          "payment-request#paymentmethoddata-dictionary">PaymentMethodData</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentmethodchangeevent">PaymentMethodChangeEvent</dfn>,
-          <dfn data-cite=
-          "payment-request#dom-paymentrequestupdateevent">PaymentRequestUpdateEvent</dfn>,
-          <dfn data-cite="payment-request#id-attribute">ID</dfn>,
-          <dfn data-cite=
-          "payment-request#canmakepayment()-method">canMakePayment()</dfn>,
-          <dfn data-cite="payment-request#show()-method">show()</dfn>,
-          <dfn data-cite=
-          "payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
-          <dfn data-cite=
-          "payment-request#user-accepts-the-payment-request-algorithm">user
-          accepts the payment request algorithm</dfn>, <dfn data-cite=
-          "payment-request#payment-method-changed-algorithm">payment method
-          changed algorithm</dfn>, <dfn data-cite=
-          "payment-request#paymentrequest-updated-algorithm">PaymentRequest
-          updated algorithm</dfn>, and <dfn data-cite=
-          "payment-request#dfn-json-serialize">JSON-serializable</dfn> are
-          defined by the Payment Request API specification
-          [[!payment-request]].
-        </dd>
-        <dt>
           ECMAScript
         </dt>
         <dd>
@@ -2274,64 +2227,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           slot</dfn> and <code><dfn data-cite=
           "ECMASCRIPT#sec-json.stringify">JSON.stringify</dfn></code> are
           defined by [[!ECMASCRIPT]].
-        </dd>
-        <dt>
-          Payment Method Manifest
-        </dt>
-        <dd>
-          The terms <dfn data-lt="payment method manifests" data-cite=
-          "payment-method-manifest#payment-method-manifest">payment method
-          manifest</dfn>, <dfn data-lt="ingested" data-cite=
-          "payment-method-manifest#ingest-payment-method-manifests">ingest
-          payment method manifest</dfn>, <dfn data-lt="parsed" data-cite=
-          "payment-method-manifest#parsed-payment-method-manifest">parsed
-          payment method manifest</dfn>, and <dfn data-cite=
-          "payment-method-manifest#parsed-payment-method-manifest-supported-origins">
-          supported origins</dfn> are defined by the Payment Method Manifest
-          specification [[!payment-method-manifest]].
-        </dd>
-        <dt>
-          Basic Card Payment
-        </dt>
-        <dd>
-          The terms <dfn data-cite=
-          "payment-method-basic-card#method-id">basic-card</dfn>,
-          <dfn data-cite=
-          "payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
-          and <dfn data-cite=
-          "payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
-          are defined in [[!payment-method-basic-card]].
-        </dd>
-        <dt>
-          Service Workers
-        </dt>
-        <dd>
-          The terms <dfn data-cite=
-          "SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
-          <dfn>service worker registration</dfn>, <dfn>active worker</dfn>,
-          <dfn data-cite="SERVICE-WORKERS#dfn-service-worker-client">service
-          worker client</dfn>, <code><dfn data-cite=
-          "SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
-          <code><dfn data-cite=
-          "SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>,
-          <dfn data-cite="SERVICE-WORKERS#fire-functional-event-algorithm">fire
-          functional event</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
-          promises</dfn>,<dfn data-cite=
-          "SERVICE-WORKERS#dfn-pending-promises-count">pending promises
-          count</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
-          service worker registration</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
-          <dfn data-cite="SERVICE-WORKERS#try-clear-registration-algorithm">Try
-          Clear Registration</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>,
-          <dfn data-cite=
-          "SERVICE-WORKERS#extendableevent-interface">ExtendableEvent</dfn>,
-          <dfn data-cite=
-          "SERVICE-WORKERS#dictdef-extendableeventinit">ExtendableEventInit</dfn>,
-          and <dfn data-cite="SERVICE-WORKERS#dfn-scope-url">scope URL</dfn>
-          are defined in [[!SERVICE-WORKERS]].
         </dd>
       </dl>
     </section>
