@@ -539,8 +539,7 @@
             </li>
           </ol>
         </section>
-        <section data-dfn-for="PaymentInstrument" data-link-for=
-        "PaymentInstrument">
+        <section data-dfn-for="PaymentInstrument">
           <h2>
             <dfn>PaymentInstrument</dfn> dictionary
           </h2>
@@ -604,7 +603,7 @@
               <dfn>src</dfn> member
             </dt>
             <dd>
-              The <a>src</a> member is used to specify the <a>ImageObject</a>'s
+              The <a>src</a> member is used to specify the {{ImageObject}}'s
               source. It is a URL from which the user agent can fetch the
               image’s data.
             </dd>
@@ -613,7 +612,7 @@
             </dt>
             <dd>
               The <a>sizes</a> member is used to specify the
-              <a>ImageObject</a>'s sizes. It follows the spec of sizes member
+              {{ImageObject}}'s sizes. It follows the spec of sizes member
               in HTML [^link^] element, which is a string consisting of an
               <a>unordered set of unique space-separated tokens</a> which are
               [=ASCII case-insensitive=] that represents the dimensions of an
@@ -635,7 +634,7 @@
             </dt>
             <dd>
               The <a>type</a> member is used to specify the
-              <a>ImageObject</a>'s MIME type. It is a hint as to the media type
+              {{ImageObject}}'s MIME type. It is a hint as to the media type
               of the image. The purpose of this member is to allow a user agent
               to ignore images of media types it does not support.
             </dd>
@@ -649,34 +648,32 @@
             When this algorithm with <var>inputImages</var> parameter is
             invoked, the user agent must run the following steps:
           </p>
-          <ol class="algorithm">
+          <ol class="algorithm" data-cite="mimesniff">
             <li>Let <var>outputImages</var> be an empty <a>Sequence</a> of <a>
               ImageObject</a>.
             </li>
             <li>For each <var>image</var> in <var>inputImages</var>:
               <ol>
-                <li>If <var>image</var>.<a data-lt="ImageObject.type">type</a>
-                is not a <a data-cite="mimesniff">valid MIME type string</a> or
+                <li>If <var>image</var>.{{ImageObject/type}}
+                is not a <a>valid MIME type string</a> or
                 the value of type is not a supported media format, then return
-                an empty <a>Sequence</a> of <a>ImageObject</a>.
+                an empty <a>sequence</a> of {{ImageObject}}.
                 </li>
-                <li>If <var>image</var>.<a data-lt=
-                "ImageObject.sizes">sizes</a> is not a <a data-lt=
-                "ImageObject.sizes">valid value</a>, then return an empty
-                <a>Sequence</a> of <a>ImageObject</a>.
+                <li>If <var>image</var>.{{ImageObject.sizes}} is not a valid value, then return an empty
+                <a>Sequence</a> of {{ImageObject}}.
                 </li>
                 <li>Let <var>url</var> be the result of parsing
-                <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
+                <var>image</var>.{{ImageObject/src}} with the
                 <a>this</a>'s <a>relevant settings object</a>'s [=environment
                 settings object/api base url=].
                 </li>
                 <li>If <var>url</var> is failure, then return an empty
-                <a>Sequence</a> of <a>ImageObject</a>.
+                <a>Sequence</a> of {{ImageObject}}.
                 </li>
                 <li>If <var>url</var>'s [=url/scheme=] is not "https", then
-                return an empty <a>Sequence</a> of <a>ImageObject</a>.
+                return an empty <a>Sequence</a> of {{ImageObject}}.
                 </li>
-                <li>Set <var>image</var>.<a data-lt="ImageObject.src">src</a>
+                <li>Set <var>image</var>.{{ImageObject/src}}
                 to <var>url</var>.
                 </li>
                 <li>Append <var>image</var> to <var>outputImages</var>
@@ -688,7 +685,7 @@
           </ol>
           <p>
             According to the step 2.3, it is also possible to use the relative
-            url for <var>image</var>.<a data-lt="ImageObject.src">src</a>. The
+            url for <var>image</var>.{{ImageObject/src}}. The
             following examples illustrate how relative URL resolution works in
             different execution contexts.
           </p>
@@ -1205,7 +1202,7 @@
             initialized by <a>Handling a PaymentRequestEvent</a>.
           </p>
         </section>
-        <section data-cite="payment-request">
+        <section>
           <h2>
             <dfn>paymentRequestId</dfn> attribute
           </h2>
@@ -1489,8 +1486,7 @@
           <dfn>Handling a PaymentRequestEvent</dfn>
         </h2>
         <p>
-          Upon receiving a {{PaymentRequest}} by way of <a data-cite=
-          "payment-request#show-method">PaymentRequest.show()</a> and
+          Upon receiving a {{PaymentRequest}} by way of {{PaymentRequest/show()}} and
           subsequent user selection of a payment instrument, the <a>user
           agent</a> MUST run the following steps:
         </p>
@@ -1499,8 +1495,7 @@
           corresponding to the {{PaymentInstrument}} selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the {{Promise}}
-          that was created by <a data-cite=
-          "payment-request#show-method">PaymentRequest.show()</a> with an
+          that was created by {{PaymentRequest/show()}} with an
           {{"InvalidStateError"}} {{DOMException}} and terminate these steps.
           </li>
           <li>
@@ -1563,8 +1558,7 @@
               </li>
               <li>If the <a>payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the {{Promise}} that was
-              created by <a data-cite=
-              "payment-request#show-method">PaymentRequest.show()</a> with an
+              created by {{PaymentRequest/show()}} with an
               {{"OperationError"}} {{DOMException}}.
               </li>
             </ol>
@@ -1628,8 +1622,7 @@
           <li>Let <var>request</var> be the {{PaymentRequest}} that
           triggered this {{PaymentRequestEvent}}.
           </li>
-          <li>Let <var>url</var> be the result of <a data-cite=
-          "URL#concept-url-parser">parsing</a> the <var>url</var> argument.
+          <li>Let <var>url</var> be the result of [=URL Parser|parsing=] the <var>url</var> argument.
           </li>
           <li>If the url parsing throws an exception, return a {{Promise}}
           rejected with that exception.
@@ -1648,8 +1641,7 @@
           </li>
           <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }} is not null, then:
             <ol>
-              <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }}.<a data-cite=
-              "SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
+              <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }}.{{WindowClient/visibilityState}}
               is not "unloaded", reject <var>promise</var> with an
               {{"InvalidStateError"}} {{DOMException}} and abort these steps.
               </li>
@@ -1821,8 +1813,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <li>Letting the user try again, with the same payment handler or
             with a different one.
             </li>
-            <li>Rejecting the Promise that was created by <a data-cite=
-            "payment-request#show-method">PaymentRequest.show()</a>.
+            <li>Rejecting the Promise that was created by {{PaymentRequest/show()}}.
             </li>
           </ul>
         </section>
@@ -1903,16 +1894,13 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
               <li>Validate that all required members exist in
               <var>handlerResponse</var> and are well formed.
                 <ol>
-                  <li>If <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.methodName">methodName</a> is not
+                  <li>If <var>handlerResponse</var>.{{PaymentHandlerResponse.methodName}} is not
                   present or not set to one of the values from
-                  |event|.<a data-lt=
-                  "PaymentRequestEvent.methodData">methodData</a>, run the <a>
+                  |event|.{{PaymentRequestEvent.methodData}}, run the <a>
                     payment app failure algorithm</a> and terminate these
                     steps.
                   </li>
-                  <li>If <var>handlerResponse</var>.<a data-lt=
-                  "PaymentHandlerResponse.details">details</a> is not present
+                  <li>If <var>handlerResponse</var>.{{PaymentHandlerResponse.details}} is not present
                   or not <a>JSON-serializable</a>, run the <a>payment app
                   failure algorithm</a> and terminate these steps.
                   </li>
@@ -1924,8 +1912,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                 <ol>
                   <li>For each <var>member</var>in
                   <var>handlerResponse</var>Let <var>serializeMember</var>be
-                  the result of <a data-cite=
-                  "HTML#structuredserialize">StructuredSerialize</a>with <var>
+                  the result of [=StructuredSerialize=] with <var>
                     handlerResponse</var>.<var>member</var>. Rethrow any
                     exceptions.
                   </li>
