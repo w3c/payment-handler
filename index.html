@@ -1938,8 +1938,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <li>Deserialize serialized members:
                     <ol>
                       <li>For each <var>serializeMember</var>let
-                      <var>member</var>be the result of <a data-cite=
-                      "HTML#structureddeserialize">StructuredDeserialize</a>with
+                      <var>member</var>be the result of [=StructuredDeserialize=] with
                       <var>serializeMember</var>. Rethrow any exceptions.
                       </li>
                     </ol>
@@ -1949,14 +1948,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   steps.
                   </li>
                   <li>Assign <var>methodName</var> to associated
-                  PaymentRequest's <a data-lt=
-                  "PaymentResponse"><var>response</var></a>.<a data-cite=
-                  "payment-request#dom-paymentresponse-methodname">methodName</a>.
+                  {{PaymentRequest}}'s |response|.{{PaymentResponse/methodName}}.
                   </li>
-                  <li>Assign <var>details</var> to associated PaymentReqeust's
-                  <a data-lt=
-                  "PaymentResponse"><var>response</var></a>.<a data-cite=
-                  "payment-request#dom-paymentresponse-details">details</a>.
+                  <li>Assign <var>details</var> to associated {{PaymentRequest}}'s
+                  |response|.{{PaymentResponse/details}}.
                   </li>
                 </ol>
               </li>
@@ -1964,8 +1959,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           </li>
           <li>
             <a>Upon fulfillment</a> or <a>upon rejection</a> of
-            <var>handlerResponsePromise</var>, <a data-cite=
-            "HTML#queue-a-microtask">queue a microtask</a> to perform the
+            <var>handlerResponsePromise</var>, <a>queue a microtask</a> to perform the
             following steps:
             <ol>
               <li>Decrement the |event|'s <a>pending promises count</a> by one.
