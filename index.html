@@ -1790,7 +1790,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <dfn>details</dfn> attribute
           </h2>
           <p>
-            A <a>JSON-serializable</a> object that provides a payment
+            A object that provides a payment
             method specific message used by the merchant to process the
             transaction and determine successful fund transfer.
           </p>
@@ -1900,9 +1900,12 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                     payment app failure algorithm</a> and terminate these
                     steps.
                   </li>
-                  <li>If <var>handlerResponse</var>.{{PaymentHandlerResponse.details}} is not present
-                  or not <a>JSON-serializable</a>, run the <a>payment app
-                  failure algorithm</a> and terminate these steps.
+                  <li>If <var>handlerResponse</var>.{{PaymentHandlerResponse.details}} is not present,
+                    run the <a>payment app failure algorithm</a> and terminate these steps.
+                  </li>
+                  <li>
+                    Try to [=JSON-serialize=] <var>handlerResponse</var>.{{PaymentHandlerResponse.details}}.
+                    If it passing throws run the <a>payment app failure algorithm</a> and terminate these steps.
                   </li>
                 </ol>
               </li>
