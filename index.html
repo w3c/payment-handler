@@ -1670,11 +1670,16 @@ navigator.serviceWorker.addEventListener("message", e =&gt; {
 });
 
 document.getElementById("form").addEventListener("submit", e =&gt; {
-  const paymentAppResponse = {};
+  const details = {};
   ["cardholderName", "cardNumber", "expiryMonth", "expiryYear", "cardSecurityCode"]
   .forEach(field =&gt; {
-    paymentAppResponse[field] = form.elements[field].value;
+    details[field] = form.elements[field].value;
   });
+
+  const paymentAppResponse = {
+    methodName: "https://example.com/pay",
+    details
+  };
 
   navigator.serviceWorker.controller.postMessage(paymentAppResponse);
   window.close();

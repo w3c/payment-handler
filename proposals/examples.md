@@ -123,7 +123,7 @@ navigator.serviceWorker
       if (registration.paymentAppManager) {
         registration.paymentAppManager.options.set("app_key", {
           enabledMethods: ["https://example.com/pay"],
-          name: "app for MyCard",
+          name: "Example Pay app",
           id: "M. JAUNE D'EAU;4111111111111111;12;25;987"
         });
       }
