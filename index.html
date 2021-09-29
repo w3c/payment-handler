@@ -134,11 +134,9 @@
           to the user agent to improve the user experience of selecting payment
           credentials:
           <ul>
-            <li>The <a data-lt="PaymentInstrument.method">method</a> and
-            optional <a data-lt=
-            "PaymentInstrument.capabilities">capabilities</a> inform the user
-            agent decision whether to display this instrument as a candidate
-            for payment.
+            <li>The <a data-lt="PaymentInstrument.method">method</a> inform the
+            user agent decision whether to display this instrument as a
+            candidate for payment.
             </li>
             <li>When the instrument matches what the payee accepts, the user
             agent may display the <a data-lt="PaymentInstrument.name">name</a>
@@ -155,8 +153,7 @@
         agent computes a list of candidate payment handlers, comparing the
         payment methods accepted by the merchant with those supported by
         registered payment handlers. For payment methods that support
-        additional filtering, either merchant and payment handler capabilities
-        are compared or <a>CanMakePaymentEvent</a> is used as part of
+        additional filtering, <a>CanMakePaymentEvent</a> is used as part of
         determining whether there is a match.
         </li>
         <li>The user agent displays a set of choices to the user: the
@@ -206,10 +203,10 @@
         </p>
         <p>
           The logic of a payment handler is driven by the payment methods that
-          it supports. Some payment methods, such as <a>basic-card</a> expect
-          little to no processing by the payment handler which simply returns
-          payment card details in the response. It is then the job of the payee
-          website to process the payment using the returned data as input.
+          it supports. Some payment methods expect little to no processing by
+          the payment handler which simply returns payment card details in the
+          response. It is then the job of the payee website to process the
+          payment using the returned data as input.
         </p>
         <p>
           In contrast, some payment methods, such as a crypto-currency payments
@@ -333,8 +330,8 @@
             associated with a service worker (and therefore its payment
             handler). To be a candidate payment handler, a handler must have at
             least one registered payment instrument to present to the user.
-            That instrument needs to match the payment methods and required
-            capabilities specified by the payment request.
+            That instrument needs to match the payment methods specified by the
+            payment request.
           </p>
         </section>
         <section>
@@ -549,7 +546,6 @@
               required DOMString name;
               sequence&lt;ImageObject&gt; icons;
               DOMString method;
-              object capabilities;
             };
           </pre>
           <dl>
@@ -575,17 +571,6 @@
             <dd>
               The <a>method</a> member is the <a>payment method identifier</a>
               of the <a>payment method</a> supported by this instrument.
-            </dd>
-            <dt>
-              <dfn>capabilities</dfn> member
-            </dt>
-            <dd>
-              The <a>capabilities</a> member is a list of
-              payment-method-specific capabilities that this payment handler is
-              capable of supporting for this instrument. For example, for the
-              <a>basic-card</a> payment method, this object will consist of an
-              object with two fields: one for <a>supportedNetworks</a>, and
-              another for <a>supportedTypes</a>.
             </dd>
           </dl>
         </section>
@@ -759,7 +744,8 @@
           navigator.serviceWorker.register("/sw.js");
           const registration = await navigator.serviceWorker.ready;
 
-          // Excellent, we got it! Let's now set up the user's cards.
+          // Excellent, we got it! Let's now set up the user's payment
+          // instruments.
           await addInstruments(registration);
         }, { once: true });
 
@@ -768,31 +754,15 @@
             registration.paymentManager.instruments.set(
               "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
               {
-                name: "Visa ending ****4756",
-                method: "basic-card",
-                capabilities: {
-                  supportedNetworks: ["visa"],
-                  supportedTypes: ["credit"]
-                }
+                name: "My Example Pay Account: max@example.com",
+                method: "https://example.com/pay",
               }),
 
             registration.paymentManager.instruments.set(
               "c8126178-3bba-4d09-8f00-0771bcfd3b11",
               {
-                name: "My Bob Pay Account: john@example.com",
+                name: "My Bob Pay Account: john@bobpay.com",
                 method: "https://bobpay.com"
-              }),
-
-            registration.paymentManager.instruments.set(
-              "new-card",
-              {
-                name: "Add new credit/debit card to ExampleApp",
-                method: "basic-card",
-                capabilities: {
-                  supportedNetworks:
-                    ["visa", "mastercard", "amex", "discover"],
-                  supportedTypes: ["credit", "debit", "prepaid"]
-                }
               }),
             ]);
           };
@@ -986,20 +956,7 @@
           <li>If <var>methodName</var> is a <a>standardized payment method
           identifier</a> or is a <a>URL-based payment method identifier</a>
           with the <code>"*"</code> string <a>supported origins</a> in
-          <var>paymentMethodManifest</var>, filter based on <a data-lt=
-          "PaymentInstrument.capabilities">capabilities</a>:
-            <ol>
-              <li>For each <var>key</var> in <var>methodData</var>:
-                <ol>
-                  <li>If the intersection of <var>methodData[key]</var> and
-                  <var>instrument.capabilities[key]</var> is empty, return
-                  `false`.
-                  </li>
-                </ol>
-              </li>
-              <li>Otherwise, return <code>true</code>.
-              </li>
-            </ol>
+          <var>paymentMethodManifest</var>, return <code>true</code>.
           </li>
           <li>Otherwise, if the <a>URL-based payment method identifier</a>
           <var>methodName</var> has the same <a>origin</a> as
@@ -1015,44 +972,6 @@
           <li>Otherwise, return `false`.
           </li>
         </ol>
-        <section id="capabilities-example" class="informative">
-          <h2>
-            How to specify capabilities
-          </h2>
-          <p>
-            Example of how a payment handler should provide the list of all its
-            active cards to the browser.
-          </p>
-          <pre class="example js" title="Specifying capabilities">
-          await navigator.serviceWorker.register("/pw/app.js");
-          const registration = await navigator.serviceWorker.ready;
-          registration.paymentManager.userHint = "(Visa ****1111)";
-          await registration.paymentManager.instruments.set(
-            "12345",
-            {
-              name: "Visa ****1111",
-              icons: [{
-                src: "/pay/visa.png",
-                sizes: "32x32",
-                type: "image/png",
-              }],
-              method: "basic-card",
-              capabilities: {
-                supportedNetworks: ["visa"],
-                supportedTypes: ["credit"],
-              },
-            });
-          </pre>
-          <p>
-            In this case, <code>new PaymentRequest([{supportedMethods:
-            "basic-card"}], shoppingCart).canMakePayment()</code> should return
-            <code>true</code> because there's an active card in the payment
-            handler. Note that <code>new PaymentRequest([{supportedMethods:
-            "basic-card", data: {supportedTypes: ["debit"]}}],
-            shoppingCart).canMakePayment()</code> would return `false` because
-            of mismatch in <code>supportedTypes</code> in this example.
-          </p>
-        </section>
       </section>
     </section>
     <section id="invocation">
@@ -1730,8 +1649,8 @@
       </pre>
         <p>
           Using the simple scheme described above, a trivial HTML page that is
-          loaded into the <a>payment handler window</a> to implement the
-          <em>basic card</em> scheme might look like the following:
+          loaded into the <a>payment handler window</a> might look like the
+          following:
         </p>
         <pre class="example html" title="Simple Payment Handler Window">
 &lt;form id="form"&gt;
@@ -1751,18 +1670,11 @@ navigator.serviceWorker.addEventListener("message", e =&gt; {
 });
 
 document.getElementById("form").addEventListener("submit", e =&gt; {
-  /* See https://w3c.github.io/payment-method-basic-card/#basiccardresponse-dictionary */
-  const basicCardResponse = {};
+  const paymentAppResponse = {};
   ["cardholderName", "cardNumber", "expiryMonth", "expiryYear", "cardSecurityCode"]
   .forEach(field =&gt; {
-    basicCardResponse[field] = form.elements[field].value;
+    paymentAppResponse[field] = form.elements[field].value;
   });
-
-  /* See https://w3c.github.io/payment-handler/#paymenthandlerresponse-dictionary */
-  const paymentAppResponse = {
-    methodName: "basic-card",
-    details: basicCardResponse
-  };
 
   navigator.serviceWorker.controller.postMessage(paymentAppResponse);
   window.close();
@@ -1995,7 +1907,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
       paymentRequestEvent.respondWith(new Promise(function(accept,reject) {
         /* ... processing may occur here ... */
         accept({
-          methodName: "basic-card",
+          methodName: "https://example.com/pay",
           details: {
             cardHolderName:   "John Smith",
             cardNumber:       "1232343451234",
@@ -2289,18 +2201,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           "payment-method-manifest#parsed-payment-method-manifest-supported-origins">
           supported origins</dfn> are defined by the Payment Method Manifest
           specification [[!payment-method-manifest]].
-        </dd>
-        <dt>
-          Basic Card Payment
-        </dt>
-        <dd>
-          The terms <dfn data-cite=
-          "payment-method-basic-card#method-id">basic-card</dfn>,
-          <dfn data-cite=
-          "payment-method-basic-card#dom-basiccardrequest-supportednetworks">supportedNetworks</dfn>,
-          and <dfn data-cite=
-          "payment-method-basic-card#dom-basiccardrequest-supportedtypes">supportedTypes</dfn>
-          are defined in [[!payment-method-basic-card]].
         </dd>
         <dt>
           Service Workers
