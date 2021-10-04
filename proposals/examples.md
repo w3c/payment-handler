@@ -10,7 +10,7 @@ For each use case we should see code that demonstrates the following, with descr
   1. [Adding](#example31), [Updating](#example33), [Removing](#example32) payment methods
   1. Handling `.canMakePayment()` (*Let's leave this fucntionality out for now*).
   1. A web app in the origin installing at least 1 service worker that has [an event listener](#example1) for the `onpaymentrequest` event
-  1. The web app [making the browser aware](#example31) of the payment methods it supports (with any specific capabilities, eg: basic-card > visa)
+  1. The web app [making the browser aware](#example31) of the payment methods it supports
   1. The web app handling the `onpaymentrequest` event and [returning a response](#example4).
   1. Handling POSTing for payment (without a secure window)
   1. Getting the browser to open a secure window
@@ -19,7 +19,7 @@ For each use case we should see code that demonstrates the following, with descr
    
 ## Use Cases
 
-  1. App that handles [`basic-card` payments](#app1)
+  1. App that handles [a URL-based payment method](#app1)
   1. App that handles multiple payment methods
   1. App that handles a payment by making a network request before responding
   1. App that renders UI to get user confirmation for the payment
@@ -54,7 +54,7 @@ navigator.serviceWorker
       "app-option2-key",
       {
         name: "Visa xxxx8200",
-        enabledMethods: ["basic-card"],
+        enabledMethods: ["https://example.com/pay"],
       }
     );
 });
@@ -70,7 +70,7 @@ navigator.serviceWorker
     registration.paymentAppManager.options.set( walletKey,
       {
         name: "Visa xxxx8299",
-        enabledMethods: ["basic-card"],
+        enabledMethods: ["https://example.com/pay"],
       }
     );
 });
@@ -108,22 +108,22 @@ self.addEventListener('paymentrequest', function (paymentrequestEvent) {
 ```
 
 ## App Samples
-<h3 id="app1">`basic-card` payment</h3>
+<h3 id="app1">A URL-based payment method</h3>
 Actual running full project [here](https://github.com/pjbazin/wapp-examples)
 
 #### registration
 
 ```javascript
 navigator.serviceWorker
-    .register('/app-bc.js')
+    .register('/app.js')
     .then(function(registration) {
-      console.log("[app-bc] registration " + JSON.stringify(registration));
+      console.log("[app] registration " + JSON.stringify(registration));
 
       // Set Registration methods & options
       if (registration.paymentAppManager) {
-        registration.paymentAppManager.options.set("app-bc_key", {
-          enabledMethods: ["basic-card"],
-          name: "app-bc for MyCard",
+        registration.paymentAppManager.options.set("app_key", {
+          enabledMethods: ["https://example.com/pay"],
+          name: "Example Pay app",
           id: "M. JAUNE D'EAU;4111111111111111;12;25;987"
         });
       }
@@ -133,30 +133,30 @@ navigator.serviceWorker
 
     }).then(function(sw) {
       // Previous step is successfully completed
-      console.log("[app-bc] Payment-App Service Worker is " + (sw.installing || sw.waiting || sw.active).state);
+      console.log("[app] Payment-App Service Worker is " + (sw.installing || sw.waiting || sw.active).state);
 
     }).catch(function(exception) {
-      alert("[app-bc] Dev.Exception: " + exception);
+      alert("[app] Dev.Exception: " + exception);
     });
 ```
 
-#### execution (app-bc.js)
+#### execution (app.js)
 
 ```javascript
 self.addEventListener('install', function(event) {
   // 'install' event is fired when the SW registration is successfully completed.
-  console.log("[app-bc] is installed");
+  console.log("[app] is installed");
 });
 
 
 self.addEventListener('activate', function(event) {
   // 'activate' event is fired after 'install' event.
-  console.log("[app-bc] is activated");
+  console.log("[app] is activated");
 });
 
 
 self.addEventListener('paymentrequest', function(paymentrequestEvent) {
-  console.log("[app-bc] Got paymentrequest " + JSON.stringify(paymentrequestEvent.data));
+  console.log("[app] Got paymentrequest " + JSON.stringify(paymentrequestEvent.data));
 
   // Send back selected option to the payment requester (Payee/Merchant, PISP,...)
   paymentrequestEvent.respondWith(new Promise(function(resolve, reject) {
@@ -165,9 +165,7 @@ self.addEventListener('paymentrequest', function(paymentrequestEvent) {
       // Retrive payment card options
       var optionIds = paymentrequestEvent.data.optionId.split(';');
 
-      // Build Basic-Card response according to the specific BasicCardResponse dictionary model
-      var basicCardResponse = {
-        methodName: "basic-card",
+      var response = {
         details: {
           cardholderName: optionIds[0],
           cardNumber: optionIds[1],
@@ -179,7 +177,7 @@ self.addEventListener('paymentrequest', function(paymentrequestEvent) {
       };
 
       // Callback Promise
-      resolve(basicCardResponse);
+      resolve(response);
 
     } catch (exception) { reject(exception) }
 
