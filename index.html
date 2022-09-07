@@ -496,7 +496,7 @@
                 then:
                   <ol>
                     <li>Let <var>fetchedImage</var> be the result of
-                    <a data-cite="appmanifest#fetching-image-resources">steps
+                    <a data-cite="appmanifest#fetching-an-image-resource">steps
                     to fetch an image resource</a> passing <var>icon</var> as
                     the argument.
                     </li>
@@ -1388,7 +1388,7 @@
             </td>
             <td>
               This value is a result of <a data-cite=
-              "appmanifest#fetching-image-resources">steps to fetch an image
+              "appmanifest#fetching-an-image-resource">steps to fetch an image
               resource</a> or a fallback image provided by the user agent.
             </td>
           </tr>
@@ -1571,7 +1571,7 @@
           <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }} is not null, then:
             <ol>
               <li>If |event|.{{ PaymentRequestEvent/[[windowClient]] }}.<a data-cite=
-              "SERVICE-WORKERS#client-visibilitystate-attribute">visibilityState</a>
+              "SERVICE-WORKERS#client-visibilitystate">visibilityState</a>
               is not "unloaded", reject <var>promise</var> with an
               {{"InvalidStateError"}} {{DOMException}} and abort these steps.
               </li>
@@ -2167,8 +2167,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           "payment-request#dom-paymentrequestupdateevent">PaymentRequestUpdateEvent</dfn>,
           <dfn data-cite="payment-request#id-attribute">ID</dfn>,
           <dfn data-cite=
-          "payment-request#canmakepayment()-method">canMakePayment()</dfn>,
-          <dfn data-cite="payment-request#show()-method">show()</dfn>,
+          "payment-request#canmakepayment-method">canMakePayment()</dfn>,
+          <dfn data-cite="payment-request#show-method">show()</dfn>,
           <dfn data-cite=
           "payment-request#updatewith-method">updateWith(detailsPromise)</dfn>,
           <dfn data-cite=
@@ -2218,12 +2218,12 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           worker client</dfn>, <code><dfn data-cite=
           "SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
           <code><dfn data-cite=
-          "SERVICE-WORKERS#service-worker-global-scope">ServiceWorkerGlobalScope</dfn></code>,
+          "SERVICE-WORKERS#serviceworkerglobalscope-interface">ServiceWorkerGlobalScope</dfn></code>,
           <dfn data-cite="SERVICE-WORKERS#fire-functional-event-algorithm">fire
           functional event</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#dfn-extend-lifetime-promises">extend lifetime
+          "SERVICE-WORKERS#extendableevent-extend-lifetime-promises">extend lifetime
           promises</dfn>,<dfn data-cite=
-          "SERVICE-WORKERS#dfn-pending-promises-count">pending promises
+          "SERVICE-WORKERS#extendableevent-pending-promises-count">pending promises
           count</dfn>, <dfn data-cite=
           "SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
           service worker registration</dfn>, <dfn data-cite=
