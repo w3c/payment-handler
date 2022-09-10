@@ -1895,10 +1895,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
               global object</a>'s associated <a>service worker</a>'s
               <a>containing service worker registration</a>.
               </li>
-              <li>If <var>registration</var>’s <a>uninstalling flag</a> is set,
-              invoke <a>Try Clear Registration</a> with
-              <var>registration</var>.
-              </li>
               <li>If <var>registration</var> is not null, invoke <a>Try
               Activate</a> with <var>registration</var>.
               </li>
@@ -2226,8 +2222,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           "SERVICE-WORKERS#extendableevent-pending-promises-count">pending promises
           count</dfn>, <dfn data-cite=
           "SERVICE-WORKERS#dfn-containing-service-worker-registration">containing
-          service worker registration</dfn>, <dfn data-cite=
-          "SERVICE-WORKERS#dfn-uninstalling-flag">uninstalling flag</dfn>,
+          service worker registration</dfn>, 
           <dfn data-cite="SERVICE-WORKERS#try-clear-registration-algorithm">Try
           Clear Registration</dfn>, <dfn data-cite=
           "SERVICE-WORKERS#try-activate-algorithm">Try Activate</dfn>,
