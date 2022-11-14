@@ -816,18 +816,10 @@
         <pre class="idl">
           [Exposed=ServiceWorker]
           interface CanMakePaymentEvent : ExtendableEvent {
-            constructor(DOMString type, optional CanMakePaymentEventInit eventInitDict = {});
-            readonly attribute USVString topOrigin;
-            readonly attribute USVString paymentRequestOrigin;
-            readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
+            constructor(DOMString type);
             undefined respondWith(Promise&lt;boolean&gt; canMakePaymentResponse);
           };
         </pre>
-        <p>
-          The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>,
-          <dfn>methodData</dfn>, and <dfn>modifiers</dfn> members share their
-          definitions with those defined for {{PaymentRequestEvent}}.
-        </p>
         <section>
           <h2>
             <dfn>respondWith()</dfn> method
@@ -835,23 +827,6 @@
           <p>
             This method is used by the payment handler to indicate whether it
             can respond to a payment request.
-          </p>
-        </section>
-        <section data-dfn-for="CanMakePaymentEventInit">
-          <h2>
-            <dfn>CanMakePaymentEventInit</dfn> dictionary
-          </h2>
-          <pre class="idl">
-            dictionary CanMakePaymentEventInit : ExtendableEventInit {
-              USVString topOrigin;
-              USVString paymentRequestOrigin;
-              sequence&lt;PaymentMethodData&gt; methodData;
-            };
-          </pre>
-          <p>
-            The <dfn>topOrigin</dfn>, <dfn>paymentRequestOrigin</dfn>, and
-            <dfn>methodData</dfn> members share their definitions with those
-            defined for {{PaymentRequestEvent}}.
           </p>
         </section>
       </section>
@@ -875,40 +850,8 @@
           <li>
             <p>
               <a>Fire Functional Event</a> "<code>canmakepayment</code>" using
-              <a>CanMakePaymentEvent</a> on <var>registration</var> with the
-              following properties:
+              <a>CanMakePaymentEvent</a> on <var>registration</var>.
             </p>
-            <dl>
-              <dt>
-                <a data-lt="CanMakePaymentEvent.topOrigin">topOrigin</a>
-              </dt>
-              <dd>
-                the [=serialization of an origin=] of the top level payee web
-                page.
-              </dd>
-              <dt>
-                <a data-lt=
-                "CanMakePaymentEvent.paymentRequestOrigin">paymentRequestOrigin</a>
-              </dt>
-              <dd>
-                the [=serialization of an origin=] of the context where
-                PaymentRequest was initialized.
-              </dd>
-              <dt>
-                <a data-lt="CanMakePaymentEvent.methodData">methodData</a>
-              </dt>
-              <dd>
-                The result of executing the <a>MethodData Population
-                Algorithm</a>.
-              </dd>
-              <dt>
-                <a data-lt="CanMakePaymentEvent.modifiers">modifiers</a>
-              </dt>
-              <dd>
-                The result of executing the <a>Modifiers Population
-                Algorithm</a>.
-              </dd>
-            </dl>
           </li>
         </ol>
       </section>
@@ -1944,16 +1887,24 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           </li>
           <li>In a browser that supports Payment Handler API, when a merchant
           creates a PaymentRequest object with URL-based payment method
-          identifiers, <a>CanMakePaymentEvent</a> will fire in registered
-          payment handlers from a finite number of origins: the origins of the
+          identifiers, a <a>CanMakePaymentEvent</a> will fire in registered
+          payment handlers from a finite set of origins: the origins of the
           payment method manifests and their <a>supported origins</a>. This
-          means that a registered payment handler will know that a user has
-          visited a website before the user has selected that payment handler
-          to complete a transaction. This behavior is similar to the status quo
-          where a merchant embeds a third-party iframe in a checkout page.
-          However, because user agents enable users to disable the
-          <a>CanMakePaymentEvent</a> and users can choose to uninstall payment
-          handlers, this approach improves upon the iframe status quo.
+          event is fired before the user has selected that payment handler,
+          but it contains no information about the triggering origin (i.e.,
+          the merchant website) and so cannot be used to track users directly.
+          <li>We acknowledge the risk of a timing attack via
+          <a>CanMakePaymentEvent</a>:
+          <ul>
+            <li>A merchant website sends notice via a backend channel (e.g., the
+            fetch API) to a payment handler origin, sharing that they are about
+            to construct a PaymentRequest object.</li>
+            <li>The merchant website then constructs the PaymentRequest,
+            triggering a <a>CanMakePaymentEvent</a> to be fired at the installed
+            payment handler.</li>
+            <li>That payment handler contacts its own origin, and on the server
+            side attempts to join the two requests.</li>
+          </ul>
           </li>
           <li>User agents should allow users to disable support for the
           <a>CanMakePaymentEvent</a>.
