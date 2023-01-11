@@ -1116,7 +1116,6 @@
           readonly attribute FrozenArray&lt;PaymentMethodData&gt; methodData;
           readonly attribute object total;
           readonly attribute FrozenArray&lt;PaymentDetailsModifier&gt; modifiers;
-          readonly attribute boolean requestBillingAddress;
           readonly attribute object? paymentOptions;
           readonly attribute FrozenArray&lt;PaymentShippingOption&gt;? shippingOptions;
           Promise&lt;WindowClient?&gt; openWindow(USVString url);
@@ -1197,16 +1196,6 @@
             per-payment-method basis). It is populated from the
             <a>PaymentRequest</a> using the <a>Modifiers Population
             Algorithm</a> defined below.
-          </p>
-        </section>
-        <section>
-          <h2>
-            <dfn>requestBillingAddress</dfn> attribute
-          </h2>
-          <p>
-            The value of <a data-cite=
-            "payment-request/#dom-paymentoptions">PaymentOptions</a>.<var>requestBillingAddress</var>
-            in the <a>PaymentRequest</a>.
           </p>
         </section>
         <section>
