@@ -152,9 +152,10 @@
         (e.g., when the user pushes a button on a checkout page), the user
         agent computes a list of candidate payment handlers, comparing the
         payment methods accepted by the merchant with those supported by
-        registered payment handlers. For payment methods that support
-        additional filtering, <a>CanMakePaymentEvent</a> is used as part of
-        determining whether there is a match.
+        registered payment handlers and those payment handlers that are
+        available for registration just-in-time (JIT). For payment methods that
+        support additional filtering, <a>CanMakePaymentEvent</a> is used as part
+        of determining whether there is a match.
         </li>
         <li>The user agent displays a set of choices to the user: the
         registered <a data-lt="PaymentManager.instruments">instruments</a> of
@@ -288,10 +289,21 @@
         Registration
       </h2>
       <p>
-        One registers a payment handler with the user agent when assigning the
-        first {{PaymentInstrument}} to it through the
-        {{PaymentInstruments/set()}} method.
+        One registers a payment handler with the user agent when either
+        assigning the first {{PaymentInstrument}} to it through the
+        {{PaymentInstruments/set()}} method or through a just-in-time (JIT)
+        registration mechanism.
       </p>
+      <section>
+        <h2>
+          Just-in-time registration
+        </h2>
+        <p>
+          If a payment handler is not registered when a merchant invokes
+          {{PaymentRequest/show()}} method, a user agent may allow the user to
+          register this payment handler at this time.
+        </p>
+      </section>
       <section data-dfn-for="ServiceWorkerRegistration">
         <h2>
           Extension to the `ServiceWorkerRegistration` interface
