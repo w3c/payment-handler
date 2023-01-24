@@ -151,11 +151,16 @@
         [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
         (e.g., when the user pushes a button on a checkout page), the user
         agent computes a list of candidate payment handlers, comparing the
-        payment methods accepted by the merchant with those supported by
-        registered payment handlers and those payment handlers that are
-        available for registration just-in-time (JIT). For payment methods that
-        support additional filtering, <a>CanMakePaymentEvent</a> is used as part
-        of determining whether there is a match.
+        payment methods accepted by the merchant with those known to the user
+        agent through any number of mechanisms, including, but not limited to:
+        <ul>
+          <li>Those previously registered through this API.</li>
+          <li>Those that may be registered through this API during the course of
+          the transaction, e.g., identified through a <a>payment method
+          manifest</a>.</li>
+          <li>Those registered through other mechanisms, e.g., the operating
+          system.</li>
+        </ul>
         </li>
         <li>The user agent displays a set of choices to the user: the
         registered <a data-lt="PaymentManager.instruments">instruments</a> of
@@ -301,7 +306,16 @@
         <p>
           If a payment handler is not registered when a merchant invokes
           {{PaymentRequest/show()}} method, a user agent may allow the user to
-          register this payment handler at this time.
+          register this payment handler just-in-time.
+        </p>
+        <h3>
+          <em>Non-normative</em>
+        </h3>
+        <p>
+          A user agent may perform just-in-time installation by deriving payment
+          handler information from the <a>payment method manifest</a> that is
+          found through the <a>URL-based payment method identifier</a> that the
+          merchant requested.
         </p>
       </section>
       <section data-dfn-for="ServiceWorkerRegistration">
