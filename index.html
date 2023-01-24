@@ -97,7 +97,7 @@
         <li>A payment request event type {{PaymentRequestEvent}}). A <a>payment
         handler</a> is an event handler for the {{PaymentRequestEvent}}.
         </li>
-        <li>An extension to the service worker registration interface
+        <li>An extension to the <a>service worker registration</a> interface
         ({{PaymentManager}} to manage properties of payment handlers.
         </li>
         <li>A mechanism to respond to the {{PaymentRequestEvent}}.
@@ -225,7 +225,6 @@
           user interaction, and so on.
         </p>
       </section>
-      <section class="informative">
       <section class="informative">
         <h2>
           Relation to Other Types of Payment Apps
@@ -524,7 +523,7 @@
       <p>
         Once the user has selected a payment handler, the user agent fires a
         {{PaymentRequestEvent}} and uses the subsequent
-        <a>PaymentHandlerResponse</a> to create a <a>PaymentReponse</a> for
+        <a>PaymentHandlerResponse</a> to create a <a>PaymentResponse</a> for
         [[!payment-request]].
       </p>
       <p class="issue" title=
@@ -992,19 +991,6 @@
           </tr>
           <tr>
             <td>
-              <dfn data-dfn-for="PaymentRequestEvent">[[\fetchedImage]]</dfn>
-            </td>
-            <td>
-              undefined
-            </td>
-            <td>
-              This value is a result of <a data-cite=
-              "appmanifest#fetching-an-image-resource">steps to fetch an image
-              resource</a> or a fallback image provided by the user agent.
-            </td>
-          </tr>
-          <tr>
-            <td>
               <dfn data-dfn-for="PaymentRequestEvent">[[\respondWithCalled]]</dfn>
             </td>
             <td>
@@ -1023,8 +1009,8 @@
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
           "payment-request#show-method">PaymentRequest.show()</a> and
-          subsequent user selection of a payment instrument, the <a>user
-          agent</a> MUST run the following steps:
+          subsequent user selection of a payment handler, the <a>user agent</a>
+          MUST run the following steps:
         </p>
         <ol>
           <li>Let <var>registration</var> be the {{ServiceWorkerRegistration}}
@@ -1896,7 +1882,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             payment apps for a given payment method. When the user agent is
             determining whether a payment handler matches the origin listed in
             a <a>payment method manifest</a>, the user agent uses the scope URL
-            of the payment handler's service worker registration.
+            of the payment handler's <a>service worker registration</a>.
           </li>
         </ul>
       </section>
@@ -1923,8 +1909,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           mode," the user agent should launch payment handlers in a private
           context. This will generally prevent sites from accessing any
           previously-stored information. In turn, this is likely to require
-          either that the user log in to the origin or re-enter payment
-          instrument details.
+          either that the user log in to the origin or re-enter payment details.
           </li>
           <li>The <a>CanMakePaymentEvent</a> event should not be fired in
           private browsing mode. The user agent should behave as if
@@ -1942,11 +1927,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         Payment Handler Display Considerations
       </h2>
       <p>
-        When ordering payment handlers and payment instruments, the user agent
-        is expected to honor user preferences over other preferences. User
-        agents are expected to permit manual configuration options, such as
-        setting a preferred payment handler or instrument display order for an
-        origin, or for all origins.
+        When ordering payment handlers, the user agent is expected to honor user
+        preferences over other preferences. User agents are expected to permit
+        manual configuration options, such as setting a preferred payment
+        handler display order for an origin, or for all origins.
       </p>
       <p>
         User experience details are left to implementers.
@@ -2041,7 +2025,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         <dd>
           The terms <dfn data-cite=
           "SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
-          <dfn>service worker registration</dfn>, <dfn>active worker</dfn>,
+          <dfn>service worker registration</dfn>,
           <dfn data-cite="SERVICE-WORKERS#dfn-service-worker-client">service
           worker client</dfn>, <code><dfn data-cite=
           "SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
