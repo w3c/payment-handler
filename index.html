@@ -1212,6 +1212,15 @@
               </li>
             </ol>
           </li>
+          <li>If the security properties of <var>newContext</var> are
+          unsatisfactory (e.g., invalid certificate), then:
+            <ol>
+              <li>Reject <var>promise</var> with <a>SecurityError</a>..
+              </li>
+              <li>Abort these steps.
+              </li>
+            </ol>
+          </li>
           <li>Let <var>client</var> be the result of running the
             <a data-cite="SERVICE-WORKERS#create-windowclient-algorithm">create
             window client</a> algorithm with <var>newContext</var> as the
@@ -1921,6 +1930,31 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             deduce that the user may be in private browsing mode.
           </li>
         </ul>
+      </section>
+      <section>
+        <h2>
+          HTTPS
+        </h2>
+        <ul>
+          <li>The user agent may block mixed content (e.g., non-HTTPS or
+          scripts) on the payment handler page.
+          </li>
+          <li>If the SSL certificate of the payment handler page is not valid
+          (e.g., self-signed), the user agent may cancel the payment.
+          </li>
+          <li>If the web-page is known to be malicious (e.g., a phishing page
+          according to a safe browsing database), the user agent may cancel the
+          payment.
+          </li>
+          <li>If the payment handler page redirects to a non-HTTPS scheme
+          origin, the user agent should cancel the payment.
+          </li>
+        </ul>
+        <p>
+          The user agent should provide rationale to the payment handler
+          developers (e.g., through console messages) and may also inform the
+          user to help avoid confusion whenever these mitigations happen.
+        </p>
       </section>
     </section>
     <section id="display" class="informative">
