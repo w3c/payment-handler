@@ -150,10 +150,10 @@
         </li>
         <li>When the <a>payer</a> user selects a payment handler, the user agent
         fires a {{PaymentRequestEvent}} (cf. the <a>user interaction task
-        source</a>) in its service worker. The {{PaymentRequestEvent}} includes
-        some information from the PaymentRequest (defined in
-        [[!payment-request]]) as well as additional information (e.g., payee's
-        origin).
+        source</a>) in the <a>service worker</a> for the selected payment
+        handler. The {{PaymentRequestEvent}} includes some information from the
+        PaymentRequest (defined in [[!payment-request]]) as well as additional
+        information (e.g., payee's origin).
         </li>
         <li>Once activated, the payment handler performs whatever steps are
         necessary to <a href="#handling-a-payment-request">handle the payment
