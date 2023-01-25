@@ -97,9 +97,8 @@
         <li>A payment request event type {{PaymentRequestEvent}}). A <a>payment
         handler</a> is an event handler for the {{PaymentRequestEvent}}.
         </li>
-        <li>An extension to the service worker registration interface
-        ({{PaymentManager}} to manage the definition, display, and user
-        selection of {{PaymentInstrument}}s.
+        <li>An extension to the <a>service worker registration</a> interface
+        ({{PaymentManager}} to manage properties of payment handlers.
         </li>
         <li>A mechanism to respond to the {{PaymentRequestEvent}}.
         </li>
@@ -112,7 +111,7 @@
     </section>
     <section id="model">
       <h2>
-        Overview of Handling Payment Requests
+        Overview
       </h2>
       <p>
         In this document we envision the following flow:
@@ -128,31 +127,13 @@
         <li>
           <a>Payment handlers</a> are defined in <a>service worker</a> code.
         </li>
-        <li>The {{PaymentManager}} is used to set a list of <a data-lt=
-        "PaymentManager.instruments">payment instruments</a>. Each
-          <a data-lt="PaymentInstrument">payment instrument</a> provides data
-          to the user agent to improve the user experience of selecting payment
-          credentials:
-          <ul>
-            <li>The <a data-lt="PaymentInstrument.method">method</a> informs
-            the user agent decision whether to display this instrument as a
-            candidate for payment.
-            </li>
-            <li>When the instrument matches what the payee accepts, the user
-            agent may display the <a data-lt="PaymentInstrument.name">name</a>
-            and <a data-lt="PaymentInstrument.icons">icon</a>. These provide
-            hints about payment credentials that the user agent will return in
-            the <a>PaymentHandlerResponse</a> if the user selects this
-            instrument.
-            </li>
-          </ul>
-        </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
         [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
-        (e.g., when the user pushes a button on a checkout page), the user
-        agent computes a list of candidate payment handlers, comparing the
-        payment methods accepted by the merchant with those known to the user
-        agent through any number of mechanisms, including, but not limited to:
+        (e.g., when the user -- the <dfn>payer</dfn> -- pushes a button on a
+        checkout page), the user agent computes a list of candidate payment
+        handlers, comparing the payment methods accepted by the merchant with
+        those known to the user agent through any number of mechanisms,
+        including, but not limited to:
         <ul>
           <li>Those previously registered through this API.</li>
           <li>Those that may be registered through this API during the course of
@@ -162,21 +143,17 @@
           system.</li>
         </ul>
         </li>
-        <li>The user agent displays a set of choices to the user: the
-        registered <a data-lt="PaymentManager.instruments">instruments</a> of
-        the candidate payment handlers. The user agent displays these choices
-        using information (labels and icons) provided at registration or
-        otherwise available from the Web app.
+        <li>The user agent displays a set of choices to the user: the candidate
+        payment handlers. The user agent displays these choices using
+        information (labels and icons) provided at registration or otherwise
+        available from the Web app.
         </li>
-        <li>When the user (the payer) selects an <a data-lt=
-        "PaymentManager.instruments">instrument</a>, the user agent fires a
-        {{PaymentRequestEvent}} (cf. the <a>user interaction task source</a>)
-        in the service worker whose <a data-lt=
-        "ServiceWorkerRegistration.paymentManager">PaymentManager</a> the
-        instrument was registered with. The {{PaymentRequestEvent}} includes
+        <li>When the <a>payer</a> user selects a payment handler, the user agent
+        fires a {{PaymentRequestEvent}} (cf. the <a>user interaction task
+        source</a>) in its service worker. The {{PaymentRequestEvent}} includes
         some information from the PaymentRequest (defined in
-        [[!payment-request]]) as well as additional information (e.g., origin
-        and selected instrument).
+        [[!payment-request]]) as well as additional information (e.g., payee's
+        origin).
         </li>
         <li>Once activated, the payment handler performs whatever steps are
         necessary to <a href="#handling-a-payment-request">handle the payment
@@ -186,18 +163,14 @@
         </li>
         <li>The user agent receives a response asynchronously once the payment
         handler has finished handling the request. The response becomes the
-        PaymentResponse (of [[!payment-request]]).
+        <a>PaymentResponse</a> (of [[!payment-request]]).
         </li>
       </ol>
       <p class="note">
         An origin may implement a payment app with more than one service worker
         and therefore multiple <a>payment handlers</a> may be registered per
         origin. The handler that is invoked is determined by the selection made
-        by the user of a <a data-lt="PaymentManager.instruments">payment
-        instrument</a>. The <a>service worker</a> which stored the <a data-lt=
-        "PaymentManager.instruments">payment instrument</a> with its
-        <a data-lt="ServiceWorkerRegistration.paymentManager">PaymentManager</a>
-        is the one that will be invoked.
+        by the user.
       </p>
       <section class="informative" id="handling-a-payment-request">
         <h2>
@@ -255,22 +228,6 @@
       </section>
       <section class="informative">
         <h2>
-          Structure of a Web Payment App
-        </h2>
-        <figure>
-          <img alt=
-          "Architecture of a (Web) payment apps as defined in this specification."
-          src="app-arch.png">
-          <figcaption>
-            A Web payment app is associated with an origin. Payment handlers
-            respond to {{PaymentRequestEvent}}s. {{PaymentManager}} manage the
-            definition, display, and user selection of {{PaymentInstrument}}s.
-            A {{PaymentInstrument}} supports one or more payment methods.
-          </figcaption>
-        </figure>
-      </section>
-      <section class="informative">
-        <h2>
           Relation to Other Types of Payment Apps
         </h2>
         <p>
@@ -289,15 +246,14 @@
         </figure>
       </section>
     </section>
+    </section>
     <section id="registration">
       <h2>
         Registration
       </h2>
       <p>
-        One registers a payment handler with the user agent when either
-        assigning the first {{PaymentInstrument}} to it through the
-        {{PaymentInstruments/set()}} method or through a just-in-time (JIT)
-        registration mechanism.
+        One registers a payment handler with the user agent through a
+        just-in-time (JIT) registration mechanism.
       </p>
       <section>
         <h2>
@@ -316,6 +272,15 @@
           merchant requested.
         </p>
       </section>
+    </section>
+    <section id="management">
+      <h2>
+        Management
+      </h2>
+      <p>
+        This section describes the functionality available to a payment handler
+        to manage its own properties.
+      </p>
       <section data-dfn-for="ServiceWorkerRegistration">
         <h2>
           Extension to the `ServiceWorkerRegistration` interface
@@ -327,7 +292,7 @@
         </pre>
         <p>
           The <dfn>paymentManager</dfn> attribute exposes payment handler
-          functionality in the service worker.
+          management functionality.
         </p>
       </section>
       <section data-dfn-for="PaymentManager">
@@ -335,31 +300,16 @@
           <dfn>PaymentManager</dfn> interface
         </h2>
         <pre class="idl">
-          [SecureContext, Exposed=(Window,Worker)]
+          [SecureContext, Exposed=(Window)]
           interface PaymentManager {
-            [SameObject] readonly attribute PaymentInstruments instruments;
             attribute DOMString userHint;
             Promise&lt;undefined&gt; enableDelegations(sequence&lt;PaymentDelegation&gt; delegations);
           };
         </pre>
         <p>
           The {{PaymentManager}} is used by <a>payment handler</a>s to manage
-          their associated instruments as well as supported payment methods and
-          delegations.
+          their supported delegations.
         </p>
-        <section>
-          <h2>
-            <dfn>instruments</dfn> attribute
-          </h2>
-          <p>
-            This attribute allows manipulation of payment instruments
-            associated with a service worker (and therefore its payment
-            handler). To be a candidate payment handler, a handler must have at
-            least one registered payment instrument to present to the user.
-            That instrument needs to match the payment methods specified by the
-            payment request.
-          </p>
-        </section>
         <section>
           <h2>
             <dfn>userHint</dfn> attribute
@@ -368,9 +318,7 @@
             When displaying payment handler name and icon, the user agent may
             use this string to improve the user experience. For example, a user
             hint of "**** 1234" can remind the user that a particular card is
-            available through this payment handler. When a agent displays all
-            payment instruments available through a payment handler, it may
-            cause confusion to display the additional hint.
+            available through this payment handler.
           </p>
         </section>
         <section>
@@ -422,429 +370,6 @@
           </dd>
         </dl>
       </section>
-      <section data-dfn-for="PaymentInstruments">
-        <h2>
-          <dfn>PaymentInstruments</dfn> interface
-        </h2>
-        <pre class="idl">
-          [SecureContext, Exposed=(Window,Worker)]
-          interface PaymentInstruments {
-            Promise&lt;boolean&gt; delete(DOMString instrumentKey);
-            Promise&lt;any&gt; get(DOMString instrumentKey);
-            Promise&lt;sequence&lt;DOMString&gt;&gt;  keys();
-            Promise&lt;boolean&gt; has(DOMString instrumentKey);
-            Promise&lt;undefined&gt; set(DOMString instrumentKey, PaymentInstrument details);
-            Promise&lt;undefined&gt; clear();
-          };
-        </pre>
-        <p>
-          The {{PaymentInstruments}} interface represents a collection of
-          payment instruments, each uniquely identified by an
-          <var>instrumentKey</var>. The <var>instrumentKey</var> identifier
-          will be passed to the payment handler to indicate the
-          {{PaymentInstrument}} selected by the user, if any.
-        </p>
-        <section>
-          <h2>
-            <dfn>delete()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>If the collection contains a {{PaymentInstrument}} with a
-            matching <var>instrumentKey</var>, remove it from the collection
-            and resolve |p| with <b>true</b>.
-            </li>
-            <li>Otherwise, resolve |p| with <b>false</b>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>get()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>If the collection contains a {{PaymentInstrument}} with a
-            matching <var>instrumentKey</var>, resolve |p| with that
-            {{PaymentInstrument}}.
-            </li>
-            <li>Otherwise, resolve |p| with `undefined`.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>keys()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>Resolve |p| with a <dfn>Sequence</dfn> that contains all the
-            <var>instrumentKey</var>s for the {{PaymentInstrument}}s contained
-            in the collection, in original insertion order.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>has()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>If the collection contains a {{PaymentInstrument}} with a
-            matching <var>instrumentKey</var>, resolve |p| with <b>true</b>.
-            </li>
-            <li>Otherwise, resolve |p| with <b>false</b>.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>set()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let <var>registration</var> be the {{PaymentInstrument}}'s
-            associated <a>service worker registration</a>.
-            </li>
-            <li>If <var>registration</var> has no <a>active worker</a>, then
-            reject a {{Promise}} with an {{"InvalidStateError"}}
-            {{DOMException}} and terminate these steps.
-            </li>
-            <li>Upon user agent discretion and depending on user consent,
-            optionally return a {{Promise}} rejected with a
-            {{NotAllowedError}}.
-            </li>
-            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
-            <var>details</var> is present, then:
-              <ol>
-                <li>Let <var>convertedIcons</var> be the result of running the
-                <a>convert image objects</a> algorithm passing
-                <var>details</var>.<a data-lt=
-                "PaymentInstrument.icons">icons</a> as the argument.
-                </li>
-                <li>If the <var>convertedIcons</var> is an empty
-                <a>Sequence</a>, then return a {{Promise}} rejected with a
-                {{TypeError}}.
-                </li>
-                <li>Set <var>details</var>.<a data-lt=
-                "PaymentInstrument.icons">icons</a> to
-                <var>convertedIcons</var>.
-                </li>
-              </ol>
-            </li>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>If the <a data-lt="PaymentInstrument.icons">icons</a> member of
-            <var>details</var> is present, then for each <var>icon</var> in
-            <var>details</var>.<a data-lt="PaymentInstrument.icons">icons</a>:
-              <ol>
-                <li>If the user agent wants to display the <var>icon</var>,
-                then:
-                  <ol>
-                    <li>Let <var>fetchedImage</var> be the result of
-                    <a data-cite="appmanifest#fetching-an-image-resource">steps
-                    to fetch an image resource</a> passing <var>icon</var> as
-                    the argument.
-                    </li>
-                    <li>Set <var>icon</var>.{{ PaymentRequestEvent/[[fetchedImage]] }} to
-                    <var>fetchedImage</var>.
-                    </li>
-                  </ol>
-                </li>
-              </ol>
-            </li>
-            <li>If the collection contains a {{PaymentInstrument}} with a
-            matching <var>instrumentKey</var>, replace it with the
-            {{PaymentInstrument}} in <var>details</var>.
-            </li>
-            <li>Otherwise, insert the {{PaymentInstrument}} in
-            <var>details</var> as a new member of the collection and associate
-            it with the key <var>instrumentKey</var>.
-            </li>
-            <li>Resolve |p|.
-            </li>
-          </ol>
-        </section>
-        <section>
-          <h2>
-            <dfn>clear()</dfn> method
-          </h2>
-          <p>
-            When called, this method executes the following steps:
-          </p>
-          <ol>
-            <li>Let |p:Promise| be [=a new promise=].
-            </li>
-            <li>Return |p| and perform the remaining steps in parallel:
-            </li>
-            <li>Remove all {{PaymentInstrument}}s from the collection and
-            resolve |p|.
-            </li>
-          </ol>
-        </section>
-        <section data-dfn-for="PaymentInstrument" data-link-for=
-        "PaymentInstrument">
-          <h2>
-            <dfn>PaymentInstrument</dfn> dictionary
-          </h2>
-          <pre class="idl">
-            dictionary PaymentInstrument {
-              required DOMString name;
-              sequence&lt;ImageObject&gt; icons;
-              DOMString method;
-            };
-          </pre>
-          <dl>
-            <dt>
-              <dfn>name</dfn> member
-            </dt>
-            <dd>
-              The <a>name</a> member is a string that represents the label for
-              this {{PaymentInstrument}} as it is usually displayed to the
-              user.
-            </dd>
-            <dt>
-              <dfn>icons</dfn> member
-            </dt>
-            <dd>
-              The <a>icons</a> member is an array of image objects that can
-              serve as iconic representations of the payment instrument when
-              presented to the user for selection.
-            </dd>
-            <dt>
-              <dfn>method</dfn> member
-            </dt>
-            <dd>
-              The <a>method</a> member is the <a>payment method identifier</a>
-              of the <a>payment method</a> supported by this instrument.
-            </dd>
-          </dl>
-        </section>
-        <section data-dfn-for="ImageObject" data-link-for="ImageObject">
-          <h2>
-            <dfn>ImageObject</dfn> dictionary
-          </h2>
-          <pre class="idl">
-      dictionary ImageObject {
-          required USVString src;
-          DOMString sizes;
-          DOMString type;
-      };
-      </pre>
-          <dl>
-            <dt>
-              <dfn>src</dfn> member
-            </dt>
-            <dd>
-              The <a>src</a> member is used to specify the <a>ImageObject</a>'s
-              source. It is a URL from which the user agent can fetch the
-              image’s data.
-            </dd>
-            <dt>
-              <dfn>sizes</dfn> member
-            </dt>
-            <dd>
-              The <a>sizes</a> member is used to specify the
-              <a>ImageObject</a>'s sizes. It follows the spec of sizes member
-              in HTML [^link^] element, which is a string consisting of an
-              <a>unordered set of unique space-separated tokens</a> which are
-              [=ASCII case-insensitive=] that represents the dimensions of an
-              image. Each keyword is either an [=ASCII case-insensitive=] match
-              for the string "any", or a value that consists of two valid
-              non-negative integers that do not have a leading U+0030 DIGIT
-              ZERO (0) character and that are separated by a single U+0078
-              LATIN SMALL LETTER X or U+0058 LATIN CAPITAL LETTER X character.
-              The keywords represent icon sizes in raw pixels (as opposed to
-              CSS pixels). When multiple image objects are available, a user
-              agent MAY use the value to decide which icon is most suitable for
-              a display context (and ignore any that are inappropriate). The
-              parsing steps for the <a>sizes</a> member MUST follow
-              <a data-cite="HTML#attr-link-sizes">the parsing steps for HTML
-              link element sizes attribute</a>.
-            </dd>
-            <dt>
-              <dfn>type</dfn> member
-            </dt>
-            <dd>
-              The <a>type</a> member is used to specify the
-              <a>ImageObject</a>'s MIME type. It is a hint as to the media type
-              of the image. The purpose of this member is to allow a user agent
-              to ignore images of media types it does not support.
-            </dd>
-          </dl>
-        </section>
-        <section>
-          <h2>
-            <dfn>Convert image objects</dfn>
-          </h2>
-          <p>
-            When this algorithm with <var>inputImages</var> parameter is
-            invoked, the user agent must run the following steps:
-          </p>
-          <ol class="algorithm">
-            <li>Let <var>outputImages</var> be an empty <a>Sequence</a> of <a>
-              ImageObject</a>.
-            </li>
-            <li>For each <var>image</var> in <var>inputImages</var>:
-              <ol>
-                <li>If <var>image</var>.<a data-lt="ImageObject.type">type</a>
-                is not a <a data-cite="mimesniff">valid MIME type string</a> or
-                the value of type is not a supported media format, then return
-                an empty <a>Sequence</a> of <a>ImageObject</a>.
-                </li>
-                <li>If <var>image</var>.<a data-lt=
-                "ImageObject.sizes">sizes</a> is not a <a data-lt=
-                "ImageObject.sizes">valid value</a>, then return an empty
-                <a>Sequence</a> of <a>ImageObject</a>.
-                </li>
-                <li>Let <var>url</var> be the result of parsing
-                <var>image</var>.<a data-lt="ImageObject.src">src</a> with the
-                <a>this</a>'s <a>relevant settings object</a>'s [=environment
-                settings object/api base url=].
-                </li>
-                <li>If <var>url</var> is failure, then return an empty
-                <a>Sequence</a> of <a>ImageObject</a>.
-                </li>
-                <li>If <var>url</var>'s [=url/scheme=] is not "https", then
-                return an empty <a>Sequence</a> of <a>ImageObject</a>.
-                </li>
-                <li>Set <var>image</var>.<a data-lt="ImageObject.src">src</a>
-                to <var>url</var>.
-                </li>
-                <li>Append <var>image</var> to <var>outputImages</var>
-                </li>
-              </ol>
-            </li>
-            <li>Return <var>outputImages</var>.
-            </li>
-          </ol>
-          <p>
-            According to the step 2.3, it is also possible to use the relative
-            url for <var>image</var>.<a data-lt="ImageObject.src">src</a>. The
-            following examples illustrate how relative URL resolution works in
-            different execution contexts.
-          </p>
-          <pre class="example html" title=
-          "Resolving the relative URL of image.src in window context.">
-        &lt;-- In this example, code is located in https://www.example.com/bobpay/index.html --&gt;
-        &lt;script&gt;
-
-        const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-        navigator.serviceWorker.register("/register/sw.js");
-        const registration = await navigator.serviceWorker.ready;
-        await registration.paymentManager.paymentInstruments.set({
-          instrumentKey,
-          {
-            name: "My Bob Pay Account: john@example.com",
-            method: "https://bobpay.com",
-            icons: [{
-              src: "icon/lowres.webp",
-              sizes: "48x48",
-              type: "image/webp"
-            }]
-          });
-
-        const storedInstrument =
-          await registration.paymentManager.paymentInstruments.get(instrumentKey);
-
-        // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
-
-        &lt;/script&gt;
-      </pre>
-          <pre class="example js" title=
-          "Resolving the relative URL of image.src in service worker context.">
-        // In this example, code is located in https://www.example.com/register/sw.js
-
-        const instrumentKey = "c8126178-3bba-4d09-8f00-0771bcfd3b11";
-        await self.registration.paymentManager.paymentInstruments.set({
-          instrumentKey,
-          {
-            name: "My Bob Pay Account: john@example.com",
-            method: "https://bobpay.com",
-            icons: [{
-              src: "../bobpay/icon/lowres.webp",
-              sizes: "48x48",
-              type: "image/webp"
-            }]
-          });
-
-        const storedInstrument =
-          await registration.paymentManager.paymentInstruments.get(instrumentKey);
-
-        // storedInstrument.icons[0].src == "https://www.example.com/bobpay/icon/lowres.webp";
-      </pre>
-        </section>
-        <section id="register-example" class="informative">
-          <h2>
-            Registration Example
-          </h2>
-          <p>
-            The following example shows how to register a payment handler:
-          </p>
-          <pre class="example js" title="Payment Handler Registration">
-        button.addEventListener("click", async() =&gt; {
-          if (!window.PaymentManager) {
-            return; // not supported, so bail out.
-          }
-
-          navigator.serviceWorker.register("/sw.js");
-          const registration = await navigator.serviceWorker.ready;
-          await registration.paymentManager.enableDelegations(
-            ['shippingAddress', 'payerName']);
-
-          // Excellent, we got it! Let's now set up the user's payment
-          // instruments.
-          await addInstruments(registration);
-        }, { once: true });
-
-        function addInstruments(registration) {
-          return Promise.all([
-            registration.paymentManager.instruments.set(
-              "dc2de27a-ca5e-4fbd-883e-b6ded6c69d4f",
-              {
-                name: "My Example Pay Account: max@example.com",
-                method: "https://example.com/pay",
-              }),
-
-            registration.paymentManager.instruments.set(
-              "c8126178-3bba-4d09-8f00-0771bcfd3b11",
-              {
-                name: "My Bob Pay Account: john@bobpay.com",
-                method: "https://bobpay.com"
-              }),
-            ]);
-          };
-     </pre>
-        </section>
-      </section>
     </section>
     <section id="canmakepayment">
       <h2>
@@ -886,8 +411,8 @@
           The <dfn>CanMakePaymentEvent</dfn>
         </h2>
         <p>
-          The <a>CanMakePaymentEvent</a> is used to check whether the payment
-          handler is able to respond to a payment request.
+          The <a>CanMakePaymentEvent</a> is used to as a signal for whether the
+          payment handler is able to respond to a payment request.
         </p>
         <pre class="idl">
           [Exposed=ServiceWorker]
@@ -901,8 +426,8 @@
             <dfn>respondWith()</dfn> method
           </h2>
           <p>
-            This method is used by the payment handler to indicate whether it
-            can respond to a payment request.
+            This method is used by the payment handler as a signal for whether
+            it can respond to a payment request.
           </p>
         </section>
       </section>
@@ -942,22 +467,22 @@
         </p>
         <pre class="example js" title="Handling the CanMakePaymentEvent">
           self.addEventListener("canmakepayment", function(e) {
-            e.respondWith(true);
+            e.respondWith(new Promise(function(resolve, reject) {
+              resolve(true);
+            }));
           });
         </pre>
       </section>
       <section>
         <h2>
-          Filtering of Payment Instruments
+          Filtering of Payment Handlers
         </h2>
         <p>
-          Given a <a>PaymentMethodData</a> and a {{PaymentInstrument}} that
-          match on <a>payment method identifier</a>, this algorithm returns
-          <code>true</code> if this instrument can be used for payment:
+          Given a <a>PaymentMethodData</a> and a payment handler that match on
+          <a>payment method identifier</a>, this algorithm returns
+          <code>true</code> if this payment handler can be used for payment:
         </p>
         <ol class="algorithm">
-          <li>Let <var>instrument</var> be the given {{PaymentInstrument}}.
-          </li>
           <li>Let <var>methodName</var> be the <a>payment method identifier</a>
           string specified in the <a>PaymentMethodData</a>.
           </li>
@@ -965,17 +490,16 @@
           <a>PaymentMethodData</a>.
           </li>
           <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
-          {{ServiceWorkerRegistration}} scope URL of the payment handler with
-          this <var>instrument</var>.
+          {{ServiceWorkerRegistration}} scope URL of the payment handler.
           </li>
           <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
           <a>parsed</a> <a>payment method manifest</a> for the
           <var>methodName</var>.
           </li>
-          <li>If <var>methodName</var> is a <a>standardized payment method
-          identifier</a> or is a <a>URL-based payment method identifier</a>
-          with the <code>"*"</code> string <a>supported origins</a> in
-          <var>paymentMethodManifest</var>, return <code>true</code>.
+          <li>If <var>methodName</var> is a <a>URL-based payment method
+          identifier</a> with the <code>"*"</code> string <a>supported
+          origins</a> in <var>paymentMethodManifest</var>, return
+          <code>true</code>.
           </li>
           <li>Otherwise, if the <a>URL-based payment method identifier</a>
           <var>methodName</var> has the same <a>origin</a> as
@@ -998,9 +522,9 @@
         Invocation
       </h2>
       <p>
-        Once the user has selected an Instrument, the user agent fires a
+        Once the user has selected a payment handler, the user agent fires a
         {{PaymentRequestEvent}} and uses the subsequent
-        <a>PaymentHandlerResponse</a> to create a PaymentReponse for
+        <a>PaymentHandlerResponse</a> to create a <a>PaymentResponse</a> for
         [[!payment-request]].
       </p>
       <p class="issue" title=
@@ -1344,14 +868,8 @@
             MUST perform the following steps or their equivalent:
           </p>
           <ol>
-            <li>Set <var>registeredMethods</var> to an empty set.
-            </li>
-            <li>For each {{PaymentInstrument}} <var>instrument</var> in the <a>
-              payment handler</a>'s <a data-lt=
-              "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add the value of <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.method">method</a> to
-              <var>registeredMethods</var>.
+            <li>Let <var>registeredMethods</var> be the set of registered
+            <a>payment method identifier</a>s of the invoked payment handler.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -1398,14 +916,8 @@
             MUST perform the following steps or their equivalent:
           </p>
           <ol>
-            <li>Set <var>registeredMethods</var> to an empty set.
-            </li>
-            <li>For each {{PaymentInstrument}} <var>instrument</var> in the <a>
-              payment handler</a>'s <a data-lt=
-              "ServiceWorkerRegistration.paymentManager">PaymentManager</a>.<a data-lt="PaymentManager.instruments">instruments</a>,
-              add the value of <var>instrument</var>.<a data-lt=
-              "PaymentInstrument.method">method</a> to
-              <var>registeredMethods</var>.
+            <li>Let <var>registeredMethods</var> be the set of registered
+            <a>payment method identifier</a>s of the invoked payment handler.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -1480,19 +992,6 @@
           </tr>
           <tr>
             <td>
-              <dfn data-dfn-for="PaymentRequestEvent">[[\fetchedImage]]</dfn>
-            </td>
-            <td>
-              undefined
-            </td>
-            <td>
-              This value is a result of <a data-cite=
-              "appmanifest#fetching-an-image-resource">steps to fetch an image
-              resource</a> or a fallback image provided by the user agent.
-            </td>
-          </tr>
-          <tr>
-            <td>
               <dfn data-dfn-for="PaymentRequestEvent">[[\respondWithCalled]]</dfn>
             </td>
             <td>
@@ -1511,12 +1010,12 @@
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
           "payment-request#show-method">PaymentRequest.show()</a> and
-          subsequent user selection of a payment instrument, the <a>user
-          agent</a> MUST run the following steps:
+          subsequent user selection of a payment handler, the <a>user agent</a>
+          MUST run the following steps:
         </p>
         <ol>
           <li>Let <var>registration</var> be the {{ServiceWorkerRegistration}}
-          corresponding to the {{PaymentInstrument}} selected by the user.
+          corresponding to the payment handler selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the {{Promise}}
           that was created by <a data-cite=
@@ -2216,6 +1715,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </p>
       </section>
     </section>
+    </section>
     <section id="security">
       <h2>
         Security and Privacy Considerations
@@ -2278,18 +1778,16 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           </li>
         </ul>
       </section>
-      <section data-link-for="PaymentInstruments">
+      <section id="user-consent-to-install">
         <h2>
           User Consent to Install a Payment Handler
         </h2>
         <ul>
           <li>This specification does not define how the user agent establishes
-          user consent when <a>set()</a> is first called. The user agent might
-          prompt the user as a result of <a>set()</a>, or might not if consent
-          has been established previously through manual configuration by the
-          user or usage patterns.
+          user consent when a payment handler is first registered. The user
+          agent might notify and/or prompt the user during registration.
           </li>
-          <li>User agents MAY reject a <a>set()</a> promise for security
+          <li>User agents MAY reject payment handler registration for security
           reasons (e.g., due to an invalid SSL certificate) and SHOULD notify
           the user when this happens.
           </li>
@@ -2385,7 +1883,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             payment apps for a given payment method. When the user agent is
             determining whether a payment handler matches the origin listed in
             a <a>payment method manifest</a>, the user agent uses the scope URL
-            of the payment handler's service worker registration.
+            of the payment handler's <a>service worker registration</a>.
           </li>
         </ul>
       </section>
@@ -2412,8 +1910,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           mode," the user agent should launch payment handlers in a private
           context. This will generally prevent sites from accessing any
           previously-stored information. In turn, this is likely to require
-          either that the user log in to the origin or re-enter payment
-          instrument details.
+          either that the user log in to the origin or re-enter payment details.
           </li>
           <li>The <a>CanMakePaymentEvent</a> event should not be fired in
           private browsing mode. The user agent should behave as if
@@ -2431,11 +1928,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         Payment Handler Display Considerations
       </h2>
       <p>
-        When ordering payment handlers and payment instruments, the user agent
-        is expected to honor user preferences over other preferences. User
-        agents are expected to permit manual configuration options, such as
-        setting a preferred payment handler or instrument display order for an
-        origin, or for all origins.
+        When ordering payment handlers, the user agent is expected to honor user
+        preferences over other preferences. User agents are expected to permit
+        manual configuration options, such as setting a preferred payment
+        handler display order for an origin, or for all origins.
       </p>
       <p>
         User experience details are left to implementers.
@@ -2530,7 +2026,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         <dd>
           The terms <dfn data-cite=
           "SERVICE-WORKERS#service-worker-concept">service worker</dfn>,
-          <dfn>service worker registration</dfn>, <dfn>active worker</dfn>,
+          <dfn>service worker registration</dfn>,
           <dfn data-cite="SERVICE-WORKERS#dfn-service-worker-client">service
           worker client</dfn>, <code><dfn data-cite=
           "SERVICE-WORKERS#service-worker-registration-concept">ServiceWorkerRegistration</dfn></code>,
