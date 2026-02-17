@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <title>
-      Payment Handler API
+      Web-based Payment Handler API
     </title>
     <script src="https://www.w3.org/Tools/respec/respec-w3c" class=
     "remove"></script>
@@ -244,10 +244,10 @@
         </p>
         <figure>
           <img alt=
-          "Different types of payment apps. Payment Handler API is for Web apps."
+          "Different types of payment apps. Web-based Payment Handler API is for Web apps."
           src="app-types.png">
           <figcaption>
-            Payment Handler API enables Web apps to handle payments. Other
+            Web-based Payment Handler API enables Web apps to handle payments. Other
             types of payment apps may use other (proprietary) mechanisms.
           </figcaption>
         </figure>
@@ -1754,7 +1754,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>User agents should not share payment request information with any
           payment handler until the user has selected that payment handler.
           </li>
-          <li>In a browser that supports Payment Handler API, when a merchant
+          <li>In a browser that supports Web-based Payment Handler API, when a merchant
           creates a PaymentRequest object with URL-based payment method
           identifiers, a <a>CanMakePaymentEvent</a> will fire in registered
           payment handlers from a finite set of origins: the origins of the
@@ -1778,7 +1778,7 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>User agents should allow users to disable support for the
           <a>CanMakePaymentEvent</a>.
           </li>
-          <li>In a browser that supports Payment Handler API,
+          <li>In a browser that supports Web-based Payment Handler API,
           <a>CanMakePaymentEvent</a> will fire in registered payment handlers
           that can provide all merchant requested information including
           shipping address and payer's contact information whenever needed.
