@@ -72,7 +72,7 @@
         };
     </script>
   </head>
-  <body data-cite="service-workers payment-method-id">
+  <body data-cite="service-workers payment-method-id payment-request">
     <section id="abstract">
       <p>
         This specification defines capabilities that enable Web applications to
@@ -101,11 +101,13 @@
       <ul>
         <li>An origin-based permission to handle payment request events.
         </li>
-        <li>A payment request event type ({{PaymentRequestEvent}}). A <a>payment
-        handler</a> is an event handler for the {{PaymentRequestEvent}}.
+        <li>A payment request event type ({{PaymentRequestEvent}}). A
+        <a>web-based payment handler</a> is an event handler for the
+        {{PaymentRequestEvent}}.
         </li>
         <li>An extension to the <a>service worker registration</a> interface
-        ({{PaymentManager}}) to manage properties of payment handlers.
+	({{PaymentManager}}) to manage properties of web-based payment
+        handlers.
         </li>
         <li>A mechanism to respond to the {{PaymentRequestEvent}}.
         </li>
@@ -126,20 +128,21 @@
       <ol>
         <li>An origin requests permission from the user to handle payment
         requests for a set of supported payment methods. For example, a user
-        visiting a retail or bank site may be prompted to register a payment
-        handler from that origin. The origin establishes the scope of the
-        permission but the origin's capabilities may evolve without requiring
-        additional user consent.
+        visiting a retail or bank site may be prompted to register a web-based
+        payment handler from that origin. The origin establishes the scope of
+        the permission but the origin's capabilities may evolve without
+        requiring additional user consent.
         </li>
         <li>
-          <a>Payment handlers</a> are defined in <a>service worker</a> code.
+          <a>Web-based payment handlers</a> are defined in <a>service
+          worker</a> code.
         </li>
         <li>When the merchant (or other <dfn>payee</dfn>) calls the
         [[payment-request]] method <a>canMakePayment()</a> or <a>show()</a>
         (e.g., when the user -- the <dfn>payer</dfn> -- pushes a button on a
-        checkout page), the user agent computes a list of candidate payment
-        handlers, comparing the payment methods accepted by the merchant with
-        those known to the user agent through any number of mechanisms,
+        checkout page), the user agent computes a list of candidate web-based
+        payment handlers, comparing the payment methods accepted by the merchant
+        with those known to the user agent through any number of mechanisms,
         including, but not limited to:
         <ul>
           <li>Those previously registered through this API.</li>
@@ -155,52 +158,53 @@
         information (labels and icons) provided at registration or otherwise
         available from the Web app.
         </li>
-        <li>When the <a>payer</a> user selects a payment handler, the user agent
-        fires a {{PaymentRequestEvent}} (cf. the <a>user interaction task
-        source</a>) in the <a>service worker</a> for the selected payment
-        handler. The {{PaymentRequestEvent}} includes some information from the
-        PaymentRequest (defined in [[!payment-request]]) as well as additional
-        information (e.g., payee's origin).
+        <li>When the <a>payer</a> user selects a web-based payment handler, the
+        user agent fires a {{PaymentRequestEvent}} (cf. the <a>user interaction
+        task source</a>) in the <a>service worker</a> for the selected web-based
+        payment handler. The {{PaymentRequestEvent}} includes some information
+        from the PaymentRequest (defined in [[!payment-request]]) as well as
+        additional information (e.g., payee's origin).
         </li>
-        <li>Once activated, the payment handler performs whatever steps are
-        necessary to <a href="#handling-a-payment-request">handle the payment
-        request</a>, and return an appropriate payment response to the
-        <a>payee</a>. If interaction with the user is necessary, the <a>payment
-        handler</a> can open a window for that purpose.
+        <li>Once activated, the web-based payment handler performs whatever
+        steps are necessary to <a href="#handling-a-payment-request">handle the
+        payment request</a>, and return an appropriate payment response to the
+        <a>payee</a>. If interaction with the user is necessary, the <a>Web-based
+        payment handler</a> can open a window for that purpose.
         </li>
-        <li>The user agent receives a response asynchronously once the payment
-        handler has finished handling the request. The response becomes the
-        <a>PaymentResponse</a> (of [[!payment-request]]).
+        <li>The user agent receives a response asynchronously once the web-based
+        payment handler has finished handling the request. The response becomes
+        the <a>PaymentResponse</a> (of [[!payment-request]]).
         </li>
       </ol>
       <p class="note">
         An origin may implement a payment app with more than one service worker
-        and therefore multiple <a>payment handlers</a> may be registered per
-        origin. The handler that is invoked is determined by the selection made
-        by the user.
+        and therefore multiple <a>Web-based payment handlers</a> may be
+        registered per origin. The handler that is invoked is determined by the
+        selection made by the user.
       </p>
       <section class="informative" id="handling-a-payment-request">
         <h2>
           Handling a Payment Request
         </h2>
         <p>
-          A <dfn>payment handler</dfn> is a Web application that can handle a
+	  A <dfn>Web-based payment handler</dfn> is a Web application based
+          [=payment handler=]; that is, a Web application that can handle a
           request for payment on behalf of the user.
         </p>
         <p>
-          The logic of a payment handler is driven by the payment methods that
-          it supports. Some payment methods expect little to no processing by
-          the payment handler which simply returns payment card details in the
-          response. It is then the job of the payee website to process the
-          payment using the returned data as input.
+          The logic of a web-based payment handler is driven by the payment
+          methods that it supports. Some payment methods expect little to no
+          processing by the web-based payment handler which simply returns
+          payment card details in the response. It is then the job of the payee
+          website to process the payment using the returned data as input.
         </p>
         <p>
           In contrast, some payment methods, such as a crypto-currency payments
-          or bank originated credit transfers, require that the payment handler
-          initiate processing of the payment. In such cases the payment handler
-          will return a payment reference, endpoint URL or some other data that
-          the payee website can use to determine the outcome of the payment (as
-          opposed to processing the payment itself).
+          or bank originated credit transfers, require that the web-based
+          payment handler initiate processing of the payment. In such cases the
+          web-based payment handler will return a payment reference, endpoint
+          URL or some other data that the payee website can use to determine the
+          outcome of the payment (as opposed to processing the payment itself).
         </p>
         <p>
           Handling a payment request may include numerous interactions: with
@@ -210,11 +214,12 @@
         </p>
         <p>
           This specification does not address these activities that occur
-          between the payment handler accepting the {{PaymentRequestEvent}} and
-          the payment handler returning a response. All of these activities
-          which may be required to configure the payment handler and handle the
-          payment request, are left to the implementation of the payment
-          handler, including:
+          between the web-based payment handler accepting the
+          {{PaymentRequestEvent}} and the web-based payment handler returning a
+          response. All of these activities which may be required to configure
+	  the web-based payment handler and handle the payment request, are
+          left to the implementation of the web-based payment handler,
+          including:
         </p>
         <ul>
           <li>how the user establishes an account with an origin that provides
@@ -259,7 +264,7 @@
         Registration
       </h2>
       <p>
-        One registers a payment handler with the user agent through a
+        One registers a web-based payment handler with the user agent through a
         just-in-time (JIT) registration mechanism.
       </p>
       <section>
@@ -267,16 +272,17 @@
           Just-in-time registration
         </h2>
         <p>
-          If a payment handler is not registered when a merchant invokes
-          {{PaymentRequest/show()}} method, a user agent may allow the user to
-          register this payment handler during the transaction ("just-in-time").
+          If a web-based payment handler is not registered when a merchant
+          invokes {{PaymentRequest/show()}} method, a user agent may allow the
+          user to register this web-based payment handler during the transaction
+          ("just-in-time").
         </p>
         <p><em>The remaining content of this section is non-normative.</em></p>
         <p>
-          A user agent may perform just-in-time installation by deriving payment
-          handler information from the <a>payment method manifest</a> that is
-          found through the <a>URL-based payment method identifier</a> that the
-          merchant requested.
+          A user agent may perform just-in-time installation by deriving
+          web-based payment handler information from the <a>payment method
+          manifest</a> that is found through the <a>URL-based payment method
+          identifier</a> that the merchant requested.
         </p>
       </section>
     </section>
@@ -285,8 +291,8 @@
         Management
       </h2>
       <p>
-        This section describes the functionality available to a payment handler
-        to manage its own properties.
+        This section describes the functionality available to a web-based
+        payment handler to manage its own properties.
       </p>
       <section data-dfn-for="ServiceWorkerRegistration">
         <h2>
@@ -298,8 +304,8 @@
         };
         </pre>
         <p>
-          The <dfn>paymentManager</dfn> attribute exposes payment handler
-          management functionality.
+          The <dfn>paymentManager</dfn> attribute exposes web-based payment
+          handler management functionality.
         </p>
       </section>
       <section data-dfn-for="PaymentManager">
@@ -314,18 +320,18 @@
           };
         </pre>
         <p>
-          The {{PaymentManager}} is used by <a>payment handler</a>s to manage
-          their supported delegations.
+          The {{PaymentManager}} is used by <a>Web-based payment handler</a>s to
+          manage their supported delegations.
         </p>
         <section>
           <h2>
             <dfn>userHint</dfn> attribute
           </h2>
           <p>
-            When displaying payment handler name and icon, the user agent may
-            use this string to improve the user experience. For example, a user
-            hint of "**** 1234" can remind the user that a particular card is
-            available through this payment handler.
+            When displaying web-based payment handler name and icon, the user
+            agent may use this string to improve the user experience. For
+            example, a user hint of "**** 1234" can remind the user that a
+            particular card is available through this web-based payment handler.
           </p>
         </section>
         <section>
@@ -333,8 +339,8 @@
             <dfn>enableDelegations()</dfn> method
           </h2>
           <p>
-            This method allows a <a>payment handler</a> to asynchronously
-            declare its supported <a>PaymentDelegation</a> list.
+            This method allows a <a>Web-based payment handler</a> to
+            asynchronously declare its supported <a>PaymentDelegation</a> list.
           </p>
         </section>
       </section>
@@ -355,25 +361,29 @@
             "<dfn>shippingAddress</dfn>"
           </dt>
           <dd>
-            The payment handler will provide shipping address whenever needed.
+            The web-based payment handler will provide shipping address whenever
+            needed.
           </dd>
           <dt>
             "<dfn>payerName</dfn>"
           </dt>
           <dd>
-            The payment handler will provide payer's name whenever needed.
+            The web-based payment handler will provide payer's name whenever
+            needed.
           </dd>
           <dt>
             "<dfn>payerPhone</dfn>"
           </dt>
           <dd>
-            The payment handler will provide payer's phone whenever needed.
+            The web-based payment handler will provide payer's phone whenever
+            needed.
           </dd>
           <dt>
             "<dfn>payerEmail</dfn>"
           </dt>
           <dd>
-            The payment handler will provide payer's email whenever needed.
+            The web-based payment handler will provide payer's email whenever
+            needed.
           </dd>
         </dl>
       </section>
@@ -383,9 +393,9 @@
         Can make payment
       </h2>
       <p>
-        If the <a>payment handler</a> supports <a>CanMakePaymentEvent</a>, the
-        <a>user agent</a> may use it to help with filtering of the available
-        payment handlers.
+        If the <a>Web-based payment handler</a> supports
+        <a>CanMakePaymentEvent</a>, the <a>user agent</a> may use it to help
+        with filtering of the available web-based payment handlers.
       </p>
       <p>
         Implementations may impose a timeout for developers to respond to the
@@ -419,7 +429,7 @@
         </h2>
         <p>
           The <a>CanMakePaymentEvent</a> is used to as a signal for whether the
-          payment handler is able to respond to a payment request.
+          web-based payment handler is able to respond to a payment request.
         </p>
         <pre class="idl">
           [Exposed=ServiceWorker]
@@ -433,8 +443,8 @@
             <dfn>respondWith()</dfn> method
           </h2>
           <p>
-            This method is used by the payment handler as a signal for whether
-            it can respond to a payment request.
+            This method is used by the web-based payment handler as a signal for
+            whether it can respond to a payment request.
           </p>
         </section>
       </section>
@@ -485,9 +495,10 @@
           Filtering of Payment Handlers
         </h2>
         <p>
-          Given a <a>PaymentMethodData</a> and a payment handler that matches on
-          <a>payment method identifier</a>, this algorithm returns
-          <code>true</code> if this payment handler can be used for payment:
+          Given a <a>PaymentMethodData</a> and a web-based payment handler that
+          matches on <a>payment method identifier</a>, this algorithm returns
+          <code>true</code> if this web-based payment handler can be used for
+          payment:
         </p>
         <ol class="algorithm">
           <li>Let <var>methodName</var> be the <a>payment method identifier</a>
@@ -497,7 +508,8 @@
           <a>PaymentMethodData</a>.
           </li>
           <li>Let <var>paymentHandlerOrigin</var> be the <a>origin</a> of the
-          {{ServiceWorkerRegistration}} scope URL of the payment handler.
+          {{ServiceWorkerRegistration}} scope URL of the web-based payment
+          handler.
           </li>
           <li>Let <var>paymentMethodManifest</var> be the <a>ingested</a> and
           <a>parsed</a> <a>payment method manifest</a> for the
@@ -511,13 +523,13 @@
           <li>Otherwise, if the <a>URL-based payment method identifier</a>
           <var>methodName</var> has the same <a>origin</a> as
           <var>paymentHandlerOrigin</var>, fire the <a>CanMakePaymentEvent</a>
-          in the payment handler and return the result.
+          in the web-based payment handler and return the result.
           </li>
           <li>Otherwise, if <a>supported origins</a> in
           <var>paymentMethodManifest</var> is an ordered set of [=url/origin=]
           that contains the <var>paymentHandlerOrigin</var>, fire the
-          <a>CanMakePaymentEvent</a> in the payment handler and return the
-          result.
+          <a>CanMakePaymentEvent</a> in the web-based payment handler and return
+          the result.
           </li>
           <li>Otherwise, return `false`.
           </li>
@@ -529,8 +541,8 @@
         Invocation
       </h2>
       <p>
-        Once the user has selected a payment handler, the user agent fires a
-        {{PaymentRequestEvent}} and uses the subsequent
+        Once the user has selected a web-based payment handler, the user agent
+        fires a {{PaymentRequestEvent}} and uses the subsequent
         <a>PaymentHandlerResponse</a> to create a <a>PaymentResponse</a> for
         [[!payment-request]].
       </p>
@@ -539,8 +551,8 @@
       "117">
         Payment Request API supports delegation of responsibility to manage an
         abort to a payment app. There is a proposal to add a
-        paymentRequestAborted event to the Payment Handler interface. The event
-        will have a respondWith method that takes a boolean parameter
+        paymentRequestAborted event to the Web-based Payment Handler interface.
+        The event will have a respondWith method that takes a boolean parameter
         indicating if the paymentRequest has been successfully aborted.
       </p>
       <section data-dfn-for="ServiceWorkerGlobalScope" data-link-for=
@@ -577,7 +589,7 @@
           The <code>PaymentRequestDetailsUpdate</code> contains the updated
           total (optionally with modifiers and shipping options) and possible
           errors resulting from user selection of a payment method, a shipping
-          address, or a shipping option within a payment handler.
+          address, or a shipping option within a web-based payment handler.
         </p>
         <pre class="idl">
         dictionary PaymentRequestDetailsUpdate {
@@ -594,8 +606,9 @@
             <dfn>error</dfn> member
           </h2>
           <p>
-            A human readable string that explains why the user selected payment
-            method, shipping address or shipping option cannot be used.
+            A human readable string that explains why the user selected
+            web-based payment method, shipping address or shipping option cannot
+            be used.
           </p>
         </section>
         <section>
@@ -782,8 +795,9 @@
             <dfn>openWindow()</dfn> method
           </h2>
           <p>
-            This method is used by the payment handler to show a window to the
-            user. When called, it runs the <a>open window algorithm</a>.
+            This method is used by the web-based payment handler to show a
+            window to the user. When called, it runs the <a>open window
+            algorithm</a>.
           </p>
         </section>
         <section>
@@ -793,8 +807,8 @@
             method
           </h2>
           <p>
-            This method is used by the payment handler to get updated total
-            given such payment method details as the billing address. When
+            This method is used by the web-based payment handler to get updated
+            total given such payment method details as the billing address. When
             called, it runs the <a>change payment method algorithm</a>.
           </p>
         </section>
@@ -805,8 +819,8 @@
             method
           </h2>
           <p>
-            This method is used by the payment handler to get updated payment
-            details given the shippingAddress. When called, it runs the
+            This method is used by the web-based payment handler to get updated
+            payment details given the shippingAddress. When called, it runs the
             <a>change payment details algorithm</a>.
           </p>
         </section>
@@ -817,9 +831,9 @@
             method
           </h2>
           <p>
-            This method is used by the payment handler to get updated payment
-            details given the shippingOption identifier. When called, it runs
-            the <a>change payment details algorithm</a>.
+            This method is used by the web-based payment handler to get updated
+            payment details given the shippingOption identifier. When called,
+            it runs the <a>change payment details algorithm</a>.
           </p>
         </section>
         <section>
@@ -828,7 +842,7 @@
             "respondWith(handlerResponsePromise)">respondWith()</dfn> method
           </h2>
           <p>
-            This method is used by the payment handler to provide a
+            This method is used by the web-based payment handler to provide a
             <a>PaymentHandlerResponse</a> when the payment successfully
             completes. When called, it runs the <a>Respond to PaymentRequest
             Algorithm</a> with |event| and <var>handlerResponsePromise</var> as
@@ -876,7 +890,8 @@
           </p>
           <ol>
             <li>Let <var>registeredMethods</var> be the set of registered
-            <a>payment method identifier</a>s of the invoked payment handler.
+            <a>payment method identifier</a>s of the invoked web-based payment
+            handler.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -924,7 +939,8 @@
           </p>
           <ol>
             <li>Let <var>registeredMethods</var> be the set of registered
-            <a>payment method identifier</a>s of the invoked payment handler.
+            <a>payment method identifier</a>s of the invoked web-based payment
+            handler.
             </li>
             <li>Create a new empty <a>Sequence</a>.
             </li>
@@ -993,8 +1009,8 @@
             </td>
             <td>
               The currently active <dfn>WindowClient</dfn>. This is set if a
-              payment handler is currently showing a window to the user.
-              Otherwise, it is null.
+              web-based payment handler is currently showing a window to the
+              user. Otherwise, it is null.
             </td>
           </tr>
           <tr>
@@ -1017,12 +1033,12 @@
         <p>
           Upon receiving a <a>PaymentRequest</a> by way of <a data-cite=
           "payment-request#show-method">PaymentRequest.show()</a> and
-          subsequent user selection of a payment handler, the <a>user agent</a>
-          MUST run the following steps:
+          subsequent user selection of a web-based payment handler, the <a>user
+          agent</a> MUST run the following steps:
         </p>
         <ol>
           <li>Let <var>registration</var> be the {{ServiceWorkerRegistration}}
-          corresponding to the payment handler selected by the user.
+          corresponding to the web-based payment handler selected by the user.
           </li>
           <li>If <var>registration</var> is not found, reject the {{Promise}}
           that was created by <a data-cite=
@@ -1105,7 +1121,7 @@
               <li>Wait for all of the promises in the <a>extend lifetime
               promises</a> of <var>dispatchedEvent</var> to resolve.
               </li>
-              <li>If the <a>payment handler</a> has not provided a
+              <li>If the <a>Web-based payment handler</a> has not provided a
               <a>PaymentHandlerResponse</a>, reject the {{Promise}} that was
               created by <a data-cite=
               "payment-request#show-method">PaymentRequest.show()</a> with an
@@ -1118,29 +1134,29 @@
     </section>
     <section>
       <h2>
-        <dfn data-lt="payment handler window">Windows</dfn>
+        <dfn data-lt="web-based payment handler window">Windows</dfn>
       </h2>
       <p>
-        An invoked payment handler may or may not need to display information
-        about itself or request user input. Some examples of potential payment
-        handler display include:
+        An invoked web-based payment handler may or may not need to display
+        information about itself or request user input. Some examples of
+        potential web-based payment handler display include:
       </p>
       <ul>
-        <li>The payment handler opens a window for the user to provide an
-        authorization code.
+        <li>The web-based payment handler opens a window for the user to provide
+        an authorization code.
         </li>
-        <li>The payment handler opens a window that makes it easy for the user
-        to confirm payment using default information for that site provided
-        through previous user configuration.
+        <li>The web-based payment handler opens a window that makes it easy for
+        the user to confirm payment using default information for that site 
+        provided through previous user configuration.
         </li>
-        <li>When first selected to pay in a given session, the payment handler
-        opens a window. For subsequent payments in the same session, the
-        payment handler (through configuration) performs its duties without
-        opening a window or requiring user interaction.
+        <li>When first selected to pay in a given session, the web-based payment
+        handler opens a window. For subsequent payments in the same session, the
+        web-based payment handler (through configuration) performs its duties
+        without opening a window or requiring user interaction.
         </li>
       </ul>
       <p>
-        A <a>payment handler</a> that requires visual display and user
+        A <a>Web-based payment handler</a> that requires visual display and user
         interaction, may call openWindow() to display a page to the user.
       </p>
       <p class="note">
@@ -1148,8 +1164,8 @@
         {{PaymentRequestEvent}}, they SHOULD render the window in a way that is
         consistent with the flow and not confusing to the user. The resulting
         window client is bound to the tab/window that initiated the
-        <a>PaymentRequest</a>. A single <a>payment handler</a> SHOULD NOT be
-        allowed to open more than one client window using this method.
+        <a>PaymentRequest</a>. A single <a>Web-based payment handler</a> SHOULD
+        NOT be allowed to open more than one client window using this method.
       </p>
       <section>
         <h2>
@@ -1182,8 +1198,8 @@
           {{Promise}} rejected with a {{TypeError}}.
           </li>
           <li>If <var>url</var>'s origin is not the same as the <a>service
-          worker</a>'s origin associated with the payment handler, return a
-          {{Promise}} resolved with null.
+          worker</a>'s origin associated with the web-based payment handler,
+          return a {{Promise}} resolved with null.
           </li>
           <li>Let <var>promise</var> be a new {{Promise}}.
           </li>
@@ -1210,8 +1226,8 @@
           with that exception and abort these steps.
           </li>
           <li>If the origin of <var>newContext</var> is not the same as the <a>
-            service worker client</a> origin associated with the payment
-            handler, then:
+            service worker client</a> origin associated with the web-based
+            payment handler, then:
             <ol>
               <li>Resolve <var>promise</var> with null.
               </li>
@@ -1271,7 +1287,7 @@
       </pre>
         <p>
           Using the simple scheme described above, a trivial HTML page that is
-          loaded into the <a>payment handler window</a> might look like the
+          loaded into the <a>Web-based payment handler window</a> might look like the
           following:
         </p>
         <pre class="example html" title="Simple Payment Handler Window">
@@ -1350,8 +1366,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             transaction and determine successful fund transfer.
           </p>
           <p>
-            The user agent receives a successful response from the payment
-            handler through resolution of the Promise provided to the
+            The user agent receives a successful response from the web-based
+            payment handler through resolution of the Promise provided to the
             {{PaymentRequestEvent/respondWith}} function of the corresponding
             {{PaymentRequestEvent}} interface. The application is expected to
             resolve the Promise with a <a>PaymentHandlerResponse</a> instance
@@ -1365,8 +1381,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             but are not limited to:
           </p>
           <ul>
-            <li>Letting the user try again, with the same payment handler or
-            with a different one.
+            <li>Letting the user try again, with the same web-based payment
+            handler or with a different one.
             </li>
             <li>Rejecting the Promise that was created by <a data-cite=
             "payment-request#show-method">PaymentRequest.show()</a>.
@@ -1748,39 +1764,40 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </h2>
         <ul>
           <li>The API does not share information about the user's registered
-          payment handlers. Information from origins is only shared with the
-          payee with the consent of the user.
+          web-based payment handlers. Information from origins is only shared
+          with the payee with the consent of the user.
           </li>
           <li>User agents should not share payment request information with any
-          payment handler until the user has selected that payment handler.
+          web-based payment handler until the user has selected that payment
+          handler.
           </li>
           <li>In a browser that supports Web-based Payment Handler API, when a merchant
           creates a PaymentRequest object with URL-based payment method
           identifiers, a <a>CanMakePaymentEvent</a> will fire in registered
-          payment handlers from a finite set of origins: the origins of the
-          payment method manifests and their <a>supported origins</a>. This
-          event is fired before the user has selected that payment handler,
+          web-based payment handlers from a finite set of origins: the origins
+          of the payment method manifests and their <a>supported origins</a>.
+          This event is fired before the user has selected that payment handler,
           but it contains no information about the triggering origin (i.e.,
           the merchant website) and so cannot be used to track users directly.
           <li>We acknowledge the risk of a timing attack via
           <a>CanMakePaymentEvent</a>:
           <ul>
             <li>A merchant website sends notice via a backend channel (e.g., the
-            fetch API) to a payment handler origin, sharing that they are about
-            to construct a PaymentRequest object.</li>
+            fetch API) to a web-based payment handler origin, sharing that they
+            are about to construct a PaymentRequest object.</li>
             <li>The merchant website then constructs the PaymentRequest,
             triggering a <a>CanMakePaymentEvent</a> to be fired at the installed
-            payment handler.</li>
-            <li>That payment handler contacts its own origin, and on the server
-            side attempts to join the two requests.</li>
+            web-based payment handler.</li>
+            <li>That web-based payment handler contacts its own origin, and on
+            the server side attempts to join the two requests.</li>
           </ul>
           </li>
           <li>User agents should allow users to disable support for the
           <a>CanMakePaymentEvent</a>.
           </li>
           <li>In a browser that supports Web-based Payment Handler API,
-          <a>CanMakePaymentEvent</a> will fire in registered payment handlers
-          that can provide all merchant requested information including
+          <a>CanMakePaymentEvent</a> will fire in registered web-based payment
+          handlers that can provide all merchant requested information including
           shipping address and payer's contact information whenever needed.
           </li>
         </ul>
@@ -1791,12 +1808,12 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </h2>
         <ul>
           <li>This specification does not define how the user agent establishes
-          user consent when a payment handler is first registered. The user
-          agent might notify and/or prompt the user during registration.
+          user consent when a web-based payment handler is first registered. The
+          user agent might notify and/or prompt the user during registration.
           </li>
-          <li>User agents MAY reject payment handler registration for security
-          reasons (e.g., due to an invalid SSL certificate) and SHOULD notify
-          the user when this happens.
+          <li>User agents MAY reject web-based payment handler registration for
+          security reasons (e.g., due to an invalid SSL certificate) and SHOULD
+          notify the user when this happens.
           </li>
         </ul>
       </section>
@@ -1808,11 +1825,12 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>One goal of this specification is to minimize the user
           interaction required to make a payment. However, we also want to
           ensure that the user has an opportunity to consent to making a
-          payment. Because payment handlers are not required to open a window
-          for user interaction, user agents should take necessary steps to make
-          sure the user (1) is made aware when a payment request is invoked,
-          and (2) has an opportunity to interact with a payment handler before
-          the merchant receives the response from that payment handler.
+          payment. Because web-based payment handlers are not required to open
+          a window for user interaction, user agents should take necessary steps
+          to make sure the user (1) is made aware when a payment request is
+          invoked, and (2) has an opportunity to interact with a web-based
+          payment handler before the merchant receives the response from that
+          payment handler.
           </li>
         </ul>
       </section>
@@ -1821,11 +1839,11 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           User Awareness about Sharing Data Cross-Origin
         </h2>
         <ul>
-          <li>By design, a payment handler from one origin shares data with
-          another origin (e.g., the merchant site).
+          <li>By design, a web-based payment handler from one origin shares data
+          with another origin (e.g., the merchant site).
           </li>
           <li>To mitigate phishing attacks, it is important that user agents
-          make clear to users the origin of a payment handler.
+          make clear to users the origin of a web-based payment handler.
           </li>
           <li>User agents should help users understand that they are sharing
           information cross-origin, and ideally what information they are
@@ -1843,8 +1861,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           considerations</a>
           </li>
           <li>Payment method security is outside the scope of this
-          specification and is addressed by payment handlers that support those
-          payment methods.
+          specification and is addressed by web-based payment handlers that
+          support those payment methods.
           </li>
         </ul>
       </section>
@@ -1857,8 +1875,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           apps through a <a>payment method manifest</a>. See the <a>Handling a
           CanMakePaymentEvent</a> algorithm for details.
           </li>
-          <li>The user agent is not required to make available payment handlers
-          that pose security issues. Security issues might include:
+          <li>The user agent is not required to make available web-based payment
+          handlers that pose security issues. Security issues might include:
             <ul>
               <li>Certificates that are expired, revoked, self-signed, and so
               on.
@@ -1872,10 +1890,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
               </li>
             </ul>
             <p>
-              When a payment handler is unavailable for security reasons, the
-              user agent should provide rationale to the payment handler
-              developers (e.g., through console messages) and may also inform
-              the user to help avoid confusion.
+              When a web-based payment handler is unavailable for security
+              reasons, the user agent should provide rationale to the web-based
+              payment handler developers (e.g., through console messages) and
+              may also inform the user to help avoid confusion.
             </p>
           </li>
         </ul>
@@ -1888,9 +1906,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>
             <a>Payment method manifests</a> authorize origins to distribute
             payment apps for a given payment method. When the user agent is
-            determining whether a payment handler matches the origin listed in
-            a <a>payment method manifest</a>, the user agent uses the scope URL
-            of the payment handler's <a>service worker registration</a>.
+            determining whether a web-based payment handler matches the origin
+            listed in a <a>payment method manifest</a>, the user agent uses the
+            scope URL of the web-based payment handler's <a>service worker
+            registration</a>.
           </li>
         </ul>
       </section>
@@ -1914,8 +1933,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         </h2>
         <ul>
           <li>When the Payment Request API is invoked in a "private browsing
-          mode," the user agent should launch payment handlers in a private
-          context. This will generally prevent sites from accessing any
+          mode," the user agent should launch web-based payment handlers in a
+          private context. This will generally prevent sites from accessing any
           previously-stored information. In turn, this is likely to require
           either that the user log in to the origin or re-enter payment details.
           </li>
@@ -1924,8 +1943,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <a data-lt="CanMakePaymentEvent.respondWith()">respondWith()</a>
             was called with `false`. We acknowledge a consequent risk: if an
             entity controls both the origin of the Payment Request API call and
-            the origin of the payment handler, that entity may be able to
-            deduce that the user may be in private browsing mode.
+            the origin of the web-based payment handler, that entity may be able
+            to deduce that the user may be in private browsing mode.
           </li>
         </ul>
       </section>
@@ -1935,10 +1954,11 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
         Payment Handler Display Considerations
       </h2>
       <p>
-        When ordering payment handlers, the user agent is expected to honor user
-        preferences over other preferences. User agents are expected to permit
-        manual configuration options, such as setting a preferred payment
-        handler display order for an origin, or for all origins.
+        When ordering web-based payment handlers, the user agent is expected to
+        honor user preferences over other preferences. User agents are expected
+        to permit manual configuration options, such as setting a preferred
+        web-based payment handler display order for an origin, or for all
+        origins.
       </p>
       <p>
         User experience details are left to implementers.
