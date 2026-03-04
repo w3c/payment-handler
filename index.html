@@ -1334,8 +1334,21 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
       "PaymentHandlerResponse">
         <h2>
           <dfn>PaymentHandlerResponse</dfn> dictionary
-        </h2>The PaymentHandlerResponse is conveyed using the following
-        dictionary:
+        </h2>
+        <p>
+          The user agent receives a successful response from the web-based
+          payment handler through resolution of the Promise provided to the
+          {{PaymentRequestEvent/respondWith}} function of the corresponding
+          {{PaymentRequestEvent}} interface. The application is expected to
+          resolve the Promise with a <a>PaymentHandlerResponse</a> instance
+          containing the payment response. In case of user cancellation or
+          error, the application may signal failure by rejecting the Promise.
+        </p>
+
+        <p>
+          The PaymentHandlerResponse is conveyed using the following dictionary:
+        </p>
+
         <pre class="idl">
           dictionary PaymentHandlerResponse {
           DOMString methodName;
@@ -1365,29 +1378,6 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             method</a> specific message used by the merchant to process the
             transaction and determine successful fund transfer.
           </p>
-          <p>
-            The user agent receives a successful response from the web-based
-            payment handler through resolution of the Promise provided to the
-            {{PaymentRequestEvent/respondWith}} function of the corresponding
-            {{PaymentRequestEvent}} interface. The application is expected to
-            resolve the Promise with a <a>PaymentHandlerResponse</a> instance
-            containing the payment response. In case of user cancellation or
-            error, the application may signal failure by rejecting the Promise.
-          </p>
-          <p>
-            If the Promise is rejected, the user agent MUST run the
-            <dfn>payment app failure algorithm</dfn>. The exact details of this
-            algorithm are left to implementers. Acceptable behaviors include,
-            but are not limited to:
-          </p>
-          <ul>
-            <li>Letting the user try again, with the same web-based payment
-            handler or with a different one.
-            </li>
-            <li>Rejecting the Promise that was created by <a data-cite=
-            "payment-request#show-method">PaymentRequest.show()</a>.
-            </li>
-          </ul>
         </section>
         <section>
           <h2>
@@ -1519,10 +1509,10 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           <li>Increment the |event|'s <a>pending promises count</a> by one.
           </li>
           <li>
-            <a>Upon rejection</a> of <var>handlerResponsePromise</var>:
+            <a>Upon rejection</a> of <var>handlerResponsePromise</var> with |reason|:
             <ol>
-              <li>Run the <a>payment app failure algorithm</a> and terminate
-              these steps.
+              <li>Run the <a>payment app failure algorithm</a> with |reason|, and
+              terminate these steps.
               </li>
             </ol>
           </li>
@@ -1531,8 +1521,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
             <ol>
               <li>Let <var>handlerResponse</var> be |value| <a>converted to an
               IDL value</a> {{PaymentHandlerResponse}}. If this throws an
-              exception, run the <a>payment app failure algorithm</a> and
-              terminate these steps.
+              exception, run the <a>payment app failure algorithm</a> with an
+              {{"OperationError"}} {{DOMException}}, and terminate these steps.
               </li>
               <li>Validate that all required members exist in
               <var>handlerResponse</var> and are well formed.
@@ -1542,7 +1532,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   present or not set to one of the values from
                   |event|.<a data-lt=
                   "PaymentRequestEvent.methodData">methodData</a>, run the <a>
-                    payment app failure algorithm</a> and terminate these
+                    payment app failure algorithm</a> with an
+                    {{"OperationError"}} {{DOMException}}, and terminate these
                     steps.
                   </li>
                   <li>If <var>handlerResponse</var>.<a data-lt=
@@ -1557,7 +1548,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.shippingAddress">shippingAddress</a>
                   is not present, run the <a>payment app failure algorithm</a>
-                  and terminate these steps.
+                  with an {{"OperationError"}} {{DOMException}}, and terminate
+                  these steps.
                   </li>
                   <li>If <var>shippingRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
@@ -1565,8 +1557,9 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   not present or not set to one of shipping options identifiers
                   from |event|.<a data-lt=
                   "PaymentRequestEvent.shippingOptions">shippingOptions</a>,
-                  run the <a>payment app failure algorithm</a> and terminate
-                  these steps.
+                  run the <a>payment app failure algorithm</a> with an
+                  {{"OperationError"}} {{DOMException}}, and terminate these
+                  steps.
                   </li>
                   <li>Let <var>payerNameRequired</var> be the <a data-cite=
                   "payment-request#dom-paymentoptions-requestpayername">requestPayerName</a>
@@ -1574,8 +1567,9 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <a>paymentOptions</a>. If <var>payerNameRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.payerName">payerName</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
+                  present, run the <a>payment app failure algorithm</a> with an
+                  {{"OperationError"}} {{DOMException}}, and terminate these
+                  steps.
                   </li>
                   <li>Let <var>payerEmailRequired</var> be the <a data-cite=
                   "payment-request#dom-paymentoptions-requestpayeremail">requestPayerEmail</a>
@@ -1583,8 +1577,9 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <a>paymentOptions</a>. If <var>payerEmailRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.payerEmail">payerEmail</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
+                  present, run the <a>payment app failure algorithm</a> with an
+                  {{"OperationError"}} {{DOMException}}, and terminate these
+                  steps.
                   </li>
                   <li>Let <var>payerPhoneRequired</var> be the <a data-cite=
                   "payment-request#dom-paymentoptions-requestpayerphone">requestPayerPhone</a>
@@ -1592,8 +1587,9 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                   <a>paymentOptions</a>. If <var>payerPhoneRequired</var> and
                   <var>handlerResponse</var>.<a data-lt=
                   "PaymentHandlerResponse.payerPhone">payerPhone</a> is not
-                  present, run the <a>payment app failure algorithm</a> and
-                  terminate these steps.
+                  present, run the <a>payment app failure algorithm</a> with an
+                  {{"OperationError"}} {{DOMException}}, and terminate these
+                  steps.
                   </li>
                 </ol>
               </li>
@@ -1629,7 +1625,8 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
                     </ol>
                   </li>
                   <li>If any exception occurs in the above step, then run the
-                  <a>payment app failure algorithm</a> and terminate these
+                  <a>payment app failure algorithm</a> with an
+                  {{"OperationError"}} {{DOMException}}, and terminate these
                   steps.
                   </li>
                   <li>Assign <var>methodName</var> to associated
@@ -1736,6 +1733,40 @@ document.getElementById("form").addEventListener("submit", e =&gt; {
           ecosystem (including payment app providers and payees) can use for
           reconciliation after network or other failures.
         </p>
+      </section>
+      <section>
+        <h2>
+          <dfn>Payment App Failure Algorithm</dfn>
+        </h2>
+        <p>
+          When this algorithm is invoked with |reason|, the user agent MUST run
+          the following steps:
+        </p>
+        <ol class="algorithm">
+          <li>
+            If |reason| is an {{"OperationError"}} {{DOMException}}, then run
+	    the <a>Payment handler indicates an internal error algorithm</a> as
+            defined in [[!payment-request]].
+          </li>
+          <li>
+            Otherwise, run the <a>user aborts the payment request algorithm</a>
+            as defined in [[!payment-request]].
+
+            <p class="note">
+              Previous versions of this specification did not define what
+              happened when the <a>payment app failure algorithm</a> was
+              invoked. In practice, implementors acted as if the
+              <a>user aborts the payment request algorithm</a> was run.
+
+              To maintain as much backwards compatibility as possible, while
+              still introducing a way for web-based payment handlers to indicate
+              internal error, this specification now maps all |reason|s other
+              than a {{"OperationError"}} {{DOMException}} to user abort. Future
+              versions of this specification may add additional handled |reason|
+              types.
+            </p>
+          </li>
+        </ol>
       </section>
     </section>
     </section>
